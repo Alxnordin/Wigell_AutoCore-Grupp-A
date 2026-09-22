@@ -1,0 +1,116 @@
+.root {
+    -fx-background-color: #F5F7F4;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+Label {
+    -fx-text-fill:#10182b;
+}
+
+
+Button {
+    -fx-text-fill: #F5F7F4;
+    -fx-background-color: #2E7D32;
+    -fx-background-radius: 8px;
+    -fx-border-color: #235e27;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 10px 18px;
+    -fx-cursor: hand;
+}
+
+Button:hover {
+    -fx-background-color: #37963d;
+    -fx-border-color: #2E7D32;
+}
+
+.category-button {
+    -fx-background-color: #2E7D32;
+    -fx-text-fill: #F5F7F4;
+    -fx-font-size: 15px;
+    -fx-font-weight: 500;
+    -fx-background-radius: 10px;
+    -fx-border-color: #235e27;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+    -fx-padding: 20px 16px;
+    -fx-cursor: hand;
+}
+
+.category-button:hover {
+    -fx-background-color: #37963d;
+    -fx-border-color: #E8F0EB;
+}
+
+.submenu Button {
+    -fx-background-color: #E8F0EB;
+    -fx-text-fill: #10182b;
+    -fx-border-color: #cfe0d6;
+    -fx-font-size: 13px;
+}
+
+.submenu Button:hover {
+    -fx-background-color: #2E7D32;
+    -fx-text-fill: #F5F7F4;
+    -fx-border-color: #235e27;
+}
+
+.exit-button {
+    -fx-background-color: #d47b3b;
+    -fx-text-fill: #111112;
+    -fx-font-size: 14px;
+    -fx-border-color: #d98f5f;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 24px;
+    -fx-cursor: hand;
+
+}
+
+.exit-button:hover {
+    -fx-background-color: #f5e2d8;
+}
+
+.menu-title {
+    -fx-text-fill: #10182b;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.submenu {
+    -fx-padding: 4px 0 8px 0;
+    -fx-spacing: 6px;
+}
+
+.header {
+    -fx-background-color: #E8F0EB;
+    -fx-padding: 16px;
+    -fx-border-color: transparent transparent  #cfe0d6 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.footer {
+    -fx-background-color: #E8F0EB;
+    -fx-padding: 12px;
+    -fx-border-color: #cfe0d6 transparent transparent transparent;
+    -fx-border-width: 1px 0 0 0;
+}
+
+.main-menu {
+    -fx-background-color: #E8F0EB;
+    -fx-padding: 16px 8px;
+    -fx-spacing: 6px;
+    -fx-pref-width: 240px;
+    -fx-border-color: transparent #cfe0d6 transparent transparent;
+    -fx-border-width: 0 1px 0 0;
+}
+
+ListView .list-cell {
+    -fx-background-color: #E8F0EB;
+    -fx-text-fill: #10182b;
+}
+
+ListView .list-cell:filled:selected {
+    -fx-background-color: #2E7D32;
+    -fx-text-fill: #F5F7F4;
+}
