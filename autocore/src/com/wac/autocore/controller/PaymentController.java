@@ -8,6 +8,8 @@ import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.PaymentView;
 import javafx.scene.Parent;
 
+
+//Kopplar PaymentView till GarageSystem — hanterar fakturor och betalningar.
 public class PaymentController {
 
     private final GarageSystem garageSystem;

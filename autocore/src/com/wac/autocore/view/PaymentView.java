@@ -9,6 +9,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
+
+//UI för att visa fakturor och registrera betalningar
 public class PaymentView {
 
     private final Parent root;

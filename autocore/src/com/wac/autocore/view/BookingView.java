@@ -8,6 +8,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
+
+//UI vy klass för att skapa en ny bokning (fordons-ID, datum, beskrivning).
 public class BookingView {
 
     private final Parent root;
@@ -17,7 +19,7 @@ public class BookingView {
     private TextField descriptionField;
     private Button createBookingButton;
     private Button backButton;
-    private ListView<String> bookingListView;
+
 
     public BookingView () {
         VBox box = new VBox(12);
@@ -34,10 +36,9 @@ public class BookingView {
         createBookingButton = new Button("Skapa bokning");
         backButton = new Button("Tillbaka");
 
-        bookingListView = new ListView<>();
 
         box.getChildren().addAll(vehicleIdField, date,descriptionField,
-                createBookingButton,bookingListView,backButton);
+                createBookingButton,backButton);
         this.root = box;
     }
 
@@ -48,5 +49,4 @@ public class BookingView {
     public TextField getDescriptionField() {return descriptionField;}
     public Button getCreateBookingButton() {return createBookingButton;}
     public Button getBackButton() {return backButton;}
-    public ListView<String> getBookingListView() {return bookingListView;}
 }

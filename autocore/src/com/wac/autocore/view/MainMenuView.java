@@ -8,6 +8,8 @@ import javafx.scene.layout.VBox;
 import java.util.ArrayList;
 import java.util.List;
 
+
+//UI klass för huvudmenyn med knappar till systemets olika delar
 public class MainMenuView {
 
     private final Parent root;

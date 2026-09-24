@@ -7,6 +7,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
+
+//UI klass med formulär för att skapa och visa fordon
 public class VehicleView {
 
     private final Parent root;

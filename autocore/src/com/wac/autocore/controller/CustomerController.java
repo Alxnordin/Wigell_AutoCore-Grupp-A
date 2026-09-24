@@ -7,6 +7,7 @@ import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.CustomerView;
 import javafx.scene.Parent;
 
+//Kopplar CustomerView till GarageSystem — hanterar visning och skapande av kunder
 public class CustomerController {
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;

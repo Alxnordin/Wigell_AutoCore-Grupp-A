@@ -7,6 +7,8 @@ import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.VehicleView;
 import javafx.scene.Parent;
 
+
+//Kopplar VehicleView till GarageSystem — hanterar visning och skapande av fordon
 public class VehicleController {
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;

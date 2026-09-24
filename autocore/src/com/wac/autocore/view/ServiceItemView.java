@@ -7,33 +7,27 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
 
-public class ServiceView {
+//Visar listan över tillgängliga tjänster
+public class ServiceItemView {
     private final Parent root;
     private ListView<String> serviceItemListView;
-    private ListView<String> mechanicListView;
     private Button backButton;
 
-    public ServiceView(){
+    public ServiceItemView(){
         VBox box = new VBox(12);
         box.setPadding(new Insets(20));
 
         Label serviceLabel = new Label("Tjänster");
         serviceItemListView = new ListView<>();
 
-        Label mechanicLabel = new Label("Mekaniker");
-        mechanicListView = new ListView<>();
+        backButton = new Button("Tillbaka");
 
-        backButton= new Button("Tillbaka");
-
-        box.getChildren().addAll(serviceLabel,serviceItemListView,
-                mechanicLabel, mechanicListView, backButton
-        );
+        box.getChildren().addAll(serviceLabel, serviceItemListView, backButton);
 
         this.root = box;
     }
 
     public Parent getView() { return root; }
     public ListView<String> getServiceItemListView() { return serviceItemListView; }
-    public ListView<String> getMechanicListView() { return mechanicListView; }
     public Button getBackButton() { return backButton; }
 }

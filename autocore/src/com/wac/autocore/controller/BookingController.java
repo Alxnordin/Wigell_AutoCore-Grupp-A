@@ -4,19 +4,25 @@ import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.data.Database;
 import com.wac.autocore.model.Booking;
 import com.wac.autocore.service.GarageSystem;
+import com.wac.autocore.view.BookingListView;
 import com.wac.autocore.view.BookingView;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import java.time.LocalDate;
 
+//Den klass som kopplar BookingView/BookingListView till GarageSystem samt hanterar skapande av bokningar och navigering.
 public class BookingController {
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
     private final BookingView bookingView;
+    private final BookingListView bookingListView;
 
-    public BookingController(GarageSystem garageSystem,AutoCoreApplication app,BookingView bookingView) {
+    public BookingController(GarageSystem garageSystem,AutoCoreApplication app,
+                             BookingView bookingView,BookingListView bookingListView) {
         this.garageSystem = garageSystem;
         this.app = app;
         this.bookingView = bookingView;
+        this.bookingListView = bookingListView;
         wireEvents();
         refreshBookingList();
     }
@@ -27,7 +33,7 @@ public class BookingController {
             String description = bookingView.getDescriptionField().getText();
 
             if (date == null) {
-                System.out.println("Du måste välja ett datum.");
+                showWarning("Du måste välja ett datum.");
                 return;
             }
 
@@ -43,22 +49,34 @@ public class BookingController {
                     bookingView.getDescriptionField().clear();
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Ogiltigt fordons-ID — måste vara ett heltal.");
+                showWarning("Ogiltigt fordons-ID — måste vara ett heltal.");
             }
         });
 
         bookingView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+
+        bookingListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
     }
 
     private void refreshBookingList() {
-        bookingView.getBookingListView().getItems().clear();
+        bookingListView.getBookingListView().getItems().clear();
 
         for (Booking booking : Database.getBookings()) {
-            bookingView.getBookingListView().getItems().add(booking.toString());
+            bookingListView.getBookingListView().getItems().add(booking.toString());
         }
     }
 
-    public Parent getView() {
+    private void showWarning(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING, message);
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+
+    public Parent getBookingFormView() {
         return bookingView.getView();
+    }
+
+    public Parent getBookingListPane() {
+        return bookingListView.getView();
     }
 }
