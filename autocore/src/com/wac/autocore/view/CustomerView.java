@@ -1,5 +1,6 @@
 package com.wac.autocore.view;
 
+import com.wac.autocore.util.LanguageManager;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -20,21 +21,23 @@ public class CustomerView {
     private Button backButton;
     private ListView<String> customerListView;
 
+    LanguageManager languageManager = LanguageManager.getInstance();
+
     public CustomerView() {
         VBox box = new VBox(12);
         box.setPadding(new Insets(20));
 
         nameField = new TextField();
-        nameField.setPromptText("Namn");
+        nameField.setPromptText(languageManager.getString("nameField"));
 
         phoneField = new TextField();
-        phoneField.setPromptText("Telefon");
+        phoneField.setPromptText(languageManager.getString("phoneField"));
 
         emailField = new TextField();
-        emailField.setPromptText("Email");
+        emailField.setPromptText(languageManager.getString("emailField"));
 
-        createCustomerButton = new Button("Skapa kund");
-        backButton = new Button("Tillbaka");
+        createCustomerButton = new Button(languageManager.getString("createCustomerButton"));
+        backButton = new Button(languageManager.getString("backButton"));
 
         customerListView = new ListView<>();
 
@@ -43,6 +46,11 @@ public class CustomerView {
                 createCustomerButton,
                 customerListView,backButton);
         this.root = box;
+
+        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
+            changeTextAllComponents();
+        });
+
     }
     public Parent getView() {
         return root;
@@ -54,4 +62,12 @@ public class CustomerView {
     public Button getCreateCustomerButton() {return createCustomerButton;}
     public Button getBackButton() {return backButton;}
     public ListView<String> getCustomerListView() {return customerListView;}
+
+    public void changeTextAllComponents() {
+        nameField.setPromptText(languageManager.getString("nameField"));
+        phoneField.setPromptText(languageManager.getString("phoneField"));
+        emailField.setPromptText(languageManager.getString("emailField"));
+        createCustomerButton.setText(languageManager.getString("createCustomerButton"));
+        backButton.setText(languageManager.getString("backButton"));
+    }
 }

@@ -1,6 +1,7 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
+import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.data.Database;
 import com.wac.autocore.model.Booking;
 import com.wac.autocore.model.WorkOrder;
@@ -9,6 +10,8 @@ import com.wac.autocore.view.OrderFormView;
 import com.wac.autocore.view.OrderListView;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+
+import java.text.MessageFormat;
 import java.time.LocalDate;
 
 
@@ -20,6 +23,8 @@ public class OrderController {
     private final OrderFormView orderFormView;
     private final OrderListView orderListView;
 
+    private final LanguageManager languageManager = LanguageManager.getInstance();
+
     public OrderController(GarageSystem garageSystem, AutoCoreApplication app,
                            OrderFormView orderFormView, OrderListView orderListView) {
         this.garageSystem = garageSystem;
@@ -28,6 +33,10 @@ public class OrderController {
         this.orderListView = orderListView;
         wireEvents();
         refreshOrderList();
+
+        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
+            refreshOrderList();
+        });
     }
 
     private void wireEvents() {
@@ -40,17 +49,17 @@ public class OrderController {
                 Booking booking = findBookingById(bookingId);
 
                 if (booking == null) {
-                    showWarning("Bokning med ID " + bookingId + " finns inte.");
+                    showWarning(MessageFormat.format(languageManager.getString("bookingNotFound"), bookingId));
                     return;
                 }
 
                 if (hasExistingWorkOrder(bookingId)) {
-                    showWarning("Bokningen har redan en arbetsorder.");
+                    showWarning(languageManager.getString("existingWorkOrder"));
                     return;
                 }
 
                 if (isMechanicBookedOnDate(mechanicId, booking.getDate(), bookingId)) {
-                    showWarning("Mekanikern har redan en bokning det datumet.");
+                    showWarning(languageManager.getString("mechanicAlreadyBooked"));
                     return;
                 }
 
@@ -63,7 +72,7 @@ public class OrderController {
                     orderFormView.getServiceItemIdsField().clear();
                 }
             } catch (NumberFormatException e) {
-                showWarning("Ogiltigt ID — boknings-ID, mekaniker-ID och service-ID:n måste vara heltal.");
+                showWarning(languageManager.getString("invalidOrderIds"));
             }
         });
 
@@ -74,7 +83,7 @@ public class OrderController {
                 refreshOrderList();
                 orderListView.getStartOrderIdField().clear();
             } catch (NumberFormatException e) {
-                showWarning("Ogiltigt arbetsorder-ID — måste vara ett heltal.");
+                showWarning(languageManager.getString("invalidWorkOrderId"));
             }
         });
 
@@ -85,7 +94,7 @@ public class OrderController {
                 refreshOrderList();
                 orderListView.getCompleteOrderIdField().clear();
             } catch (NumberFormatException e) {
-                System.out.println("Ogiltigt arbetsorder-ID — måste vara ett heltal.");
+                showWarning(languageManager.getString("invalidWorkOrderId"));
             }
         });
 
@@ -111,7 +120,18 @@ public class OrderController {
         orderListView.getOrderListView().getItems().clear();
 
         for (WorkOrder workOrder : Database.getWorkOrders()) {
-            orderListView.getOrderListView().getItems().add(workOrder.toString());
+
+            String orderInfo = workOrder.getId() + " | "
+                    + languageManager.getString("bookingIdInTable")
+                    + ": " + workOrder.getBookingId() + " | "
+                    + languageManager.getString("mechanicIdInTable")
+                    + ": " + workOrder.getMechanicId() + " | "
+                    + languageManager.getString("serviceItemIdsInTable")
+                    + ": " + workOrder.getServiceItemIds() + " | "
+                    + languageManager.getString("statusInTable")
+                    + ": " + workOrder.getStatus();
+
+            orderListView.getOrderListView().getItems().add(orderInfo);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.wac.autocore.view;
 
+import com.wac.autocore.util.LanguageManager;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -23,48 +24,108 @@ public class MainMenuView {
     private Button showInvoicesButton, addInvoiceButton, showPaymentsButton, addPaymentButton;
     private Button exitButton;
 
+    private Button customersButton;
+    private Button vehiclesButton;
+    private Button bookingsButton;
+    private Button servicesButton;
+    private Button ordersButton;
+    private Button paymentsButton;
+    private Button languageButton;
+
+    LanguageManager languageManager = LanguageManager.getInstance();
+
+
     public MainMenuView() {
+
         VBox menu = new VBox();
         menu.getStyleClass().add("main-menu");
 
-        showCustomersButton = new Button("Visa kunder");
-        addCustomerButton = new Button("Lägg till kund");
-        menu.getChildren().add(buildSection("👤 Kunder", showCustomersButton, addCustomerButton));
+        showCustomersButton = new Button(languageManager.getString("showCustomers"));
+        addCustomerButton = new Button(languageManager.getString("addCustomer"));
+        customersButton = new Button(languageManager.getString("customersButton"));
+        menu.getChildren().add(buildSection(customersButton, showCustomersButton, addCustomerButton));
 
-        showVehiclesButton = new Button("Visa fordon");
-        addVehicleButton = new Button("Lägg till fordon");
-        menu.getChildren().add(buildSection("🚗 Fordon", showVehiclesButton, addVehicleButton));
+        showVehiclesButton = new Button(languageManager.getString("showVehicles"));
+        addVehicleButton = new Button(languageManager.getString("addVehicle"));
+        vehiclesButton = new Button(languageManager.getString("vehiclesButton"));
+        menu.getChildren().add(buildSection(vehiclesButton, showVehiclesButton, addVehicleButton));
 
-        showBookingsButton = new Button("Visa bokningar");
-        addBookingButton = new Button("Lägg till bokning");
-        menu.getChildren().add(buildSection("📅 Bokning", showBookingsButton, addBookingButton));
+        showBookingsButton = new Button(languageManager.getString("showBookings"));
+        addBookingButton = new Button(languageManager.getString("addBooking"));
+        bookingsButton = new Button(languageManager.getString("bookingsButton"));
+        menu.getChildren().add(buildSection(bookingsButton, showBookingsButton, addBookingButton));
 
-        showServicesButton = new Button("Visa tjänster");
-        showMechanicsButton = new Button("Visa mekaniker");
-        menu.getChildren().add(buildSection("🛠 Service", showServicesButton, showMechanicsButton));
+        showServicesButton = new Button(languageManager.getString("showServices"));
+        showMechanicsButton = new Button(languageManager.getString("showMechanicsButton"));
+        servicesButton = new Button(languageManager.getString("servicesButton"));
+        menu.getChildren().add(buildSection(servicesButton, showServicesButton, showMechanicsButton));
 
-        showOrdersButton = new Button("Visa ordrar");
-        addOrderButton = new Button("Skapa order");
-        startCompleteOrderButton = new Button("Starta/slutför");
-        menu.getChildren().add(buildSection("📋 Ordrar", showOrdersButton, addOrderButton, startCompleteOrderButton));
+        showOrdersButton = new Button(languageManager.getString("showOrders"));
+        addOrderButton = new Button(languageManager.getString("addOrder"));
+        startCompleteOrderButton = new Button(languageManager.getString("startCompleteOrder"));
+        ordersButton = new Button(languageManager.getString("ordersButton"));
+        menu.getChildren().add(buildSection(ordersButton, showOrdersButton, addOrderButton, startCompleteOrderButton));
 
-        showInvoicesButton = new Button("Visa fakturor");
-        addInvoiceButton = new Button("Skapa faktura");
-        showPaymentsButton = new Button("Visa betalningar");
-        addPaymentButton = new Button("Utför betalning");
-        menu.getChildren().add(buildSection("💳 Betalning", showInvoicesButton, addInvoiceButton, showPaymentsButton, addPaymentButton));
+        showInvoicesButton = new Button(languageManager.getString("showInvoices"));
+        addInvoiceButton = new Button(languageManager.getString("addInvoice"));
+        showPaymentsButton = new Button(languageManager.getString("showPayments"));
+        addPaymentButton = new Button(languageManager.getString("addPayment"));
+        paymentsButton = new Button(languageManager.getString("paymentsButton"));
+        menu.getChildren().add(buildSection(paymentsButton, showInvoicesButton, addInvoiceButton, showPaymentsButton, addPaymentButton));
 
-        exitButton = new Button("Avsluta");
+        exitButton = new Button(languageManager.getString("quit"));
         exitButton.getStyleClass().add("exit-button");
         exitButton.setMaxWidth(Double.MAX_VALUE);
-
         menu.getChildren().add(exitButton);
+
+        languageButton = new Button(languageManager.getString("language"));
+        languageButton.setMaxWidth(Double.MAX_VALUE);
+        menu.getChildren().add(languageButton);
+
+        languageButton.setOnAction(e -> {
+            languageManager.changeLanguage();
+        });
+
+        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
+            changeTextAllComponents();
+        });
 
         this.root = menu;
     }
 
-    private VBox buildSection(String title, Button... subButtons) {
-        Button mainButton = new Button(title);
+    public void changeTextAllComponents() {
+        customersButton.setText(languageManager.getString("customersButton"));
+        showCustomersButton.setText(languageManager.getString("showCustomers"));
+        addCustomerButton.setText(languageManager.getString("addCustomer"));
+
+        vehiclesButton.setText(languageManager.getString("vehiclesButton"));
+        showVehiclesButton.setText(languageManager.getString("showVehicles"));
+        addVehicleButton.setText(languageManager.getString("addVehicle"));
+
+        bookingsButton.setText(languageManager.getString("bookingsButton"));
+        showBookingsButton.setText(languageManager.getString("showBookings"));
+        addBookingButton.setText(languageManager.getString("addBooking"));
+
+        servicesButton.setText(languageManager.getString("servicesButton"));
+        showServicesButton.setText(languageManager.getString("showServices"));
+        showMechanicsButton.setText(languageManager.getString("showMechanicsButton"));
+
+        ordersButton.setText(languageManager.getString("ordersButton"));
+        showOrdersButton.setText(languageManager.getString("showOrders"));
+        addOrderButton.setText(languageManager.getString("addOrder"));
+        startCompleteOrderButton.setText(languageManager.getString("startCompleteOrder"));
+
+        paymentsButton.setText(languageManager.getString("paymentsButton"));
+        showInvoicesButton.setText(languageManager.getString("showInvoices"));
+        addInvoiceButton.setText(languageManager.getString("addInvoice"));
+        showPaymentsButton.setText(languageManager.getString("showPayments"));
+        addPaymentButton.setText(languageManager.getString("addPayment"));
+
+        languageButton.setText(languageManager.getString("language"));
+        exitButton.setText(languageManager.getString("quit"));
+    }
+
+    private VBox buildSection(Button mainButton, Button... subButtons) {
         mainButton.getStyleClass().add("category-button");
         mainButton.setMaxWidth(Double.MAX_VALUE);
         mainButton.setAlignment(Pos.CENTER_LEFT);
