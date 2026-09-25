@@ -1,5 +1,6 @@
 package com.wac.autocore.view;
 
+import com.wac.autocore.util.LanguageManager;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -8,11 +9,13 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
+//SKA DEN HÄR KLASSEN TAS BORT?
 public class OrderView {
 
     private final Parent root;
 
     //Skapa arbetsorder
+    private Label createLabel;
     private TextField bookingIdField;
     private TextField mechanicIdField;
     private TextField serviceItemIdsField;
@@ -20,41 +23,45 @@ public class OrderView {
 
 
     //Starta arbetsorder
+    private Label startLabel;
     private TextField startOrderIdField;
     private Button startOrderButton;
 
     //Slutför arbetsorder
+    private Label completeLabel;
     private TextField completeOrderIdField;
     private Button completeOrderButton;
 
     private ListView<String> orderListView;
     private Button backButton;
 
+    LanguageManager languageManager = LanguageManager.getInstance();
+
     public OrderView() {
         VBox box = new VBox(12);
         box.setPadding(new Insets(20));
 
-        Label createLabel = new Label("Skapa arbetsorder");
+        createLabel = new Label(languageManager.getString("createOrderButton"));
         bookingIdField = new TextField();
-        bookingIdField.setPromptText("Boknings-ID");
+        bookingIdField.setPromptText(languageManager.getString("bookingIdField"));
         mechanicIdField = new TextField();
-        mechanicIdField.setPromptText("Mekaniker-ID");
+        mechanicIdField.setPromptText(languageManager.getString("mechanicIdField"));
         serviceItemIdsField = new TextField();
-        serviceItemIdsField.setPromptText("Service-ID:n");
-        createOrderButton = new Button("Skapa arbetsorder");
+        serviceItemIdsField.setPromptText(languageManager.getString("serviceItemIdsField"));
+        createOrderButton = new Button(languageManager.getString("createOrderButton"));
 
-        Label startLabel = new Label("Starta arbetsorder");
+        startLabel = new Label(languageManager.getString("startOrder"));
         startOrderIdField = new TextField();
-        startOrderIdField.setPromptText("Arbetsorder-ID");
-        startOrderButton = new Button("Starta");
+        startOrderIdField.setPromptText(languageManager.getString("startOrderIdField"));
+        startOrderButton = new Button(languageManager.getString("startOrderButton"));
 
-        Label completeLabel = new Label("Slutför arbetsorder");
+        completeLabel = new Label(languageManager.getString("completeOrder"));
         completeOrderIdField = new TextField();
-        completeOrderIdField.setPromptText("Arbetsorder-ID");
-        completeOrderButton = new Button("Slutför");
+        completeOrderIdField.setPromptText(languageManager.getString("workOrderIdField"));
+        completeOrderButton = new Button(languageManager.getString("completeOrderButton"));
 
         orderListView = new ListView<>();
-        backButton = new Button("Tillbaka");
+        backButton = new Button(languageManager.getString("backButton"));
 
         box.getChildren().addAll(createLabel,bookingIdField,mechanicIdField,
                 serviceItemIdsField,createOrderButton,startLabel,startOrderIdField,
@@ -63,6 +70,10 @@ public class OrderView {
         );
 
         this.root = box;
+
+        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
+            changeTextAllComponents();
+        });
     }
 
     public Parent getView() {return root;}
@@ -80,4 +91,21 @@ public class OrderView {
 
     public ListView<String> getOrderListView() {return orderListView;}
     public Button getBackButton() {return backButton;}
+
+    public void changeTextAllComponents() {
+
+        createLabel.setText(languageManager.getString("createOrderButton"));
+        bookingIdField.setPromptText(languageManager.getString("bookingIdField"));
+        mechanicIdField.setPromptText(languageManager.getString("mechanicIdField"));
+        serviceItemIdsField.setPromptText(languageManager.getString("serviceItemIdsField"));
+        createOrderButton.setText(languageManager.getString("createOrderButton"));
+        startLabel.setText(languageManager.getString("startOrder"));
+        startOrderIdField.setPromptText(languageManager.getString("startOrderIdField"));
+        startOrderButton.setText(languageManager.getString("startOrderButton"));
+        completeLabel.setText(languageManager.getString("completeOrder"));
+        completeOrderIdField.setPromptText(languageManager.getString("workOrderIdField"));
+        completeOrderButton.setText(languageManager.getString("completeOrderButton"));
+        backButton.setText(languageManager.getString("backButton"));
+    }
+
 }

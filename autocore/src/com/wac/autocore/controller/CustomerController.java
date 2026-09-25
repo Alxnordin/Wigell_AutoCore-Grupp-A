@@ -1,16 +1,20 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
+import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.data.Database;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.CustomerView;
 import javafx.scene.Parent;
 
+//Kopplar CustomerView till GarageSystem — hanterar visning och skapande av kunder
 public class CustomerController {
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
     private final CustomerView customerView;
+
+    private final LanguageManager languageManager = LanguageManager.getInstance();
 
     public CustomerController(GarageSystem garageSystem, AutoCoreApplication app, CustomerView customerView) {
         this.garageSystem =garageSystem;
@@ -18,6 +22,10 @@ public class CustomerController {
         this.customerView = customerView;
         wireEvents();
         refreshCustomerList();
+
+        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
+            refreshCustomerList();
+        });
     }
 
     public void wireEvents() {
@@ -42,7 +50,25 @@ public class CustomerController {
     customerView.getCustomerListView().getItems().clear();
 
     for (Customer customer : Database.getCustomers()) {
-        customerView.getCustomerListView().getItems().add(customer.toString());
+
+        String vipYesOrNo;
+        if (customer.isVip()) {
+            vipYesOrNo = languageManager.getString("vipYes");
+        }
+        else {
+            vipYesOrNo = languageManager.getString("vipNo");
+        }
+
+        String customerInfo = customer.getId() + " | "
+                + languageManager.getString("nameInTable")
+                + ": " + customer.getName() + " | "
+                + languageManager.getString("phoneInTable")
+                + ": " + customer.getPhone() + " | "
+                + languageManager.getString("emailInTable")
+                + ": " + customer.getEmail() + " | "
+                + "VIP: " + vipYesOrNo;
+
+        customerView.getCustomerListView().getItems().add(customerInfo);
     }
 }
 

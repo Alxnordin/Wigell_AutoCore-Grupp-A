@@ -1,16 +1,21 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
+import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.data.Database;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.VehicleView;
 import javafx.scene.Parent;
 
+
+//Kopplar VehicleView till GarageSystem — hanterar visning och skapande av fordon
 public class VehicleController {
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
     public final VehicleView vehicleView;
+
+    private final LanguageManager languageManager = LanguageManager.getInstance();
 
     public VehicleController(GarageSystem garageSystem, AutoCoreApplication app, VehicleView vehicleView){
         this.garageSystem = garageSystem;
@@ -18,6 +23,10 @@ public class VehicleController {
         this.vehicleView = vehicleView;
         wireEvents();
         refreshVehicleList();
+
+        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
+            refreshVehicleList();
+        });
     }
 
     public void wireEvents() {
@@ -53,14 +62,27 @@ public class VehicleController {
     }
 
     private void refreshVehicleList() {
-    vehicleView.getVehicleListView().getItems().clear();
+        vehicleView.getVehicleListView().getItems().clear();
 
-    for (Vehicle vehicle : Database.getVehicles()) {
-        vehicleView.getVehicleListView().getItems().add(vehicle.toString());
+        for (Vehicle vehicle : Database.getVehicles()) {
+            String vehicleInfo =
+                    vehicle.getId() + " | "
+                    + languageManager.getString("registrationNumber")
+                    + ": " + vehicle.getRegistrationNumber() + " | "
+                    + languageManager.getString("vehicleBrand")
+                    + ": " + vehicle.getBrand() + " | "
+                    + languageManager.getString("vehicleModel")
+                    + ": " + vehicle.getModel() + " | "
+                    + languageManager.getString("vehicleYear")
+                    + ": " + vehicle.getYear() + " | "
+                    + languageManager.getString("customerId")
+                    + ": " + vehicle.getCustomerId();
+
+            vehicleView.getVehicleListView().getItems().add(vehicleInfo);
+        }
     }
-}
 
-public Parent getView() {
+    public Parent getView() {
         return vehicleView.getView();
     }
 }

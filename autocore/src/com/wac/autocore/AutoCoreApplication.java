@@ -12,6 +12,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+
+//JavaFX startpunkt, bygger upp scenen/fönstret, skapar vyer och kontroller, och styr växling mellan de olika vyerna
 public class AutoCoreApplication extends Application {
 
     private final GarageSystem garageSystem = new GarageSystem();
@@ -58,16 +60,33 @@ public class AutoCoreApplication extends Application {
         borderPane.setCenter(new VehicleController(garageSystem, this, new VehicleView()).getView());
     }
 
-    public void showServiceView() {
-        borderPane.setCenter(new ServiceController(garageSystem, this, new ServiceView()).getView());
+    public void showServiceItemView() {
+        ServiceController controller = new ServiceController(garageSystem, this, new ServiceItemView(), new MechanicView());
+        borderPane.setCenter(controller.getServiceItemView());
     }
 
+    public void showMechanicView() {
+        ServiceController controller = new ServiceController(garageSystem, this, new ServiceItemView(), new MechanicView());
+        borderPane.setCenter(controller.getMechanicView());
+    }
     public void showBookingView() {
-        borderPane.setCenter(new BookingController(garageSystem, this, new BookingView()).getView());
+        BookingController controller = new BookingController(garageSystem, this, new BookingView(), new BookingListView());
+        borderPane.setCenter(controller.getBookingFormView());
     }
 
-    public void showOrderView() {
-       borderPane.setCenter(new OrderController(garageSystem, this, new OrderView()).getView());
+    public void showBookingListView() {
+        BookingController controller = new BookingController(garageSystem, this, new BookingView(), new BookingListView());
+        borderPane.setCenter(controller.getBookingListPane());
+    }
+
+    public void showOrderFormView() {
+        OrderController controller = new OrderController(garageSystem, this, new OrderFormView(), new OrderListView());
+        borderPane.setCenter(controller.getOrderFormView());
+    }
+
+    public void showOrderListView() {
+        OrderController controller = new OrderController(garageSystem, this, new OrderFormView(), new OrderListView());
+        borderPane.setCenter(controller.getOrderListPane());
     }
 
     public void showPaymentView() {

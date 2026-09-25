@@ -7,6 +7,8 @@ import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.MainMenuView;
 import javafx.scene.layout.BorderPane;
 
+
+//Bygger och visar huvudmenyn, kopplar menyknapparna till respektive vy via AutoCoreApplication.
 public class MainMenuController {
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
@@ -29,15 +31,15 @@ public class MainMenuController {
         view.getShowVehiclesButton().setOnAction(e -> app.showVehicleView());
         view.getAddVehicleButton().setOnAction(e -> app.showVehicleView());
 
-        view.getShowBookingsButton().setOnAction(e -> app.showBookingView());
+        view.getShowBookingsButton().setOnAction(e -> app.showBookingListView());
         view.getAddBookingButton().setOnAction(e -> app.showBookingView());
 
-        view.getShowServicesButton().setOnAction(e -> app.showServiceView());
-        view.getShowMechanicsButton().setOnAction(e -> app.showServiceView());
+        view.getShowServicesButton().setOnAction(e -> app.showServiceItemView());
+        view.getShowMechanicsButton().setOnAction(e -> app.showMechanicView());
 
-        view.getShowOrdersButton().setOnAction(e -> app.showOrderView());
-        view.getAddOrderButton().setOnAction(e -> app.showOrderView());
-        view.getStartCompleteOrderButton().setOnAction(e -> app.showOrderView());
+        view.getShowOrdersButton().setOnAction(e -> app.showOrderListView());
+        view.getAddOrderButton().setOnAction(e -> app.showOrderFormView());
+        view.getStartCompleteOrderButton().setOnAction(e -> app.showOrderFormView());
 
         view.getShowInvoicesButton().setOnAction(e -> app.showPaymentView());
         view.getAddInvoiceButton().setOnAction(e -> app.showPaymentView());
