@@ -1,6 +1,8 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
+import com.wac.autocore.dao.InvoiceDAO;
+import com.wac.autocore.dao.PaymentDAO;
 import com.wac.autocore.data.Database;
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.model.Payment;
@@ -13,6 +15,9 @@ public class PaymentController {
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
     private final PaymentView paymentView;
+    //FREDRIK
+    private final InvoiceDAO invoiceDAO = new InvoiceDAO();
+    private final PaymentDAO paymentDAO = new PaymentDAO();
 
     public PaymentController(GarageSystem garageSystem, AutoCoreApplication app, PaymentView paymentView) {
         this.garageSystem = garageSystem;
@@ -68,6 +73,17 @@ public class PaymentController {
 
     private void refreshLists() {
         paymentView.getInvoiceListView().getItems().clear();
+        //FREDRIK - ändrat
+        for (Invoice invoice :invoiceDAO.findAll()) {
+            paymentView.getInvoiceListView().getItems().add(invoice.toString());
+        }
+
+        paymentView.getPaymentListView().getItems().clear();
+        for (Payment payment : paymentDAO.findAll()) {
+            paymentView.getPaymentListView().getItems().add(payment.toString());
+        }
+
+        /*
         for (Invoice invoice : Database.getInvoices()) {
             paymentView.getInvoiceListView().getItems().add(invoice.toString());
         }
@@ -76,6 +92,8 @@ public class PaymentController {
         for (Payment payment : Database.getPayments()) {
             paymentView.getPaymentListView().getItems().add(payment.toString());
         }
+
+         */
     }
 
     public Parent getView() {

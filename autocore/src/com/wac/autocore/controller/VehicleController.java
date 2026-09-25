@@ -1,6 +1,7 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
+import com.wac.autocore.dao.VehicleDAO;
 import com.wac.autocore.data.Database;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.service.GarageSystem;
@@ -11,6 +12,8 @@ public class VehicleController {
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
     public final VehicleView vehicleView;
+    //FREDRIK - lagt till
+    private final VehicleDAO vehicleDAO = new VehicleDAO();
 
     public VehicleController(GarageSystem garageSystem, AutoCoreApplication app, VehicleView vehicleView){
         this.garageSystem = garageSystem;
@@ -54,10 +57,14 @@ public class VehicleController {
 
     private void refreshVehicleList() {
     vehicleView.getVehicleListView().getItems().clear();
-
-    for (Vehicle vehicle : Database.getVehicles()) {
+    //FREDRIK - ändrat
+    for(Vehicle vehicle : vehicleDAO.findAll()) {
         vehicleView.getVehicleListView().getItems().add(vehicle.toString());
     }
+    /*
+    for (Vehicle vehicle : Database.getVehicles()) {
+        vehicleView.getVehicleListView().getItems().add(vehicle.toString());
+    } */
 }
 
 public Parent getView() {

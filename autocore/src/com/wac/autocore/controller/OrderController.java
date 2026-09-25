@@ -1,6 +1,7 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
+import com.wac.autocore.dao.WorkOrderDAO;
 import com.wac.autocore.data.Database;
 import com.wac.autocore.model.WorkOrder;
 import com.wac.autocore.service.GarageSystem;
@@ -12,6 +13,8 @@ public class OrderController {
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
     private final OrderView orderView;
+    //FREDRIK - lagt till
+    private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
 
     public OrderController(GarageSystem garageSystem,AutoCoreApplication app,OrderView orderView) {
         this.garageSystem = garageSystem;
@@ -80,9 +83,16 @@ public class OrderController {
     private void refreshOrderList() {
         orderView.getOrderListView().getItems().clear();
 
+        //FREDRIK - Ändrat
+        for (WorkOrder workOrder : workOrderDAO.findAll()) {
+            orderView.getOrderListView().getItems().add(workOrder.toString());
+        }
+        /*
         for (WorkOrder workOrder : Database.getWorkOrders()) {
             orderView.getOrderListView().getItems().add(workOrder.toString());
         }
+
+         */
     }
 
     public Parent getView() {

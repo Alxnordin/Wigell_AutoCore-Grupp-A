@@ -1,6 +1,7 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
+import com.wac.autocore.dao.CustomerDAO;
 import com.wac.autocore.data.Database;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.service.GarageSystem;
@@ -11,6 +12,8 @@ public class CustomerController {
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
     private final CustomerView customerView;
+    //FREDRIK - lagt till
+    private final CustomerDAO customerDAO = new CustomerDAO();
 
     public CustomerController(GarageSystem garageSystem, AutoCoreApplication app, CustomerView customerView) {
         this.garageSystem =garageSystem;
@@ -41,7 +44,9 @@ public class CustomerController {
     private void refreshCustomerList() {
     customerView.getCustomerListView().getItems().clear();
 
-    for (Customer customer : Database.getCustomers()) {
+    //FREDRIK - ändrat
+    //for (Customer customer : Database.getCustomers())
+    for (Customer customer : customerDAO.findAll()){
         customerView.getCustomerListView().getItems().add(customer.toString());
     }
 }
