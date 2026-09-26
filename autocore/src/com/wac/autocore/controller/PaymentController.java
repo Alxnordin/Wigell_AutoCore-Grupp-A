@@ -3,13 +3,15 @@ package com.wac.autocore.controller;
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.dao.InvoiceDAO;
 import com.wac.autocore.dao.PaymentDAO;
-import com.wac.autocore.data.Database;
+import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.model.Payment;
 import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.PaymentView;
 import javafx.scene.Parent;
 
+
+//Kopplar PaymentView till GarageSystem — hanterar fakturor och betalningar.
 public class PaymentController {
 
     private final GarageSystem garageSystem;
@@ -19,12 +21,18 @@ public class PaymentController {
     private final InvoiceDAO invoiceDAO = new InvoiceDAO();
     private final PaymentDAO paymentDAO = new PaymentDAO();
 
+    private final LanguageManager languageManager = LanguageManager.getInstance();
+
     public PaymentController(GarageSystem garageSystem, AutoCoreApplication app, PaymentView paymentView) {
         this.garageSystem = garageSystem;
         this.app = app;
         this.paymentView = paymentView;
         wireEvents();
         refreshLists();
+
+        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
+            refreshLists();
+        });
     }
 
     private void wireEvents() {
@@ -73,27 +81,48 @@ public class PaymentController {
 
     private void refreshLists() {
         paymentView.getInvoiceListView().getItems().clear();
-        //FREDRIK - ändrat
-        for (Invoice invoice :invoiceDAO.findAll()) {
-            paymentView.getInvoiceListView().getItems().add(invoice.toString());
+
+        for (Invoice invoice : invoiceDAO.findAll()) {
+            String invoiceInfo = invoice.getId() + " | "
+                    + languageManager.getString("workOrderIdInTable")
+                    + ": " + invoice.getWorkOrderId() + " | "
+                    + languageManager.getString("dateInTable")
+                    + ": " + invoice.getInvoiceDate() + " | "
+                    + languageManager.getString("amountInTable")
+                    + ": " + invoice.getAmount() + " SEK | "
+                    + languageManager.getString("discountInTable")
+                    + ": " + invoice.getDiscount() + " SEK | "
+                    + languageManager.getString("totalInTable")
+                    + ": " + invoice.getTotalAmount() + " SEK | "
+                    + languageManager.getString("paidInTable")
+                    + ": " + (invoice.isPaid()
+                    ? languageManager.getString("yes")
+                    : languageManager.getString("no"));
+
+            paymentView.getInvoiceListView().getItems().add(invoiceInfo);
+
         }
 
         paymentView.getPaymentListView().getItems().clear();
         for (Payment payment : paymentDAO.findAll()) {
-            paymentView.getPaymentListView().getItems().add(payment.toString());
+            String paymentInfo = payment.getId() + " | "
+                    + languageManager.getString("invoiceIdInTable")
+                    + ": " + payment.getInvoiceId() + " | "
+                    + languageManager.getString("amountInTable")
+                    + ": " + payment.getAmount() + " SEK | "
+                    + languageManager.getString("paymentTypeInTable")
+                    + ": " + payment.getPaymentType() + " | "
+                    + languageManager.getString("dateInTable")
+                    + ": " + payment.getPaymentDate() + " | "
+                    + languageManager.getString("successfulInTable")
+                    + ": " + (payment.isSuccessful()
+                    ? languageManager.getString("yes")
+                    : languageManager.getString("no"));
+
+            paymentView.getPaymentListView().getItems().add(paymentInfo);
         }
 
-        /*
-        for (Invoice invoice : Database.getInvoices()) {
-            paymentView.getInvoiceListView().getItems().add(invoice.toString());
-        }
-
-        paymentView.getPaymentListView().getItems().clear();
-        for (Payment payment : Database.getPayments()) {
-            paymentView.getPaymentListView().getItems().add(payment.toString());
-        }
-
-         */
+         
     }
 
     public Parent getView() {
