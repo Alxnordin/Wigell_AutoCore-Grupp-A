@@ -1,8 +1,9 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
+import com.wac.autocore.dao.InvoiceDAO;
+import com.wac.autocore.dao.PaymentDAO;
 import com.wac.autocore.util.LanguageManager;
-import com.wac.autocore.data.Database;
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.model.Payment;
 import com.wac.autocore.service.GarageSystem;
@@ -16,6 +17,9 @@ public class PaymentController {
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
     private final PaymentView paymentView;
+    //FREDRIK
+    private final InvoiceDAO invoiceDAO = new InvoiceDAO();
+    private final PaymentDAO paymentDAO = new PaymentDAO();
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -78,7 +82,7 @@ public class PaymentController {
     private void refreshLists() {
         paymentView.getInvoiceListView().getItems().clear();
 
-        for (Invoice invoice : Database.getInvoices()) {
+        for (Invoice invoice : invoiceDAO.findAll()) {
             String invoiceInfo = invoice.getId() + " | "
                     + languageManager.getString("workOrderIdInTable")
                     + ": " + invoice.getWorkOrderId() + " | "
@@ -100,7 +104,7 @@ public class PaymentController {
         }
 
         paymentView.getPaymentListView().getItems().clear();
-        for (Payment payment : Database.getPayments()) {
+        for (Payment payment : paymentDAO.findAll()) {
             String paymentInfo = payment.getId() + " | "
                     + languageManager.getString("invoiceIdInTable")
                     + ": " + payment.getInvoiceId() + " | "
@@ -117,6 +121,8 @@ public class PaymentController {
 
             paymentView.getPaymentListView().getItems().add(paymentInfo);
         }
+
+         
     }
 
     public Parent getView() {

@@ -1,8 +1,10 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
+import com.wac.autocore.dao.MechanicDAO;
+import com.wac.autocore.dao.ServiceItemDAO;
+import com.wac.autocore.dao.WorkOrderDAO;
 import com.wac.autocore.util.LanguageManager;
-import com.wac.autocore.data.Database;
 import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.WorkOrder;
@@ -15,9 +17,13 @@ import javafx.scene.Parent;
 //Kopplar ServiceItemView/MechanicView till GarageSystem — visar tjänster, mekaniker och vald mekanikers tilldelade arbete
 public class ServiceController {
     private final GarageSystem garageSystem;
-    private final AutoCoreApplication app;
+    private final AutoCoreApplication app;    
+    private final ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
+    private final MechanicDAO mechanicDAO = new MechanicDAO();
+    private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
     private final ServiceItemView serviceItemView;
     private final MechanicView mechanicView;
+
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -36,8 +42,11 @@ public class ServiceController {
     }
 
     public void refreshLists() {
+
         serviceItemView.getServiceItemListView().getItems().clear();
-        for (ServiceItem item : Database.getServiceItems()) {
+        
+        for (ServiceItem item : serviceItemDAO.findAll()) {
+            
 
             String serviceItemInfo =
                     item.getId() + " | "
@@ -54,8 +63,10 @@ public class ServiceController {
 
         }
 
+
         mechanicView.getMechanicListView().getItems().clear();
-        for (Mechanic mechanic : Database.getMechanics()) {
+
+        for (Mechanic mechanic : mechanicDAO.findAll()) {
 
             String bookedYesOrNo;
 
@@ -80,7 +91,9 @@ public class ServiceController {
 
         }
 
+
         mechanicView.getMechanicWorkListView().getItems().clear();
+
     }
 
     private void wireEvents() {
@@ -94,13 +107,13 @@ public class ServiceController {
     private void showMechanicWork(int selectedIndex) {
         mechanicView.getMechanicWorkListView().getItems().clear();
 
-        if (selectedIndex < 0 || selectedIndex >= Database.getMechanics().size()) {
+        if (selectedIndex < 0 || selectedIndex >= mechanicDAO.findAll().size()) {
             return;
         }
 
-        Mechanic selectedMechanic = Database.getMechanics().get(selectedIndex);
+        Mechanic selectedMechanic = mechanicDAO.findAll().get(selectedIndex);
 
-        for (WorkOrder workOrder : Database.getWorkOrders()) {
+        for (WorkOrder workOrder : workOrderDAO.findAll()) {
             if (workOrder.getMechanicId() == selectedMechanic.getId()) {
 
                 String workOrderStatus;

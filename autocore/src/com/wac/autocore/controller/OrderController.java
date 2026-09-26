@@ -1,8 +1,9 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
+import com.wac.autocore.dao.WorkOrderDAO;
+import com.wac.autocore.dao.BookingDAO;
 import com.wac.autocore.util.LanguageManager;
-import com.wac.autocore.data.Database;
 import com.wac.autocore.model.Booking;
 import com.wac.autocore.model.WorkOrder;
 import com.wac.autocore.service.GarageSystem;
@@ -20,8 +21,11 @@ public class OrderController {
 
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
+    private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
+    private final BookingDAO bookingDAO = new BookingDAO();
     private final OrderFormView orderFormView;
     private final OrderListView orderListView;
+
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -119,7 +123,7 @@ public class OrderController {
     private void refreshOrderList() {
         orderListView.getOrderListView().getItems().clear();
 
-        for (WorkOrder workOrder : Database.getWorkOrders()) {
+        for (WorkOrder workOrder : workOrderDAO.findAll()) {
 
             String orderInfo = workOrder.getId() + " | "
                     + languageManager.getString("bookingIdInTable")
@@ -136,7 +140,7 @@ public class OrderController {
     }
 
     private Booking findBookingById(int bookingId) {
-        for (Booking booking : Database.getBookings()) {
+        for (Booking booking : bookingDAO.findAll()) {
             if (booking.getId() == bookingId) {
                 return booking;
             }
@@ -145,7 +149,7 @@ public class OrderController {
     }
 
     private boolean hasExistingWorkOrder(int bookingId) {
-        for (WorkOrder workOrder : Database.getWorkOrders()) {
+        for (WorkOrder workOrder : workOrderDAO.findAll()) {
             if (workOrder.getBookingId() == bookingId) {
                 return true;
             }
@@ -154,7 +158,7 @@ public class OrderController {
     }
 
     private boolean isMechanicBookedOnDate(int mechanicId, LocalDate date, int excludingBookingId) {
-        for (WorkOrder workOrder : Database.getWorkOrders()) {
+        for (WorkOrder workOrder : workOrderDAO.findAll()) {
             if (workOrder.getMechanicId() == mechanicId && workOrder.getBookingId() != excludingBookingId) {
                 Booking otherBooking = findBookingById(workOrder.getBookingId());
                 if (otherBooking != null && otherBooking.getDate().equals(date)) {
@@ -162,6 +166,9 @@ public class OrderController {
                 }
             }
         }
+
+
+
         return false;
     }
 

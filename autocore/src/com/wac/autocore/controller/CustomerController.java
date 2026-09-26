@@ -1,8 +1,8 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
+import com.wac.autocore.dao.CustomerDAO;
 import com.wac.autocore.util.LanguageManager;
-import com.wac.autocore.data.Database;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.CustomerView;
@@ -13,6 +13,8 @@ public class CustomerController {
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
     private final CustomerView customerView;
+    //FREDRIK - lagt till
+    private final CustomerDAO customerDAO = new CustomerDAO();
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -49,8 +51,9 @@ public class CustomerController {
     private void refreshCustomerList() {
     customerView.getCustomerListView().getItems().clear();
 
-    for (Customer customer : Database.getCustomers()) {
 
+    for (Customer customer : customerDAO.findAll()){
+     
         String vipYesOrNo;
         if (customer.isVip()) {
             vipYesOrNo = languageManager.getString("vipYes");
@@ -69,6 +72,7 @@ public class CustomerController {
                 + "VIP: " + vipYesOrNo;
 
         customerView.getCustomerListView().getItems().add(customerInfo);
+
     }
 }
 

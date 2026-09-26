@@ -1,8 +1,8 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
+import com.wac.autocore.dao.BookingDAO;
 import com.wac.autocore.util.LanguageManager;
-import com.wac.autocore.data.Database;
 import com.wac.autocore.model.Booking;
 import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.BookingListView;
@@ -16,6 +16,8 @@ public class BookingController {
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
     private final BookingView bookingView;
+    //FREDRIK - Lagt till
+    private final BookingDAO bookingDAO= new BookingDAO();
     private final BookingListView bookingListView;
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
@@ -67,19 +69,13 @@ public class BookingController {
     }
 
     private void refreshBookingList() {
-        bookingListView.getBookingListView().getItems().clear();
-
-        for (Booking booking : Database.getBookings()) {
-            String bookingInfo = booking.getId() + " | "
-                    + languageManager.getString("vehicleIdInTable")
-                    + ": " + booking.getVehicleId() + " | "
-                    + languageManager.getString("dateInTable")
-                    + ": " + booking.getDate() + " | "
-                    + languageManager.getString("descriptionInTable")
-                    + ": " + booking.getDescription();
-
-            bookingListView.getBookingListView().getItems().add(bookingInfo);
+          bookingView.getBookingListView().getItems().clear();
+      
+        for (Booking booking : bookingDAO.findAll()){
+            bookingView.getBookingListView().getItems().add(booking.toString());
         }
+
+       
     }
 
     private void showWarning(String message) {

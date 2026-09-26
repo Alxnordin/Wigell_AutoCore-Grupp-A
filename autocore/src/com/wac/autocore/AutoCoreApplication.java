@@ -1,6 +1,7 @@
 package com.wac.autocore;
 
 import com.wac.autocore.controller.*;
+import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.*;
 import javafx.application.Application;
@@ -22,6 +23,9 @@ public class AutoCoreApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        //FREDRIK - lagt till
+        DatabaseConnection.initializeDatabase();
+
         this.stage = primaryStage;
         stage.setTitle("Wigell AutoCore");
 

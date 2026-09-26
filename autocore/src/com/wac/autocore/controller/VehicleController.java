@@ -1,8 +1,8 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
+import com.wac.autocore.dao.VehicleDAO;
 import com.wac.autocore.util.LanguageManager;
-import com.wac.autocore.data.Database;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.VehicleView;
@@ -14,6 +14,8 @@ public class VehicleController {
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
     public final VehicleView vehicleView;
+    
+    private final VehicleDAO vehicleDAO = new VehicleDAO();
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -62,9 +64,10 @@ public class VehicleController {
     }
 
     private void refreshVehicleList() {
-        vehicleView.getVehicleListView().getItems().clear();
+      
+    vehicleView.getVehicleListView().getItems().clear();
 
-        for (Vehicle vehicle : Database.getVehicles()) {
+        for (Vehicle vehicle : vehicleDAO.findAll()) {
             String vehicleInfo =
                     vehicle.getId() + " | "
                     + languageManager.getString("registrationNumber")
@@ -81,6 +84,7 @@ public class VehicleController {
             vehicleView.getVehicleListView().getItems().add(vehicleInfo);
         }
     }
+
 
     public Parent getView() {
         return vehicleView.getView();
