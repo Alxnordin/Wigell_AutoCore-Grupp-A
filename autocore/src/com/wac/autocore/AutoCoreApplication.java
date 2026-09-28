@@ -46,7 +46,7 @@ public class AutoCoreApplication extends Application {
         new MainMenuController(garageSystem, this, borderPane);
 
         Scene scene = new Scene(borderPane, 1000, 700);
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
 
