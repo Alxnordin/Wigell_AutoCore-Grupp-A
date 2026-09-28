@@ -69,10 +69,10 @@ public class BookingController {
     }
 
     private void refreshBookingList() {
-          bookingView.getBookingListView().getItems().clear();
+          bookingListView.getBookingListView().getItems().clear();
       
         for (Booking booking : bookingDAO.findAll()){
-            bookingView.getBookingListView().getItems().add(booking.toString());
+            bookingListView.getBookingListView().getItems().add(booking.toString());
         }
 
        
