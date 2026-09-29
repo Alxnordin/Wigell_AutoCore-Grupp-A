@@ -3,15 +3,21 @@ package com.wac.autocore;
 import com.wac.autocore.controller.*;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.service.GarageSystem;
+import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.*;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 
 //JavaFX startpunkt, bygger upp scenen/fönstret, skapar vyer och kontroller, och styr växling mellan de olika vyerna
@@ -31,9 +37,35 @@ public class AutoCoreApplication extends Application {
 
         borderPane = new BorderPane();
 
-        Label headerLabel = new Label("WAC");
-        HBox header = new HBox(headerLabel);
-        header.setAlignment(Pos.CENTER);
+        Label headerLabel = new Label("WAC AutoCore");
+        Button languageButton = new Button(LanguageManager.getInstance().getString("language"));
+
+        // Logotyp
+        Image logoImage = new Image(getClass().getResourceAsStream("/WAC_1.png"));
+        ImageView logoView = new ImageView(logoImage);
+        logoView.setFitHeight(40);
+        logoView.setPreserveRatio(true);
+
+        StackPane header = new StackPane();
+        // WAC AutoCore i mitten
+        StackPane.setAlignment(headerLabel, Pos.CENTER);
+        // Logotyp till vänster
+        StackPane.setAlignment(logoView, Pos.CENTER_LEFT);
+        StackPane.setMargin(logoView, new Insets(0, 0, 0, 15));
+        // Språkknapp till höger
+        StackPane.setAlignment(languageButton, Pos.CENTER_RIGHT);
+        StackPane.setMargin(languageButton, new Insets(0, 15, 0, 0));
+
+        header.getChildren().addAll(logoView, headerLabel, languageButton);
+
+        LanguageManager languageManager = LanguageManager.getInstance();
+        languageButton.setOnAction(e -> {
+            languageManager.changeLanguage();
+        });
+        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
+            languageButton.setText(languageManager.getString("language"));
+        });
+
         header.getStyleClass().add("header");
         borderPane.setTop(header);
 

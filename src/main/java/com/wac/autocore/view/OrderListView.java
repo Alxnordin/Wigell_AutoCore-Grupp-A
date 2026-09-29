@@ -78,7 +78,6 @@ public class OrderListView {
         completeOrderIdField.setText(languageManager.getString("workOrderIdField"));
         completeOrderButton.setText(languageManager.getString("completeOrderButton"));
 
-        //OBS! Den här ändrar nu alla backButton på alla sidor??
         backButton.setText(languageManager.getString("backButton"));
     }
 }

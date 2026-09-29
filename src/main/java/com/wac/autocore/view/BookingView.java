@@ -1,5 +1,6 @@
 package com.wac.autocore.view;
 
+import java.util.Locale;
 import com.wac.autocore.util.LanguageManager;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
@@ -47,6 +48,13 @@ public class BookingView {
 
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
             changeTextAllComponents();
+
+            java.time.LocalDate selectedDate = date.getValue();
+            DatePicker newDatePicker = new DatePicker();
+            newDatePicker.setValue(selectedDate);
+            int index = box.getChildren().indexOf(date);
+            box.getChildren().set(index, newDatePicker);
+            date = newDatePicker;
         });
     }
 

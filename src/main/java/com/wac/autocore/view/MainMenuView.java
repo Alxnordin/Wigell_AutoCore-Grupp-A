@@ -30,7 +30,6 @@ public class MainMenuView {
     private Button servicesButton;
     private Button ordersButton;
     private Button paymentsButton;
-    private Button languageButton;
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -78,14 +77,6 @@ public class MainMenuView {
         exitButton.setMaxWidth(Double.MAX_VALUE);
         menu.getChildren().add(exitButton);
 
-        languageButton = new Button(languageManager.getString("language"));
-        languageButton.setMaxWidth(Double.MAX_VALUE);
-        menu.getChildren().add(languageButton);
-
-        languageButton.setOnAction(e -> {
-            languageManager.changeLanguage();
-        });
-
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
             changeTextAllComponents();
         });
@@ -121,7 +112,6 @@ public class MainMenuView {
         showPaymentsButton.setText(languageManager.getString("showPayments"));
         addPaymentButton.setText(languageManager.getString("addPayment"));
 
-        languageButton.setText(languageManager.getString("language"));
         exitButton.setText(languageManager.getString("quit"));
     }
 

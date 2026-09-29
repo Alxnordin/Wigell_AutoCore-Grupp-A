@@ -15,7 +15,12 @@ public class LanguageManager {
 
     private LanguageManager() {
         locale = new SimpleObjectProperty<>(Locale.forLanguageTag("en"));
+        Locale.setDefault(locale.get());
         resourceBundle = ResourceBundle.getBundle("language", locale.get());
+    }
+
+    public Locale getLocale() {
+        return locale.get();
     }
 
     public static LanguageManager getInstance() {
@@ -40,7 +45,10 @@ public class LanguageManager {
             newLocale = Locale.forLanguageTag("en");
         }
 
+        Locale.setDefault(newLocale);
+
         resourceBundle = ResourceBundle.getBundle("language", newLocale);
+
         locale.set(newLocale);
     }
 }

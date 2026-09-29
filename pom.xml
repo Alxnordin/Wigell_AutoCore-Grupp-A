@@ -27,14 +27,4 @@
 
     </dependencies>
 
-    <build>
-        <sourceDirectory>autocore/src</sourceDirectory>
-
-        <resources>
-            <resource>
-                <directory>autocore/resources</directory>
-            </resource>
-        </resources>
-    </build>
-
 </project>
