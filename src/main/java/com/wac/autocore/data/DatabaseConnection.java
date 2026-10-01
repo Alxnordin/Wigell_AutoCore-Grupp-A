@@ -112,6 +112,7 @@ public class DatabaseConnection {
             statement.execute(workOrderSql);
             statement.execute(workOrderServiceItemSql);
             statement.execute(bookingServiceItemSql);
+
             //För att kunna lägga till pris i nya kolumnen
             try {
                 statement.execute("ALTER TABLE work_order_service_item " +
@@ -120,6 +121,7 @@ public class DatabaseConnection {
             } catch (SQLException e) {
 
             }
+
         }catch(SQLException e){
             throw new RuntimeException("Could not initialize database.", e);
         }
