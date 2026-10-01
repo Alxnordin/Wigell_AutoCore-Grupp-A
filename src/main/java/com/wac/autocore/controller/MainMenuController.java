@@ -24,6 +24,7 @@ public class MainMenuController {
         wireEvents();
         borderPane.setLeft(view.getView());
     }
+
     public void wireEvents() {
         view.getShowCustomersButton().setOnAction(e -> app.showCustomerView());
         view.getAddCustomerButton().setOnAction(e -> app.showCustomerView());
@@ -41,8 +42,10 @@ public class MainMenuController {
         view.getAddOrderButton().setOnAction(e -> app.showOrderFormView());
         view.getStartCompleteOrderButton().setOnAction(e -> app.showOrderFormView());
 
-        view.getShowInvoicesButton().setOnAction(e -> app.showPaymentView());
-        view.getAddInvoiceButton().setOnAction(e -> app.showPaymentView());
+        //LINNÉA ÄNDRAT HÄR - knapparna går nu till showInvoice och inte showPayment.
+        view.getShowInvoicesButton().setOnAction(e -> app.showInvoiceView());
+        view.getAddInvoiceButton().setOnAction(e -> app.showInvoiceView());
+
         view.getShowPaymentsButton().setOnAction(e -> app.showPaymentView());
         view.getAddPaymentButton().setOnAction(e -> app.showPaymentView());
 

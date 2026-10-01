@@ -71,6 +71,7 @@ public class VehicleView {
     }
     public ListView<String> getVehicleListView() {return vehicleListView;}
 
+    //HÄR ÄR DET FEL - ska vara setPromptText() och inte setText.
     public void changeTextAllComponents() {
         registrationNumberField.setText(languageManager.getString("registrationNumber"));
         brandField.setText(languageManager.getString("vehicleBrand"));

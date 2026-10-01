@@ -1,6 +1,7 @@
 .root {
     -fx-background-color: #F5F7F4;
-    -fx-font-family: "Segoe UI", sans-serif;
+      /*-fx-font-family: "Segoe UI", sans-serif;*/
+    -fx-font-family: Arial;
 }
 
 Label {
@@ -114,3 +115,156 @@ ListView .list-cell:filled:selected {
     -fx-background-color: #2E7D32;
     -fx-text-fill: #F5F7F4;
 }
+
+
+/**** FRIDAS NYA  ****/
+/*BookingView*/
+.page-title {
+    -fx-text-fill: #10182b;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.page-subtitle {
+    -fx-text-fill: #6b756e;
+    -fx-font-size: 14px;
+}
+
+.section-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 18px;
+}
+
+.section-title {
+    -fx-text-fill: #10182b;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.placeholder-text {
+    -fx-text-fill: #6b756e;
+    -fx-font-size: 14px;
+}
+
+.summary-value {
+    -fx-text-fill: #10182b;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+/*bookingview -> section 2. service*/
+/* Services table */
+
+.services-table {
+    -fx-background-color: #F8FAF8;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 12px;
+}
+
+.table-header {
+    -fx-text-fill: #10182b;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.add-service-button {
+    -fx-background-color: #E8F0EB;
+    -fx-text-fill: #10182b;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.add-service-button:hover {
+    -fx-background-color: #2E7D32;
+    -fx-text-fill: #F5F7F4;
+}
+
+/*Styling combobox*/
+.standard-combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 6px;
+}
+
+/*styling textfält*/
+.standard-text-field {
+    -fx-background-color: white;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 10px;
+}
+
+/*styling välja-datumfältet*/
+.standard-date-picker {
+    -fx-background-color: white;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-pref-height: 43px;
+}
+
+/*styling tabeller*/
+.standard-table {
+    -fx-background-color: white;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-table-cell-border-color: #dce7df;
+}
+
+/* Tabellens header */
+.standard-table .column-header-background {
+    -fx-background-color: #E8F0EB;
+    -fx-background-radius: 7px 7px 0 0;
+}
+
+.standard-table .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent #d5e2d9 transparent transparent;
+    -fx-border-width: 0 1px 0 0;
+    -fx-size: 38px;
+}
+
+/* Texten i headern */
+.standard-table .column-header .label {
+    -fx-text-fill: #10182b;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+/* Vanliga tabellceller */
+.standard-table .table-cell {
+    -fx-text-fill: #10182b;
+    -fx-padding: 10px 12px;
+    -fx-font-size: 13px;
+}
+
+/* Rader */
+.standard-table .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #e1e9e3 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+/* Hover på rad */
+.standard-table .table-row-cell:hover {
+    -fx-background-color: #F3F7F4;
+}
+
+/* När en rad är markerad */
+.standard-table .table-row-cell:selected {
+    -fx-background-color: #E8F0EB;
+    -fx-text-fill: #10182b;
+}
+
+

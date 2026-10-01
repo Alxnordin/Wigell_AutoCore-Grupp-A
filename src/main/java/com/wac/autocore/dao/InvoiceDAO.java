@@ -37,6 +37,8 @@ public class InvoiceDAO {
         }
     return invoices;
     }
+
+    //RÄTTAT FEL
     public Invoice save(Invoice invoice) {
         String sql = "INSERT INTO invoice " +
                 "(work_order_id, invoice_date, amount, discount, total_amount, paid) " +
@@ -46,8 +48,8 @@ public class InvoiceDAO {
             statement.setInt(1, invoice.getWorkOrderId());
             statement.setDate(2, java.sql.Date.valueOf(invoice.getInvoiceDate()));
             statement.setDouble(3, invoice.getAmount());
-            statement.setDouble(4, invoice.getTotalAmount());
-            statement.setDouble(5, invoice.getDiscount());
+            statement.setDouble(4, invoice.getDiscount());
+            statement.setDouble(5, invoice.getTotalAmount());
             statement.setBoolean(6, invoice.isPaid());
 
             statement.executeUpdate();

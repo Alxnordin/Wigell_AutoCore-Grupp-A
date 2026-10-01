@@ -12,12 +12,13 @@ import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.MechanicView;
 import com.wac.autocore.view.ServiceItemView;
 import javafx.scene.Parent;
+import javafx.scene.control.TextInputDialog;
 
 
 //Kopplar ServiceItemView/MechanicView till GarageSystem — visar tjänster, mekaniker och vald mekanikers tilldelade arbete
 public class ServiceController {
     private final GarageSystem garageSystem;
-    private final AutoCoreApplication app;    
+    private final AutoCoreApplication app;
     private final ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
     private final MechanicDAO mechanicDAO = new MechanicDAO();
     private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
@@ -44,9 +45,11 @@ public class ServiceController {
     public void refreshLists() {
 
         serviceItemView.getServiceItemListView().getItems().clear();
-        
+
         for (ServiceItem item : serviceItemDAO.findAll()) {
-            
+
+            serviceItemView.getServiceItemListView().getItems().add(item);
+            /*
 
             String serviceItemInfo =
                     item.getId() + " | "
@@ -60,7 +63,7 @@ public class ServiceController {
                             + ": " + item.getEstimatedMinutes() + " | ";
 
             serviceItemView.getServiceItemListView().getItems().add(serviceItemInfo);
-
+            */
         }
 
 
@@ -102,6 +105,26 @@ public class ServiceController {
 
         serviceItemView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
         mechanicView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+
+        serviceItemView.setOnChangePrice(serviceItem -> {
+            TextInputDialog dialog = new TextInputDialog(String.valueOf(serviceItem.getPrice()));
+
+            dialog.setTitle(languageManager.getString("changePrice"));
+            dialog.setHeaderText(serviceItem.getName());
+            dialog.setContentText(languageManager.getString("newPrice"));
+
+            dialog.showAndWait().ifPresent(input -> {
+                        try {
+                            double newPrice = Double.parseDouble(input);
+                            garageSystem.changeServicePrice(serviceItem.getId(), newPrice);
+                            refreshLists();
+                        }catch(NumberFormatException e) {
+                            System.out.println("Invalid price: " + input);
+                        }
+                    }
+
+            );
+        });
     }
 
     private void showMechanicWork(int selectedIndex) {
