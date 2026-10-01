@@ -13,9 +13,9 @@ import java.util.List;
 public class PaymentDAO {
     public List<Payment> findAll() {
         List<Payment> payments = new ArrayList<>();
-        String sql = "Select id, invoice_id, amount, payment_date, successful " +
-                    "FROM payment " +
-                    "ORDER BY id";
+        String sql = "SELECT id, invoice_id, amount, payment_type, payment_date, successful " +
+                "FROM payment " +
+                "ORDER BY id";
 
         try(Connection connection = DatabaseConnection.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);

@@ -2,6 +2,7 @@ package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.dao.BookingDAO;
+import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Booking;
 import com.wac.autocore.service.GarageSystem;
@@ -38,9 +39,14 @@ public class BookingController {
 
     private void wireEvents() {
         bookingView.getCreateBookingButton().setOnAction(actionEvent -> {
-            String vehicleIdText = bookingView.getVehicleIdField().getText();
+            Vehicle selectedVehicle = bookingView.getVehicleComboBox().getValue();
             LocalDate date = bookingView.getDate().getValue();
             String description = bookingView.getDescriptionField().getText();
+
+            if (selectedVehicle == null) {
+                showWarning(languageManager.getString("missingVehicleWarning"));
+                return;
+            }
 
             if (date == null) {
                 showWarning(languageManager.getString("missingDateWarning"));
@@ -48,13 +54,13 @@ public class BookingController {
             }
 
             try {
-                int vehicleId = Integer.parseInt(vehicleIdText);
+                int vehicleId = selectedVehicle.getId();
 
                 Booking booking = garageSystem.createBooking(vehicleId, date, description);
 
                 if (booking != null) {
                     refreshBookingList();
-                    bookingView.getVehicleIdField().clear();
+                    bookingView.getVehicleComboBox().setValue(null);
                     bookingView.getDate().setValue(null);
                     bookingView.getDescriptionField().clear();
                 }
@@ -64,15 +70,14 @@ public class BookingController {
         });
 
         bookingView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
-
         bookingListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
     }
 
     private void refreshBookingList() {
-          bookingListView.getBookingListView().getItems().clear();
+          bookingListView.getBookingTable().getItems().clear();
       
         for (Booking booking : bookingDAO.findAll()){
-            bookingListView.getBookingListView().getItems().add(booking.toString());
+            bookingListView.getBookingTable().getItems().add(booking);
         }
 
        

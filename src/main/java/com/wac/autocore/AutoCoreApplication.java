@@ -43,7 +43,7 @@ public class AutoCoreApplication extends Application {
         // Logotyp
         Image logoImage = new Image(getClass().getResourceAsStream("/WAC_1.png"));
         ImageView logoView = new ImageView(logoImage);
-        logoView.setFitHeight(40);
+        logoView.setFitHeight(60);
         logoView.setPreserveRatio(true);
 
         StackPane header = new StackPane();
@@ -77,7 +77,9 @@ public class AutoCoreApplication extends Application {
 
         new MainMenuController(garageSystem, this, borderPane);
 
-        Scene scene = new Scene(borderPane, 1000, 700);
+        showMainMenu();
+
+        Scene scene = new Scene(borderPane, 1200, 1000);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
@@ -85,8 +87,10 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showMainMenu() {
-        borderPane.setCenter(null);
+        borderPane.setCenter(new StartView().getView());
     }
+
+
 
     public void showCustomerView() {
         borderPane.setCenter(new CustomerController(garageSystem, this, new CustomerView()).getView());
