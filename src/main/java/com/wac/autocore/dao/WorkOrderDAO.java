@@ -8,7 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-
+//Har lagt till price så att detta kan lagras i en workOrder. på sätt sparas
+//priset på en service ifall priset på en service skulle uppdateras
 public class WorkOrderDAO {
     public List<WorkOrder> findAll() {
         List<WorkOrder> workOrders = new ArrayList<WorkOrder>();
@@ -36,7 +37,7 @@ public class WorkOrderDAO {
         return workOrders;
     }
     private void loadServiceItems(Connection connection, WorkOrder workOrder) throws Exception{
-        String sql = "SELECT service_item_id " +
+        String sql = "SELECT service_item_id, price " +
                 "FROM work_order_service_item " +
                 "WHERE work_order_id = ? " +
                 "ORDER BY service_item_id";
@@ -46,7 +47,8 @@ public class WorkOrderDAO {
             try (ResultSet resultSet = statement.executeQuery()){
                 while (resultSet.next()) {
                     workOrder.addServiceItem(
-                            resultSet.getInt("service_item_id")
+                            resultSet.getInt("service_item_id"),
+                            resultSet.getDouble("price")
                     );
                 }
             }
@@ -80,12 +82,13 @@ public class WorkOrderDAO {
         }
     private void saveServiceItems(Connection connection, WorkOrder workOrder) throws Exception{
         String sql = "INSERT INTO work_order_service_item " +
-                "(work_order_id, service_item_id) " +
-                "VALUES (?, ?)";
+                "(work_order_id, service_item_id, price) " +
+                "VALUES (?, ?, ?)";
         try(PreparedStatement statement = connection.prepareStatement(sql)){
             for(Integer serviceItemId : workOrder.getServiceItemIds()){
                 statement.setInt(1, workOrder.getId());
                 statement.setInt(2,serviceItemId);
+                statement.setDouble(3, workOrder.getServiceItemPrices().get(serviceItemId));
 
                 statement.executeUpdate();
             }

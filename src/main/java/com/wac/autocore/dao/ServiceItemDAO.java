@@ -58,5 +58,23 @@ public class ServiceItemDAO {
         }
         return serviceItem;
     }
+
+    //NY METOD FÖR ATT UPPDATERA PRISET
+
+    public void updatePrice(int serviceItemId, double newPrice){
+        String sql = "UPDATE service_item SET price = ? Where id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)){
+
+                    statement.setDouble(1, newPrice);
+                    statement.setInt(2,serviceItemId);
+
+                    statement.executeUpdate();
+
+        }catch (Exception e){
+            throw new RuntimeException("Could not update serviceItem price", e);
+        }
+    }
 }
 

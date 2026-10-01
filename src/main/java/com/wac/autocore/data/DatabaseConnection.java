@@ -13,6 +13,7 @@ public class DatabaseConnection {
     public static Connection getConnection() throws SQLException{
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
+    /*Lagt till pris i tabellen work_order_service_item för att kunna spara priset i workorder*/
     public static void initializeDatabase(){
         String sql =  "CREATE TABLE IF NOT EXISTS customer (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -77,9 +78,11 @@ public class DatabaseConnection {
                 "mechanic_id INT NOT NULL, " +
                 "status VARCHAR(50) NOT NULL" +
                 ")";
+
         String workOrderServiceItemSql = "CREATE TABLE IF NOT EXISTS work_order_service_item (" +
                 "work_order_id INT NOT NULL, " +
                 "service_item_id INT NOT NULL, " +
+                "price DOUBLE NOT NULL," +
                 "PRIMARY KEY (work_order_id, service_item_id)" +
                 ")";
         try (Connection connection = getConnection();
@@ -93,6 +96,14 @@ public class DatabaseConnection {
             statement.execute(paymentSql);
             statement.execute(workOrderSql);
             statement.execute(workOrderServiceItemSql);
+            //För att kunna lägga till pris i nya kolumnen
+            try {
+                statement.execute("ALTER TABLE work_order_service_item " +
+                        "ADD COLUMN price DOUBLE NOT NULL DEFAULT 0");
+
+            } catch(SQLException e){
+
+            }
         }catch(SQLException e){
             throw new RuntimeException("Could not initialize database.", e);
         }

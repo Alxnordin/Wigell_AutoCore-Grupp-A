@@ -14,7 +14,6 @@ import com.wac.autocore.model.WorkOrder;
 import java.time.LocalDate;
 
 public class GarageSystem {
-    //FREDRIK - lagt till DAO
 
     private final CustomerDAO customerDAO = new CustomerDAO();
     private final VehicleDAO vehicleDAO = new VehicleDAO();
@@ -36,17 +35,7 @@ public class GarageSystem {
         for (Customer customer : customerDAO.findAll()){
             System.out.println(customer);
         }
-        //FREDRIK - tagit bort
 
-        /*
-        if (Database.getCustomers().isEmpty()) {
-            System.out.println("No customers found.");
-            return;
-        }
-
-        for (Customer customer : Database.getCustomers()) {
-            System.out.println(customer);
-        } */
 
 
     }
@@ -55,7 +44,7 @@ public class GarageSystem {
         System.out.println();
         System.out.println("=== VEHICLES ===");
 
-        //FREDRIK - ändrat
+
         if(vehicleDAO.findAll().isEmpty()){
             System.out.println("No vehicles found.");
             return;
@@ -64,23 +53,14 @@ public class GarageSystem {
             System.out.println(vehicle);
         }
 
-        /*
 
-        if (Database.getVehicles().isEmpty()) {
-            System.out.println("No vehicles found.");
-            return;
-        }
-
-        for (Vehicle vehicle : Database.getVehicles()) {
-            System.out.println(vehicle);
-        }*/
     }
 
     public void showBookings() {
         System.out.println();
         System.out.println("=== BOOKINGS ===");
 
-        //FREDRIK - ändrat
+
 
         if (bookingDAO.findAll().isEmpty()){
             System.out.println("No bookings found.");
@@ -90,18 +70,7 @@ public class GarageSystem {
             System.out.println(booking);
         }
 
-        /*
 
-        if (Database.getBookings().isEmpty()) {
-            System.out.println("No bookings found.");
-            return;
-        }
-
-        for (Booking booking : Database.getBookings()) {
-            System.out.println(booking);
-        }
-
-         */
     }
 
     public void showServiceItems() {
@@ -117,24 +86,13 @@ public class GarageSystem {
             System.out.println(serviceItem);
         }
 
-        /*
 
-        if (Database.getServiceItems().isEmpty()) {
-            System.out.println("No services found.");
-            return;
-        }
-
-        for (ServiceItem serviceItem : Database.getServiceItems()) {
-            System.out.println(serviceItem);
-        }
-
-         */
     }
 
     public void showMechanics() {
         System.out.println();
         System.out.println("=== MECHANICS ===");
-        //FREDRIK - ändrat
+
         if (mechanicDAO.findAll().isEmpty()) {
             System.out.println("No mechanics found.");
             return;
@@ -143,23 +101,13 @@ public class GarageSystem {
         for (Mechanic mechanic : mechanicDAO.findAll()) {
             System.out.println(mechanic);
         }
-        /*
-        if (Database.getMechanics().isEmpty()) {
-            System.out.println("No mechanics found.");
-            return;
-        }
 
-        for (Mechanic mechanic : Database.getMechanics()) {
-            System.out.println(mechanic);
-        }
-
-         */
     }
 
     public void showWorkOrders() {
         System.out.println();
         System.out.println("=== WORK ORDERS ===");
-        //FREDRIK - ändrat
+
 
         if (workOrderDAO.findAll().isEmpty()) {
             System.out.println("No work orders found.");
@@ -169,24 +117,13 @@ public class GarageSystem {
         for (WorkOrder workOrder : workOrderDAO.findAll()) {
             System.out.println(workOrder);
         }
-        /*
 
-        if (Database.getWorkOrders().isEmpty()) {
-            System.out.println("No work orders found.");
-            return;
-        }
-
-        for (WorkOrder workOrder : Database.getWorkOrders()) {
-            System.out.println(workOrder);
-        }
-
-         */
     }
 
     public void showInvoices() {
         System.out.println();
         System.out.println("=== INVOICES ===");
-        //FREDRIK - ändrat
+
         if (invoiceDAO.findAll().isEmpty()) {
             System.out.println("No invoices found.");
             return;
@@ -195,23 +132,13 @@ public class GarageSystem {
         for (Invoice invoice : invoiceDAO.findAll()) {
             System.out.println(invoice);
         }
-        /*
-        if (Database.getInvoices().isEmpty()) {
-            System.out.println("No invoices found.");
-            return;
-        }
 
-        for (Invoice invoice : Database.getInvoices()) {
-            System.out.println(invoice);
-        }
-
-         */
     }
 
     public void showPayments() {
         System.out.println();
         System.out.println("=== PAYMENTS ===");
-        //FREDRIK - ändrat
+
         if (paymentDAO.findAll().isEmpty()) {
             System.out.println("No payments found.");
             return;
@@ -220,27 +147,12 @@ public class GarageSystem {
         for (Payment payment : paymentDAO.findAll()) {
             System.out.println(payment);
         }
-        /*
-        if (Database.getPayments().isEmpty()) {
-            System.out.println("No payments found.");
-            return;
-        }
 
-        for (Payment payment : Database.getPayments()) {
-            System.out.println(payment);
-        }
-
-         */
     }
 
     public Customer createCustomer(String name, String phone, String email) {
 
-        //FREDRIK - Ändrat
 
-        /*int id = Database.getCustomers().size() + 1;
-
-        Customer customer = new Customer(id, name, phone, email);
-        Database.getCustomers().add(customer);*/
 
         Customer customer = new Customer(0, name, phone, email);
         customerDAO.save(customer);
@@ -263,24 +175,8 @@ public class GarageSystem {
             System.out.println("Customer with ID " + customerId + " does not exist.");
             return null;
         }
-        //FREDRIK - ändrat
         Vehicle vehicle = new Vehicle(0, registrationNumber, brand, model, year, customerId);
         vehicleDAO.save(vehicle);
-        /*
-        int id = Database.getVehicles().size() + 1;
-
-        Vehicle vehicle = new Vehicle(
-                id,
-                registrationNumber,
-                brand,
-                model,
-                year,
-                customerId
-        );
-
-        Database.getVehicles().add(vehicle);
-
-         */
 
         System.out.println("Vehicle created successfully.");
         System.out.println(vehicle);
@@ -298,7 +194,7 @@ public class GarageSystem {
             System.out.println("Vehicle with ID " + vehicleId + " does not exist.");
             return null;
         }
-        //FREDRIK - ändrat
+
         Booking booking = new Booking(
                 0,
                 vehicleId,
@@ -307,20 +203,6 @@ public class GarageSystem {
         );
         bookingDAO.save(booking);
 
-        /*
-        int id = Database.getBookings().size() + 1;
-
-        Booking booking = new Booking(
-                id,
-                vehicleId,
-                date,
-                description
-        );
-
-
-
-        Database.getBookings().add(booking);
-        */
         System.out.println("Booking created successfully.");
         System.out.println(booking);
 
@@ -358,28 +240,18 @@ public class GarageSystem {
                 return null;
             }
         }
-        //FREDRIK - Ändrat
         WorkOrder workOrder = new WorkOrder(
                 0,
                 bookingId,
                 mechanicId
         );
-        /*int id = Database.getWorkOrders().size() + 1;
-
-        WorkOrder workOrder = new WorkOrder(
-                id,
-                bookingId,
-                mechanicId
-        );
-
-         */
 
         for (int serviceItemId : serviceItemIds) {
-            workOrder.addServiceItem(serviceItemId);
+            ServiceItem serviceItem = findServiceItem(serviceItemId);
+            workOrder.addServiceItem(serviceItemId, serviceItem.getPrice());
         }
-        //FREDRIK - ändrat
+
         workOrderDAO.save(workOrder);
-        //Database.getWorkOrders().add(workOrder);
 
         booking.setStatus("WORK_ORDER_CREATED");
 
@@ -452,7 +324,7 @@ public class GarageSystem {
 
         System.out.println("Work order " + workOrderId + " has been completed.");
     }
-
+    //Ändrat så att det tidigare priset hämtas från workOrder istället för det aktuella
     public Invoice createInvoice(int workOrderId, String discountCode) {
         WorkOrder workOrder = findWorkOrder(workOrderId);
 
@@ -469,10 +341,10 @@ public class GarageSystem {
         double amount = 0.0;
 
         for (Integer serviceItemId : workOrder.getServiceItemIds()) {
-            ServiceItem serviceItem = findServiceItem(serviceItemId);
+            Double price = workOrder.getServiceItemPrices().get(serviceItemId);
 
-            if (serviceItem != null) {
-                amount += serviceItem.getPrice();
+            if (price != null) {
+                amount += price;
             }
         }
 
@@ -511,18 +383,7 @@ public class GarageSystem {
         if (discount > amount) {
             discount = amount;
         }
-        //FREDRIK - ändrat
-        /*
-        int id = Database.getInvoices().size() + 1;
 
-        Invoice invoice = new Invoice(
-                id,
-                workOrderId,
-                LocalDate.now(),
-                amount
-        );
-
-         */
         Invoice invoice = new Invoice(
                 0,
                 workOrderId,
@@ -532,7 +393,6 @@ public class GarageSystem {
 
         invoice.setDiscount(discount);
         invoiceDAO.save(invoice);
-        //Database.getInvoices().add(invoice);
 
         System.out.println("Invoice created successfully.");
         System.out.println(invoice);
@@ -556,16 +416,6 @@ public class GarageSystem {
             return null;
         }
 
-        /*
-        int id = Database.getPayments().size() + 1;
-
-        Payment payment = new Payment(
-                id,
-                invoiceId,
-                invoice.getTotalAmount(),
-                paymentType
-        );
-        */
         Payment payment = new Payment(
                 0,
                 invoiceId,
@@ -598,7 +448,6 @@ public class GarageSystem {
 
         payment.setSuccessful(successful);
         paymentDAO.save(payment);
-        //Database.getPayments().add(payment);
 
         if (successful) {
             invoice.setPaid(true);
@@ -615,99 +464,51 @@ public class GarageSystem {
     }
 
     private Customer findCustomer(int id) {
-        //FREDRIK - ändrat
+
         for (Customer customer : customerDAO.findAll()){
             if (customer.getId() == id){
                 return customer;
             }
         }
-        /*
-        for (Customer customer : Database.getCustomers()) {
-            if (customer.getId() == id) {
-                return customer;
-            }
-        }
-        */
-
-
         return null;
     }
 
     private Vehicle findVehicle(int id) {
-        //FREDRIK - ändrat
-
         for (Vehicle vehicle : vehicleDAO.findAll()){
             if(vehicle.getId() == id){
                 return vehicle;
             }
         }
 
-        /*
-        for (Vehicle vehicle : Database.getVehicles()) {
-            if (vehicle.getId() == id) {
-                return vehicle;
-            }
-        }
-
-         */
-
         return null;
     }
 
     private Booking findBooking(int id) {
-        //FREDRIK - Ändrat
         for (Booking booking : bookingDAO.findAll()) {
             if (booking.getId() == id) {
                 return booking;
             }
         }
-        /*
-        for (Booking booking : Database.getBookings()) {
-            if (booking.getId() == id) {
-                return booking;
-            }
-        }
-
-         */
 
         return null;
     }
 
     private Mechanic findMechanic(int id) {
-        //FREDRIK - ändrat
         for (Mechanic mechanic : mechanicDAO.findAll()) {
             if (mechanic.getId() == id) {
                 return mechanic;
             }
         }
 
-        /*
-        for (Mechanic mechanic : Database.getMechanics()) {
-            if (mechanic.getId() == id) {
-                return mechanic;
-            }
-        }
-
-         */
-
         return null;
     }
 
     private ServiceItem findServiceItem(int id) {
-        //FREDRIK - Ändrat
         for (ServiceItem serviceItem : serviceItemDAO.findAll()) {
             if (serviceItem.getId() == id) {
                 return serviceItem;
             }
         }
-        /*
-        for (ServiceItem serviceItem : Database.getServiceItems()) {
-            if (serviceItem.getId() == id) {
-                return serviceItem;
-            }
-        }
-
-         */
 
         return null;
     }
@@ -719,34 +520,32 @@ public class GarageSystem {
             }
         }
 
-        /*
-        for (WorkOrder workOrder : Database.getWorkOrders()) {
-            if (workOrder.getId() == id) {
-                return workOrder;
-            }
-        }
-
-         */
 
         return null;
     }
 
     private Invoice findInvoice(int id) {
-        //FREDRIK - ändrat
         for (Invoice invoice : invoiceDAO.findAll()) {
             if (invoice.getId() == id) {
                 return invoice;
             }
         }
-        /*
-        for (Invoice invoice : Database.getInvoices()) {
-            if (invoice.getId() == id) {
-                return invoice;
-            }
-        }
-
-         */
 
         return null;
+    }
+
+    //NY METOD FÖR ATT UPPDATERA PRIS
+    public void changeServicePrice(int serviceItemId, double newPrice){
+        if (newPrice <= 0){
+            System.out.println("Select price higher than 0");
+            return;
+        }
+        ServiceItem serviceItem = findServiceItem(serviceItemId);
+        if (serviceItem == null){
+            System.out.println("ServiceItemId " + serviceItemId + " does not exist.");
+            return;
+        }
+        serviceItemDAO.updatePrice(serviceItemId,newPrice);
+        serviceItem.setPrice(newPrice);
     }
 }
