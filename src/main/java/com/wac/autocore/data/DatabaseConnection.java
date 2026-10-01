@@ -82,6 +82,11 @@ public class DatabaseConnection {
                 "service_item_id INT NOT NULL, " +
                 "PRIMARY KEY (work_order_id, service_item_id)" +
                 ")";
+        String bookingServiceItemSql = "CREATE TABLE IF NOT EXISTS booking_service_item (" +
+                "booking_id INT NOT NULL, " +
+                "service_item_id INT NOT NULL, " +
+                "PRIMARY KEY (booking_id, service_item_id)" +
+                ")";
         try (Connection connection = getConnection();
         Statement statement = connection.createStatement()){
             statement.execute(sql);
@@ -93,6 +98,7 @@ public class DatabaseConnection {
             statement.execute(paymentSql);
             statement.execute(workOrderSql);
             statement.execute(workOrderServiceItemSql);
+            statement.execute(bookingServiceItemSql);
         }catch(SQLException e){
             throw new RuntimeException("Could not initialize database.", e);
         }

@@ -1,6 +1,8 @@
 package com.wac.autocore.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Booking {
 
@@ -9,6 +11,7 @@ public class Booking {
     private LocalDate date;
     private String description;
     private String status;
+    private List<Integer> serviceItemIds;
 
     public Booking(int id, int vehicleId, LocalDate date, String description) {
         this.id = id;
@@ -16,6 +19,7 @@ public class Booking {
         this.date = date;
         this.description = description;
         this.status = "BOOKED";
+        this.serviceItemIds = new ArrayList<Integer>();
     }
 
     public int getId() {
@@ -50,9 +54,26 @@ public class Booking {
         this.description = description;
     }
 
-    public String getStatus() {
-        return status;
+    public List<Integer> getServiceItemIds() {
+        return serviceItemIds;
     }
+
+    public void setServiceItemIds(List<Integer> serviceItemIds) {
+        this.serviceItemIds = serviceItemIds;
+    }
+
+    public void addServiceItem(int serviceItemId) {
+        serviceItemIds.add(serviceItemId);
+    }
+
+    public void removeServiceItem(int serviceItemId) {
+        serviceItemIds.remove(Integer.valueOf(serviceItemId));
+    }
+
+    public boolean containsServiceItem(int serviceItemId) {
+        return serviceItemIds.contains(serviceItemId);}
+
+    public String getStatus() {return status;}
 
     public void setStatus(String status) {
         this.status = status;
@@ -63,6 +84,7 @@ public class Booking {
         return id + " - Vehicle ID: " + vehicleId +
                 " | Date: " + date +
                 " | Description: " + description +
+                " | Services: " + serviceItemIds +
                 " | Status: " + status;
     }
 }
