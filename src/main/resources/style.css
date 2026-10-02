@@ -1,7 +1,6 @@
 .root {
     -fx-background-color: #F5F7F4;
-      /*-fx-font-family: "Segoe UI", sans-serif;*/
-    -fx-font-family: Arial;
+    -fx-font-family: "Segoe UI", sans-serif;
 }
 
 Label {
@@ -116,8 +115,6 @@ ListView .list-cell:filled:selected {
     -fx-text-fill: #F5F7F4;
 }
 
-
-/**** FRIDAS NYA  ****/
 /*BookingView*/
 .page-title {
     -fx-text-fill: #10182b;
@@ -267,4 +264,88 @@ ListView .list-cell:filled:selected {
     -fx-text-fill: #10182b;
 }
 
+/*design för soptunnan i tabellen för servicar*/
+  .delete-button {
+      -fx-background-color: transparent;
+      -fx-border-color: transparent;
+      -fx-padding: 5px;
+  }
 
+.delete-button:hover {
+    -fx-background-color: #FBEAEA;
+    -fx-border-color: transparent;
+}
+
+.delete-icon {
+    -fx-icon-color: #984216;
+}
+
+
+/*styling sektion 3*/
+/*styling summakorten*/
+.summary-card {
+    -fx-background-color: #F8FAF8;
+    -fx-border-color: #dce7df;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 15px;
+}
+
+.summary-label {
+    -fx-text-fill: #6b756e;
+    -fx-font-size: 13px;
+    -fx-font-weight: normal;
+}
+
+.summary-value {
+    -fx-text-fill: #10182b;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/*design ikon summeringkort*/
+.summary-icon {
+    -fx-icon-color: #2E7D32;
+}
+
+/*Styling för <- tillbakaknappen*/
+.back-button {
+    -fx-background-color: #E8F0EB;
+    -fx-text-fill: #2E7D32;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 9px 16px;
+}
+
+.back-button:hover {
+    -fx-background-color: #dce9df;
+}
+
+
+/*Styling för startsidan*/
+.start-view {
+    -fx-background-color: #F5F7F4;
+}
+
+.start-icon {
+    -fx-icon-color: #2E7D32;
+}
+
+.start-title {
+    -fx-text-fill: #10182b;
+    -fx-font-size: 50px;
+    -fx-font-weight: bold;
+}
+
+.start-subtitle {
+    -fx-text-fill: #2E7D32;
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+}
+
+.start-instruction {
+    -fx-text-fill: #6b756e;
+    -fx-font-size: 18px;
+}

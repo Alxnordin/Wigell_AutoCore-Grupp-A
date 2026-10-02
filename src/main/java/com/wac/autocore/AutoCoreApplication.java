@@ -83,7 +83,7 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showMainMenu() {
-        borderPane.setCenter(null);
+        borderPane.setCenter(new StartView().getView());
     }
 
     public void showCustomerView() {
