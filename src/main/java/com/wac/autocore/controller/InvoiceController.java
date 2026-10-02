@@ -38,14 +38,14 @@ public class InvoiceController {
         invoiceView.getCreateInvoiceButton().setOnAction(actionEvent -> {
             try {
                 int workOrderId = Integer.parseInt(invoiceView.getWorkOrderIdField().getText());
-                String discountCode = invoiceView.getDiscountCodeField().getText();
+                String discountCode = invoiceView.getDiscountCodeComboBox().getValue();
 
                 Invoice invoice = garageSystem.createInvoice(workOrderId, discountCode);
 
                 if (invoice != null) {
                     refreshLists();
                     invoiceView.getWorkOrderIdField().clear();
-                    invoiceView.getDiscountCodeField().clear();
+                    invoiceView.getDiscountCodeComboBox().setValue(null);
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Ogiltigt arbetsorder-ID — måste vara ett heltal.");
@@ -56,27 +56,28 @@ public class InvoiceController {
     }
 
     private void refreshLists() {
-        invoiceListView.getInvoiceListView().getItems().clear();
 
-        for (Invoice invoice : invoiceDAO.findAll()) {
-            String invoiceInfo = invoice.getId() + " | "
-                    + languageManager.getString("workOrderIdInTable")
-                    + ": " + invoice.getWorkOrderId() + " | "
-                    + languageManager.getString("dateInTable")
-                    + ": " + invoice.getInvoiceDate() + " | "
-                    + languageManager.getString("amountInTable")
-                    + ": " + invoice.getAmount() + " SEK | "
-                    + languageManager.getString("discountInTable")
-                    + ": " + invoice.getDiscount() + " SEK | "
-                    + languageManager.getString("totalInTable")
-                    + ": " + invoice.getTotalAmount() + " SEK | "
-                    + languageManager.getString("paidInTable")
-                    + ": " + (invoice.isPaid()
-                    ? languageManager.getString("yes")
-                    : languageManager.getString("no"));
+        invoiceListView.getInvoiceTable().getItems().setAll(invoiceDAO.findAll());
 
-            invoiceListView.getInvoiceListView().getItems().add(invoiceInfo);
-        }
+//        invoiceListView.getInvoiceTable().getItems().clear();
+//            String invoiceInfo = invoice.getId() + " | "
+//                    + languageManager.getString("workOrderIdInTable")
+//                    + ": " + invoice.getWorkOrderId() + " | "
+//                    + languageManager.getString("dateInTable")
+//                    + ": " + invoice.getInvoiceDate() + " | "
+//                    + languageManager.getString("amountInTable")
+//                    + ": " + invoice.getAmount() + " SEK | "
+//                    + languageManager.getString("discountInTable")
+//                    + ": " + invoice.getDiscount() + " SEK | "
+//                    + languageManager.getString("totalInTable")
+//                    + ": " + invoice.getTotalAmount() + " SEK | "
+//                    + languageManager.getString("paidInTable")
+//                    + ": " + (invoice.isPaid()
+//                    ? languageManager.getString("yes")
+//                    : languageManager.getString("no"));
+//
+//            invoiceListView.getInvoiceTable().getItems().add(invoiceInfo);
+
     }
 
     public Parent getInvoiceListView() {

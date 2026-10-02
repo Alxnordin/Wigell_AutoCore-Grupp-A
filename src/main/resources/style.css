@@ -1,6 +1,7 @@
 .root {
     -fx-background-color: #F5F7F4;
-    -fx-font-family: "Segoe UI", sans-serif;
+    /*-fx-font-family: "Segoe UI", sans-serif;*/
+    -fx-font-family: Arial;
 }
 
 Label {
@@ -349,3 +350,18 @@ ListView .list-cell:filled:selected {
     -fx-text-fill: #6b756e;
     -fx-font-size: 18px;
 }
+
+/*styling för visa knapp i tabellerna*/
+.view-button {
+    -fx-background-color: #D8893A;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-padding: 5 14;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.view-button:hover {
+    -fx-background-color: #C4772D;
+}
+

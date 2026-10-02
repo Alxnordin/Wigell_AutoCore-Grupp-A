@@ -9,6 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 
+
 //UI klass med formulär för att skapa och visa fordon
 public class VehicleView {
 
@@ -45,7 +46,7 @@ public class VehicleView {
         customerIdField.setPromptText(languageManager.getString("customerId"));
 
         createVehicleButton = new Button(languageManager.getString("createVehicleButton"));
-        backButton = new Button(languageManager.getString("backButton"));
+        backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
 
         vehicleListView = new ListView<>();
 

@@ -75,6 +75,7 @@ public class AutoCoreApplication extends Application {
         borderPane.setBottom(footer);
 
         new MainMenuController(garageSystem, this, borderPane);
+        showMainMenu();
 
         Scene scene = new Scene(borderPane, 1000, 700);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());

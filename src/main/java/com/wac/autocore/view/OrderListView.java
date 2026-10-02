@@ -9,7 +9,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
-
 //UI-vy som visar arbetsorder listan samt kontroller för att starta och slutföra en arbetsorder
 public class OrderListView {
 
