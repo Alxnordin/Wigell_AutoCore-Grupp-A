@@ -42,8 +42,7 @@ public class MainMenuController {
         view.getAddOrderButton().setOnAction(e -> app.showOrderFormView());
         view.getStartCompleteOrderButton().setOnAction(e -> app.showOrderFormView());
 
-        //LINNÉA ÄNDRAT HÄR - knapparna går nu till showInvoice och inte showPayment.
-        view.getShowInvoicesButton().setOnAction(e -> app.showInvoiceView());
+        view.getShowInvoicesButton().setOnAction(e -> app.showInvoiceListView());
         view.getAddInvoiceButton().setOnAction(e -> app.showInvoiceView());
 
         view.getShowPaymentsButton().setOnAction(e -> app.showPaymentView());

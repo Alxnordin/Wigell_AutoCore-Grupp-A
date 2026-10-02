@@ -127,9 +127,16 @@ public class AutoCoreApplication extends Application {
         borderPane.setCenter(new PaymentController(garageSystem, this, new PaymentView()).getView());
     }
 
-    //LINNÉA LAGT TILL
+    public void showInvoiceListView() {
+        InvoiceController invoiceController = new InvoiceController(garageSystem,
+                this, new InvoiceListView(), new InvoiceView());
+        borderPane.setCenter(invoiceController.getInvoiceListView());
+    }
+
     public void showInvoiceView() {
-        borderPane.setCenter(new InvoiceController(garageSystem, this, new InvoiceView()).getView());
+        InvoiceController invoiceController = new InvoiceController(garageSystem,
+                this, new InvoiceListView(), new InvoiceView());
+        borderPane.setCenter(invoiceController.getInvoiceView());
     }
 
     public void exitApplication() {

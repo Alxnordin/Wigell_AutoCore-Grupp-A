@@ -5,6 +5,7 @@ import com.wac.autocore.dao.InvoiceDAO;
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.view.InvoiceListView;
 import com.wac.autocore.view.InvoiceView;
 import javafx.scene.Parent;
 
@@ -12,15 +13,18 @@ public class InvoiceController {
 
     private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
+    private final InvoiceListView invoiceListView;
     private final InvoiceView invoiceView;
 
     private final InvoiceDAO invoiceDAO = new InvoiceDAO();
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
-    public InvoiceController(GarageSystem garageSystem, AutoCoreApplication app, InvoiceView invoiceView) {
+    public InvoiceController(GarageSystem garageSystem, AutoCoreApplication app,
+                             InvoiceListView invoiceListView, InvoiceView invoiceView) {
         this.garageSystem = garageSystem;
         this.app = app;
+        this.invoiceListView = invoiceListView;
         this.invoiceView = invoiceView;
         wireEvents();
         refreshLists();
@@ -48,11 +52,11 @@ public class InvoiceController {
             }
         });
 
-        invoiceView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+        invoiceListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
     }
 
     private void refreshLists() {
-        invoiceView.getInvoiceListView().getItems().clear();
+        invoiceListView.getInvoiceListView().getItems().clear();
 
         for (Invoice invoice : invoiceDAO.findAll()) {
             String invoiceInfo = invoice.getId() + " | "
@@ -71,11 +75,15 @@ public class InvoiceController {
                     ? languageManager.getString("yes")
                     : languageManager.getString("no"));
 
-            invoiceView.getInvoiceListView().getItems().add(invoiceInfo);
+            invoiceListView.getInvoiceListView().getItems().add(invoiceInfo);
         }
     }
 
-    public Parent getView() {
+    public Parent getInvoiceListView() {
+        return invoiceListView.getView();
+    }
+
+    public Parent getInvoiceView() {
         return invoiceView.getView();
     }
 }
