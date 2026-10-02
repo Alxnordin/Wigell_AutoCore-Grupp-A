@@ -4,6 +4,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -120,5 +121,37 @@ public class UIComponents {
         return infoLabel;
     }
 
+    //Summeringskort: ikon + rubrik överst och värdet under, t.ex. "Estimated total time" / "165 min".
+    //Etiketterna skickas in av vyn, så att vyn själv kan byta språk och uppdatera värdet.
+    public static VBox createSummaryCard(String icon, Label titleLabel, Label valueLabel) {
+
+        FontIcon summaryIcon = new FontIcon(icon);
+        summaryIcon.setIconSize(30);
+        summaryIcon.getStyleClass().add("summary-icon");
+
+        titleLabel.getStyleClass().add("summary-label");
+        valueLabel.getStyleClass().add("summary-value");
+
+        VBox card = new VBox(6);
+        card.getStyleClass().add("summary-card");
+        card.getChildren().addAll(createIconLabel(summaryIcon, titleLabel), valueLabel);
+        card.setMaxWidth(Double.MAX_VALUE);
+
+        return card;
+    }
+
+    //lägger summeringskort bredvid varandra och gör dem lika breda
+    public static HBox createSummaryCards(VBox... cards) {
+
+        HBox box = new HBox(15);
+        box.getStyleClass().add("summary-cards");
+
+        for (VBox card : cards) {
+            HBox.setHgrow(card, Priority.ALWAYS);
+            box.getChildren().add(card);
+        }
+
+        return box;
+    }
 
 }

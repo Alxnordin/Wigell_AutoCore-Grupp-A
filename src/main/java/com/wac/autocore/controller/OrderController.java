@@ -106,6 +106,23 @@ public class OrderController {
         orderListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
     }
 
+    //Alexander
+    //fyller i formuläret från en bokning (används när man kommer från bokningslistan):
+    //bokningens ID och bokningens tjänster
+    public void prefillFromBooking(Booking booking) {
+        StringBuilder serviceItemIds = new StringBuilder();
+
+        for (int serviceItemId : booking.getServiceItemIds()) {
+            if (serviceItemIds.length() > 0) {
+                serviceItemIds.append(", ");
+            }
+            serviceItemIds.append(serviceItemId);
+        }
+
+        orderFormView.getBookingIdField().setText(String.valueOf(booking.getId()));
+        orderFormView.getServiceItemIdsField().setText(serviceItemIds.toString());
+    }
+
     private int[] parseServiceItemIds(String text) {
         if (text == null || text.trim().isEmpty()) {
             return new int[0];

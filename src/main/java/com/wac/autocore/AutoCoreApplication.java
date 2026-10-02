@@ -1,6 +1,7 @@
 package com.wac.autocore;
 
 import com.wac.autocore.controller.*;
+import com.wac.autocore.model.Booking;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.util.LanguageManager;
@@ -116,6 +117,15 @@ public class AutoCoreApplication extends Application {
 
     public void showOrderFormView() {
         OrderController controller = new OrderController(garageSystem, this, new OrderFormView(), new OrderListView());
+        borderPane.setCenter(controller.getOrderFormView());
+    }
+
+    //Alexander
+    //öppnar "Skapa order" med en bokning redan ifylld (från knappen i bokningslistan)
+
+    public void showOrderFormView(Booking booking) {
+        OrderController controller = new OrderController(garageSystem, this, new OrderFormView(), new OrderListView());
+        controller.prefillFromBooking(booking);
         borderPane.setCenter(controller.getOrderFormView());
     }
 

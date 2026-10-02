@@ -31,6 +31,9 @@ public class BookingView {
     private ComboBox<ServiceItem> serviceComboBox;
     private DatePicker date;
     private TextField descriptionField;
+    //Alexander
+    //tabellen är ett fält så att controllern kan läsa de valda tjänsterna
+    private TableView<ServiceItem> servicesTable;
 
     private final ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
     private final CustomerDAO customerDAO = new CustomerDAO();
@@ -181,7 +184,7 @@ public class BookingView {
 
 
         // Servicetabell
-        TableView<ServiceItem> servicesTable = UIComponents.createTable();
+        servicesTable = UIComponents.createTable();
 
         serviceColumn = new TableColumn<>(languageManager.getString("serviceColumn"));
         timeColumn = new TableColumn<>(languageManager.getString("timeColumn"));
@@ -205,6 +208,13 @@ public class BookingView {
 
                 deleteButton.setGraphic(deleteIcon);
                 deleteButton.getStyleClass().add("delete-button");
+                //Alexander
+                // soptunnan centreras och får mindre luft så att raden inte blir högre än övriga
+                setAlignment(Pos.CENTER);
+                setStyle("-fx-padding: 2 4 2 4;");
+
+                //Alexander - soptunnan tar bort tjänsten på den här raden ur listan med valda tjänster
+                deleteButton.setOnAction(event -> getTableView().getItems().remove(getIndex()));
             }
 
             @Override
@@ -222,10 +232,18 @@ public class BookingView {
         servicesTable.setPlaceholder(noServicesLabel);
 
         // Kolumnbredder - flytta till UIComponents??
-        serviceColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.47));
-        timeColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.23));
-        priceColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.23));
-        deleteColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.07));
+        //Alexander
+        //bredderna summerar till under 100 % så att soptunnan inte hamnar bakom en rullningslist
+        serviceColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.44));
+        timeColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.22));
+        priceColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.22));
+        deleteColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.08));
+        deleteColumn.setMinWidth(56);
+        deleteColumn.setSortable(false);
+
+        //Alexander
+        //tabellen får alltid plats med minst tre valda tjänster
+        servicesTable.setMinHeight(165);
 
         servicesTable.getColumns().addAll(serviceColumn, timeColumn, priceColumn, deleteColumn);
 
@@ -241,17 +259,8 @@ public class BookingView {
                 servicesTable);
 
 
-        // Lägg till vald tjänst i tabellen - kommer från backenden??
-//        addServiceButton.setOnAction(event -> {
-//            ServiceItem selectedService = serviceComboBox.getValue();
-//
-//            if (selectedService != null &&
-//                    !servicesTable.getItems().contains(selectedService)) {
-//
-//                servicesTable.getItems().add(selectedService);
-//                serviceComboBox.setValue(null);
-//            }
-//        });
+        //Alexander
+        //knappen "Lägg till tjänst" kopplas i BookingController (wireEvents)
 
 
         //sektion 3 -> summering
@@ -262,55 +271,14 @@ public class BookingView {
         totalTimeTitle = new Label(languageManager.getString("estimatedTotalTime"));
         totalPriceTitle = new Label(languageManager.getString("estimatedTotalPrice"));
 
-        // Ikoner
-        FontIcon timeIcon = new FontIcon("fa-clock-o");
-        timeIcon.setIconSize(30);
-        timeIcon.getStyleClass().add("summary-icon");
-
-        FontIcon priceIcon = new FontIcon("fa-money");
-        priceIcon.setIconSize(30);
-        priceIcon.getStyleClass().add("summary-icon");
-
-        // Ikon + rubrik
-        HBox timeTitleBox = UIComponents.createIconLabel(timeIcon, totalTimeTitle);
-        HBox priceTitleBox = UIComponents.createIconLabel(priceIcon, totalPriceTitle);
-
         // Värden
         totalTimeLabel = new Label("--");
         totalPriceLabel = new Label("--");
 
-        // Styling
-        totalTimeTitle.getStyleClass().add("summary-label");
-        totalPriceTitle.getStyleClass().add("summary-label");
-
-        totalTimeLabel.getStyleClass().add("summary-value");
-        totalPriceLabel.getStyleClass().add("summary-value");
-
-        // Kort för tid
-        VBox timeCard = new VBox(6);
-        timeCard.getStyleClass().add("summary-card");
-        timeCard.getChildren().addAll(
-                timeTitleBox,
-                totalTimeLabel
-        );
-
-        // Kort för pris
-        VBox priceCard = new VBox(6);
-        priceCard.getStyleClass().add("summary-card");
-        priceCard.getChildren().addAll(priceTitleBox, totalPriceLabel);
-
-        // Lägg korten bredvid varandra
-        HBox summaryCards = new HBox(15);
-        summaryCards.getStyleClass().add("summary-cards");
-
-        summaryCards.getChildren().addAll(timeCard, priceCard);
-
-        // Gör korten lika breda
-        HBox.setHgrow(timeCard, Priority.ALWAYS);
-        HBox.setHgrow(priceCard, Priority.ALWAYS);
-
-        timeCard.setMaxWidth(Double.MAX_VALUE);
-        priceCard.setMaxWidth(Double.MAX_VALUE);
+        //korten byggs av UIComponents
+        VBox timeCard = UIComponents.createSummaryCard("fa-clock-o", totalTimeTitle, totalTimeLabel);
+        VBox priceCard = UIComponents.createSummaryCard("fa-money", totalPriceTitle, totalPriceLabel);
+        HBox summaryCards = UIComponents.createSummaryCards(timeCard, priceCard);
 
         VBox summarySection = UIComponents.createSectionBox();
         summarySection.setSpacing(10);
@@ -328,12 +296,19 @@ public class BookingView {
         //listview
         bookingListView = new ListView<>();
 
-        // Listan används fortfarande av controllern, men ska inte visas på "Create Booking"-sidan.
+        // Listan används av controllern, men ska inte visas på "Create Booking"-sidan.
         bookingListView.setVisible(false);
         bookingListView.setManaged(false);
 
         box.getChildren().addAll(titleBox, bookingSubtitle, bookingInformation, servicesSection, summarySection, buttonBox, bookingListView);
-        this.root = box;
+
+        //sidan kan rullas när fönstret är för litet, så att summeringen och knapparna alltid går att nå
+        ScrollPane scrollPane = new ScrollPane(box);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.getStyleClass().add("edge-to-edge");
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+        this.root = scrollPane;
 
         //ändra språk
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
@@ -356,6 +331,19 @@ public class BookingView {
     public Button getCreateBookingButton() {return createBookingButton;}
     public Button getBackButton() {return backButton;}
 
+    //Alexander
+    //används av BookingController för att koppla tjänsterna till GarageSystem
+    public ComboBox<ServiceItem> getServiceComboBox() {return serviceComboBox;}
+    public Button getAddServiceButton() {return addServiceButton;}
+    public TableView<ServiceItem> getServicesTable() {return servicesTable;}
+
+    //Alexander
+    //visar summering, värdena räknas ut i GarageSystem, vyn visar dem bara.
+    public void showSummary(String totalTime, String totalPrice) {
+        totalTimeLabel.setText(totalTime);
+        totalPriceLabel.setText(totalPrice);
+    }
+
     public void changeTextAllComponents() {
         title.setText(languageManager.getString("bookingTitle"));
         bookingSubtitle.setText(languageManager.getString("bookingSubtitle"));
@@ -375,9 +363,6 @@ public class BookingView {
         summaryTitle.setText("3. " + languageManager.getString("summaryTitle"));
         totalTimeTitle.setText(languageManager.getString("estimatedTotalTime"));
         totalPriceTitle.setText(languageManager.getString("estimatedTotalPrice"));
-
-        totalTimeLabel.setText("--");
-        totalPriceLabel.setText("--");
 
         descriptionField.setPromptText(languageManager.getString("descriptionField"));
         createBookingButton.setText(languageManager.getString("createBookingButton"));
