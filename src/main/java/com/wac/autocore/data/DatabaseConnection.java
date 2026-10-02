@@ -13,6 +13,7 @@ public class DatabaseConnection {
     public static Connection getConnection() throws SQLException{
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
+    /*Lagt till pris i tabellen work_order_service_item för att kunna spara priset i workorder*/
     public static void initializeDatabase(){
         String sql =  "CREATE TABLE IF NOT EXISTS customer (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -61,6 +62,15 @@ public class DatabaseConnection {
                 "paid BOOLEAN NOT NULL DEFAULT FALSE" +
                 ")";
 
+        String invoiceLineSql = "CREATE TABLE IF NOT EXISTS invoice_line (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "invoice_id INT NOT NULL, " +
+                "service_item_description VARCHAR(255) NOT NULL, " +
+                "service_item_price DOUBLE NOT NULL, " +
+                "discount DOUBLE NOT NULL DEFAULT 0, " +
+                "final_price_after_discount DOUBLE NOT NULL" +
+                ")";
+
         String paymentSql = "CREATE TABLE IF NOT EXISTS payment (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "invoice_id INT NOT NULL, " +
@@ -77,9 +87,11 @@ public class DatabaseConnection {
                 "mechanic_id INT NOT NULL, " +
                 "status VARCHAR(50) NOT NULL" +
                 ")";
+
         String workOrderServiceItemSql = "CREATE TABLE IF NOT EXISTS work_order_service_item (" +
                 "work_order_id INT NOT NULL, " +
                 "service_item_id INT NOT NULL, " +
+                "price DOUBLE NOT NULL," +
                 "PRIMARY KEY (work_order_id, service_item_id)" +
                 ")";
         String bookingServiceItemSql = "CREATE TABLE IF NOT EXISTS booking_service_item (" +
@@ -95,10 +107,21 @@ public class DatabaseConnection {
             statement.execute(serviceItemSql);
             statement.execute(mechanicSql);
             statement.execute(invoiceSql);
+            statement.execute(invoiceLineSql);
             statement.execute(paymentSql);
             statement.execute(workOrderSql);
             statement.execute(workOrderServiceItemSql);
             statement.execute(bookingServiceItemSql);
+
+            //För att kunna lägga till pris i nya kolumnen
+            try {
+                statement.execute("ALTER TABLE work_order_service_item " +
+                        "ADD COLUMN price DOUBLE NOT NULL DEFAULT 0");
+
+            } catch (SQLException e) {
+
+            }
+
         }catch(SQLException e){
             throw new RuntimeException("Could not initialize database.", e);
         }

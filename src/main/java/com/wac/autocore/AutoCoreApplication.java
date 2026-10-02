@@ -19,7 +19,6 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-
 //JavaFX startpunkt, bygger upp scenen/fönstret, skapar vyer och kontroller, och styr växling mellan de olika vyerna
 public class AutoCoreApplication extends Application {
 
@@ -29,7 +28,7 @@ public class AutoCoreApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        //FREDRIK - lagt till
+
         DatabaseConnection.initializeDatabase();
 
         this.stage = primaryStage;
@@ -81,11 +80,10 @@ public class AutoCoreApplication extends Application {
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
-
     }
 
     public void showMainMenu() {
-        borderPane.setCenter(null);
+        borderPane.setCenter(new StartView().getView());
     }
 
     public void showCustomerView() {
@@ -127,6 +125,18 @@ public class AutoCoreApplication extends Application {
 
     public void showPaymentView() {
         borderPane.setCenter(new PaymentController(garageSystem, this, new PaymentView()).getView());
+    }
+
+    public void showInvoiceListView() {
+        InvoiceController invoiceController = new InvoiceController(garageSystem,
+                this, new InvoiceListView(), new InvoiceView());
+        borderPane.setCenter(invoiceController.getInvoiceListView());
+    }
+
+    public void showInvoiceView() {
+        InvoiceController invoiceController = new InvoiceController(garageSystem,
+                this, new InvoiceListView(), new InvoiceView());
+        borderPane.setCenter(invoiceController.getInvoiceView());
     }
 
     public void exitApplication() {

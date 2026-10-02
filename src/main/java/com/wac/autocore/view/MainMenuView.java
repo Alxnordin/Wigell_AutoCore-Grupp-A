@@ -21,7 +21,9 @@ public class MainMenuView {
     private Button showBookingsButton, addBookingButton;
     private Button showServicesButton, showMechanicsButton;
     private Button showOrdersButton, addOrderButton, startCompleteOrderButton;
+
     private Button showInvoicesButton, addInvoiceButton, showPaymentsButton, addPaymentButton;
+
     private Button exitButton;
 
     private Button customersButton;
@@ -32,7 +34,6 @@ public class MainMenuView {
     private Button paymentsButton;
 
     LanguageManager languageManager = LanguageManager.getInstance();
-
 
     public MainMenuView() {
 
