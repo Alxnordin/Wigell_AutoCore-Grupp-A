@@ -46,10 +46,17 @@ public class UIComponents {
 
     //sektionsboxarna
     public static VBox createSectionBox() {
-        VBox box = new VBox();
+        VBox box = new VBox(8);
         box.getStyleClass().add("section-box");
 
         return box;
+    }
+
+    //rubriken inne i sektionsboxarna
+    public static Label createSectionTitle(String text) {
+        Label title = new Label(text);
+        title.getStyleClass().add("section-title");
+        return title;
     }
 
     //Rubrik + ikon överst på sidan

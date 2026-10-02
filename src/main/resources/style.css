@@ -364,3 +364,41 @@ ListView .list-cell:filled:selected {
     -fx-background-color: #C4772D;
 }
 
+/*styling infolabel i workingorder*/
+.info-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #555555;
+}
+
+.info-value {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #222222;
+}
+
+/*design statusruta*/
+.status-value {
+    -fx-background-color: white;
+    -fx-border-color: #DCE7E1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 10 12;
+    -fx-pref-width: 250px;
+    -fx-text-fill: #333333;
+}
+
+.status-created {
+    -fx-background-color: #F6D98B;
+    -fx-text-fill: #D86F2D;
+}
+
+.status-in-progress {
+    -fx-background-color: #C9DDE8;
+    -fx-text-fill: #356B8A;
+}
+
+.status-completed {
+    -fx-background-color: #CDE3D1;
+    -fx-text-fill: #397A47;
+}
+
