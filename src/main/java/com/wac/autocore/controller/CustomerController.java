@@ -48,6 +48,8 @@ public class CustomerController {
         customerView.getBackButton().setOnAction(actionEvent ->
                 app.showMainMenu());
     }
+
+
     private void refreshCustomerList() {
     customerView.getCustomerListView().getItems().clear();
 
