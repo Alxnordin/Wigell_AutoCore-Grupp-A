@@ -313,6 +313,38 @@ public class GarageSystem {
         }
         return result;
     }
+    //Alexander
+    //total beräknad arbetstid i minuter för en lista av tjänster
+    public int calculateTotalMinutes(List<ServiceItem> serviceItems) {
+        int totalMinutes = 0;
+
+        for (ServiceItem serviceItem : serviceItems) {
+            totalMinutes += serviceItem.getEstimatedMinutes();
+        }
+        return totalMinutes;
+    }
+
+    //Alexander
+    //totalt pris för en lista av tjänster
+    public double calculateTotalPrice(List<ServiceItem> serviceItems) {
+        double totalPrice = 0;
+
+        for (ServiceItem serviceItem : serviceItems) {
+            totalPrice += serviceItem.getPrice();
+        }
+        return totalPrice;
+    }
+
+    //Alexander
+    //true om bokningen redan har en arbetsorder (en bokning kan bara ha en)
+    public boolean hasWorkOrder(int bookingId) {
+        for (WorkOrder workOrder : workOrderDAO.findAll()) {
+            if (workOrder.getBookingId() == bookingId) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
     public WorkOrder createWorkOrder(int bookingId,
@@ -798,4 +830,5 @@ public class GarageSystem {
         serviceItemDAO.updatePrice(serviceItemId,newPrice);
         serviceItem.setPrice(newPrice);
     }
+
 }
