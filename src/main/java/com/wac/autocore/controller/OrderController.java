@@ -211,6 +211,11 @@ public class OrderController {
                     orderServices
             );
 
+            detailsView.showSummary(
+                    formatTotalTime(orderServices),
+                    formatTotalPrice(orderServices)
+            );
+
             detailsView.setOnStatusChange(newStatus -> {
                 workOrder.setStatus(newStatus);
                 workOrderDAO.updateStatus(workOrder);
@@ -355,5 +360,24 @@ public class OrderController {
             }
         }
         return null;
+    }
+
+    private String formatTotalTime(List<ServiceItem> services) {
+        if (services.isEmpty()) {
+            return "--";
+        }
+
+        return garageSystem.calculateTotalMinutes(services) + " min";
+    }
+
+    private String formatTotalPrice(List<ServiceItem> services) {
+        if (services.isEmpty()) {
+            return "--";
+        }
+
+        return String.format(
+                "%,.0f kr",
+                garageSystem.calculateTotalPrice(services)
+        );
     }
 }

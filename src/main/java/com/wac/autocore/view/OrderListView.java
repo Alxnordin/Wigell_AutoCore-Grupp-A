@@ -43,7 +43,7 @@ public class OrderListView {
         HBox titleBox = UIComponents.createPageTitle(title, "fa-list-ul");
 
         //Underrubrik
-        subtitle = new Label(languageManager.getString("ordersSubtitle"));
+        subtitle = UIComponents.createSubtitle(languageManager.getString("ordersSubtitle"));
 
         //Tabell
         orderTable = UIComponents.createTable();
