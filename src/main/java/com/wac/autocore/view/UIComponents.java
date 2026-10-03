@@ -114,5 +114,11 @@ public class UIComponents {
         return subtitle;
     }
 
+    public static Label createInfoLabel(String text) {
+        Label infoLabel = new Label(text);
+        infoLabel.getStyleClass().add("info-label");
+        return infoLabel;
+    }
+
 
 }
