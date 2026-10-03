@@ -1,12 +1,12 @@
 .root {
     -fx-background-color: #F5F7F4;
-    -fx-font-family: "Segoe UI", sans-serif;
+    /*-fx-font-family: "Segoe UI", sans-serif;*/
+    -fx-font-family: Arial;
 }
 
 Label {
     -fx-text-fill:#10182b;
 }
-
 
 Button {
     -fx-text-fill: #F5F7F4;
@@ -349,3 +349,56 @@ ListView .list-cell:filled:selected {
     -fx-text-fill: #6b756e;
     -fx-font-size: 18px;
 }
+
+/*styling för visa knapp i tabellerna*/
+.view-button {
+    -fx-background-color: #D8893A;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-padding: 5 14;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.view-button:hover {
+    -fx-background-color: #C4772D;
+}
+
+/*styling infolabel i workingorder*/
+.info-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #555555;
+}
+
+.info-value {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #222222;
+}
+
+/*design statusruta*/
+.status-value {
+    -fx-background-color: white;
+    -fx-border-color: #DCE7E1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 10 12;
+    -fx-pref-width: 250px;
+    -fx-text-fill: #333333;
+}
+
+.status-created {
+    -fx-background-color: #F6D98B;
+    -fx-text-fill: #D86F2D;
+}
+
+.status-in-progress {
+    -fx-background-color: #C9DDE8;
+    -fx-text-fill: #356B8A;
+}
+
+.status-completed {
+    -fx-background-color: #CDE3D1;
+    -fx-text-fill: #397A47;
+}
+

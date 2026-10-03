@@ -1,5 +1,6 @@
 package com.wac.autocore.view;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -45,10 +46,17 @@ public class UIComponents {
 
     //sektionsboxarna
     public static VBox createSectionBox() {
-        VBox box = new VBox();
+        VBox box = new VBox(8);
         box.getStyleClass().add("section-box");
 
         return box;
+    }
+
+    //rubriken inne i sektionsboxarna
+    public static Label createSectionTitle(String text) {
+        Label title = new Label(text);
+        title.getStyleClass().add("section-title");
+        return title;
     }
 
     //Rubrik + ikon överst på sidan
@@ -89,6 +97,35 @@ public class UIComponents {
         button.getStyleClass().add("back-button");
 
         return button;
+    }
+
+    //Visa knapp i tabeller
+    public static Button createViewButton(String text) {
+
+            Button button = new Button(text);
+            button.getStyleClass().add("view-button");
+
+            return button;
+    }
+
+    //Skapa vBox som är grunden i alla viewklasser.
+    public static VBox createVBoxForViews() {
+        VBox vBox = new VBox(18);
+        vBox.setPadding(new Insets(25));
+        return vBox;
+    }
+
+    //Skapa underrubrik i viewklasserna
+    public static Label createSubtitle (String text)  {
+        Label subtitle = new Label(text);
+        subtitle.getStyleClass().add("page-subtitle");
+        return subtitle;
+    }
+
+    public static Label createInfoLabel(String text) {
+        Label infoLabel = new Label(text);
+        infoLabel.getStyleClass().add("info-label");
+        return infoLabel;
     }
 
     //Summeringskort: ikon + rubrik överst och värdet under, t.ex. "Estimated total time" / "165 min".

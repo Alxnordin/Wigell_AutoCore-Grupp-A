@@ -16,36 +16,20 @@ public class PaymentView {
 
     private final Parent root;
 
-    //Skapa faktura
-//    private Label invoiceLabel;
-//    private TextField workOrderIdField;
-//    private TextField discountCodeField;
-//    private Button createInvoiceButton;
-
     //Registrera betalning
     private Label paymentLabel;
     private TextField invoiceIdField;
     private ComboBox<String> paymentTypeComboBox;
     private Button processPaymentButton;
 
-//    private Label invoiceListLabel;
     private Label paymentListLabel;
-//    private ListView<String> invoiceListView;
     private ListView<String> paymentListView;
     private Button backButton;
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
     public PaymentView() {
-        VBox box = new VBox(12);
-        box.setPadding(new Insets(20));
-
-//        invoiceLabel = new Label(languageManager.getString("invoiceLabel"));
-//        workOrderIdField = new TextField();
-//        workOrderIdField.setPromptText(languageManager.getString("workOrderIdField"));
-//        discountCodeField = new TextField();
-//        discountCodeField.setPromptText(languageManager.getString("discountCodeField"));
-//        createInvoiceButton = new Button(languageManager.getString("createInvoiceButton"));
+      VBox box = UIComponents.createVBoxForViews();
 
         paymentLabel = new Label(languageManager.getString("paymentLabel"));
         invoiceIdField = new TextField();
@@ -60,22 +44,11 @@ public class PaymentView {
         paymentTypeComboBox.setPromptText(languageManager.getString("paymentTypeComboBox"));
         processPaymentButton = new Button(languageManager.getString("processPaymentButton"));
 
-//        invoiceListLabel = new Label(languageManager.getString("invoiceListLabel"));
-//        invoiceListView = new ListView<>();
-
         paymentListLabel = new Label(languageManager.getString("paymentListLabel"));
         paymentListView = new ListView<>();
 
-        backButton = new Button(languageManager.getString("backButton"));
+        backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
 
-//        box.getChildren().addAll(
-//                invoiceLabel, workOrderIdField, discountCodeField, createInvoiceButton,
-//                paymentLabel, invoiceIdField, paymentTypeComboBox, processPaymentButton,
-//                invoiceListLabel, invoiceListView,
-//                paymentListLabel, paymentListView,
-//                backButton
-//        );
-//
              box.getChildren().addAll(
                 paymentLabel, invoiceIdField, paymentTypeComboBox, processPaymentButton,
                 paymentListLabel, paymentListView,
@@ -90,24 +63,13 @@ public class PaymentView {
     }
 
     public Parent getView() { return root; }
-
-//    public TextField getWorkOrderIdField() { return workOrderIdField; }
-//    public TextField getDiscountCodeField() { return discountCodeField; }
-//    public Button getCreateInvoiceButton() { return createInvoiceButton; }
-
     public TextField getInvoiceIdField() { return invoiceIdField; }
     public ComboBox<String> getPaymentTypeComboBox() { return paymentTypeComboBox; }
     public Button getProcessPaymentButton() { return processPaymentButton; }
-
-//    public ListView<String> getInvoiceListView() { return invoiceListView; }
     public ListView<String> getPaymentListView() { return paymentListView; }
     public Button getBackButton() { return backButton; }
 
     public void changeTextAllComponents() {
-//        invoiceLabel.setText(languageManager.getString("invoiceLabel"));
-//        workOrderIdField.setText(languageManager.getString("workOrderIdField"));
-//        discountCodeField.setText(languageManager.getString("discountCodeField"));
-//        createInvoiceButton.setText(languageManager.getString("createInvoiceButton"));
         paymentLabel.setText(languageManager.getString("paymentLabel"));
 
         invoiceIdField.setText(languageManager.getString("invoiceIdField"));
@@ -120,8 +82,6 @@ public class PaymentView {
         paymentTypeComboBox.setPromptText(languageManager.getString("paymentTypeComboBox"));
 
         processPaymentButton.setText(languageManager.getString("processPaymentButton"));
-
-//        invoiceListLabel.setText(languageManager.getString("invoiceListLabel"));
         paymentListLabel.setText(languageManager.getString("paymentListLabel"));
         backButton.setText(languageManager.getString("backButton"));
     }

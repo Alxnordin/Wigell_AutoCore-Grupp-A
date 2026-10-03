@@ -462,6 +462,8 @@ public class GarageSystem {
 
         System.out.println("Work order " + workOrderId + " has been completed.");
     }
+
+
     //Ändrat så att det tidigare priset hämtas från workOrder istället för det aktuella
 //    public Invoice createInvoice(int workOrderId, String discountCode) {
 //        WorkOrder workOrder = findWorkOrder(workOrderId);

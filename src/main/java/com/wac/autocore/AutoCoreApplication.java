@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -76,6 +77,9 @@ public class AutoCoreApplication extends Application {
         borderPane.setBottom(footer);
 
         new MainMenuController(garageSystem, this, borderPane);
+        showMainMenu();
+
+        showMainMenu();
 
         Scene scene = new Scene(borderPane, 1000, 700);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
@@ -131,6 +135,10 @@ public class AutoCoreApplication extends Application {
     public void showOrderListView() {
         OrderController controller = new OrderController(garageSystem, this, new OrderFormView(), new OrderListView());
         borderPane.setCenter(controller.getOrderListPane());
+    }
+
+    public void showView(Parent view) {
+        borderPane.setCenter(view);
     }
 
     public void showPaymentView() {
