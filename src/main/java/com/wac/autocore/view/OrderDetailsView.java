@@ -33,6 +33,12 @@ public class OrderDetailsView {
     private final Label statusValue;
     private final Button statusActionButton;
 
+    private final Label summaryTitle;
+    private final Label totalTimeTitle;
+    private final Label totalPriceTitle;
+    private final Label totalTimeValue;
+    private final Label totalPriceValue;
+
     private final TableColumn<ServiceItem, String> serviceColumn;
     private final TableColumn<ServiceItem, Integer> timeColumn;
     private final TableColumn<ServiceItem, String> priceColumn;
@@ -58,14 +64,12 @@ public class OrderDetailsView {
         box.setPadding(new Insets(20));
 
         // Rubrik
-        title = new Label(
-                languageManager.getString("workOrderTitle")
+        title = new Label(languageManager.getString("workOrderTitle")
                         + " #" + workOrder.getId());
-
         HBox titleBox = UIComponents.createPageTitle(title, "fa-wrench");
 
         // Underrubrik
-        subtitle = new Label(languageManager.getString("workOrderSubtitle"));
+        subtitle = UIComponents.createSubtitle(languageManager.getString("workOrderSubtitle"));
 
         // Information
         VBox bookingInfoBox = UIComponents.createSectionBox();
@@ -288,15 +292,62 @@ public class OrderDetailsView {
             }
         });
 
+
+        // HÄR BÖRJAR SUMMARY-KORTEN
+        summaryTitle = UIComponents.createSectionTitle(
+                languageManager.getString("summaryTitle")
+        );
+
+        totalTimeTitle = new Label(
+                languageManager.getString("estimatedTotalTime")
+        );
+
+        totalPriceTitle = new Label(
+                languageManager.getString("estimatedTotalPrice")
+        );
+
+        totalTimeValue = new Label("--");
+        totalPriceValue = new Label("--");
+
+        VBox timeCard = UIComponents.createSummaryCard(
+                "fa-clock-o",
+                totalTimeTitle,
+                totalTimeValue
+        );
+
+        VBox priceCard = UIComponents.createSummaryCard(
+                "fa-money",
+                totalPriceTitle,
+                totalPriceValue
+        );
+
+        HBox summaryCards = UIComponents.createSummaryCards(
+                timeCard,
+                priceCard
+        );
+
+        // SKAPA BOXEN SOM HÅLLER SUMMARY-KORTEN
+        VBox summaryBox = UIComponents.createSectionBox();
+
+        summaryBox.getChildren().addAll(
+                summaryTitle,
+                summaryCards
+        );
+        // HÄR SLUTAR SUMMARY-KORTEN
+
+
         // Lägg allt på sidan
         box.getChildren().addAll(
                 titleBox,
                 subtitle,
                 bookingInfoBox,
                 servicesBox,
+                summaryBox,
                 backButton
         );
 
+
+        //ändra språk
         languageManager.localeProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     changeTextAllComponents();
@@ -325,8 +376,14 @@ public class OrderDetailsView {
         this.onStatusChange = onStatusChange;
     }
 
-    public void updateStatus() {
+    public void showSummary(String totalTime, String totalPrice) {
+        totalTimeValue.setText(totalTime);
+        totalPriceValue.setText(totalPrice);
+    }
 
+
+    //uppdatera status
+    public void updateStatus() {
         if ("CREATED".equals(workOrder.getStatus())) {
 
             statusValue.setText(
@@ -400,7 +457,12 @@ public class OrderDetailsView {
         serviceColumn.setText(languageManager.getString("serviceInTable"));
         timeColumn.setText(languageManager.getString("estimatedTimeInTable"));
         priceColumn.setText(languageManager.getString("priceInTable"));
+        summaryTitle.setText(languageManager.getString("summaryTitle"));
+        totalTimeTitle.setText(languageManager.getString("estimatedTotalTime"));
+        totalPriceTitle.setText(languageManager.getString("estimatedTotalPrice"));
 
         backButton.setText(languageManager.getString("backButton"));
+
+        updateStatus();
     }
 }
