@@ -1,6 +1,7 @@
-package com.wac.autocore.view;
+package com.wac.autocore.view.invoice;
 
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.view.UIComponents;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -68,5 +69,6 @@ public class InvoiceView {
         createInvoiceButton.setText(languageManager.getString("createInvoiceButton"));
         backButton.setText(languageManager.getString("backButton"));
     }
+
 
 }

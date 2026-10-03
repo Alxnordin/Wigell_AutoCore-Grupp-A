@@ -122,10 +122,25 @@ public class UIComponents {
         return subtitle;
     }
 
+    //Skapar labels som har stylingen "info-label"
     public static Label createInfoLabel(String text) {
         Label infoLabel = new Label(text);
         infoLabel.getStyleClass().add("info-label");
         return infoLabel;
+    }
+
+    //Skapar labels som har stylingen "info-value"
+    //Kan ta emot String, Localdate, int
+    public static Label createValueLabel(Object text) {
+        Label valueLabel = new Label(text.toString());
+        valueLabel.getStyleClass().add("info-value");
+        return valueLabel;
+    }
+
+    //Skapar VBoxar som har spacing 6
+    public static VBox createVBoxWithSpacing6() {
+        VBox vBox = new VBox(6);
+        return vBox;
     }
 
     //Summeringskort: ikon + rubrik överst och värdet under, t.ex. "Estimated total time" / "165 min".

@@ -11,6 +11,7 @@ import java.util.List;
 //Har lagt till price så att detta kan lagras i en workOrder. på sätt sparas
 //priset på en service ifall priset på en service skulle uppdateras
 public class WorkOrderDAO {
+
     public List<WorkOrder> findAll() {
         List<WorkOrder> workOrders = new ArrayList<WorkOrder>();
 

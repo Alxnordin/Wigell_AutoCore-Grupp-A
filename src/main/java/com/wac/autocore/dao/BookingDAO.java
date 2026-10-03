@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookingDAO {
+
     public List<Booking> findAll() {
         List<Booking> bookings = new ArrayList<>();
 

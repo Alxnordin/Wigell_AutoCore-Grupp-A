@@ -1,7 +1,8 @@
-package com.wac.autocore.view;
+package com.wac.autocore.view.invoice;
 
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.view.UIComponents;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -82,8 +83,7 @@ public class InvoiceListView {
         });
 
         invoiceTable.getColumns().addAll(invoiceIdColumn, workOrderIdColumn,
-                invoiceDateColumn, amountColumn,
-                discountColumn, totalColumn,
+                invoiceDateColumn, amountColumn, discountColumn, totalColumn,
                 paidColumn, actionColumn);
         invoiceTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 

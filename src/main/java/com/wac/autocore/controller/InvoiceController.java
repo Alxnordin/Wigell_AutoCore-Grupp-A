@@ -1,13 +1,17 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
-import com.wac.autocore.dao.InvoiceDAO;
-import com.wac.autocore.model.Invoice;
+import com.wac.autocore.dao.*;
+import com.wac.autocore.model.*;
 import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.util.LanguageManager;
-import com.wac.autocore.view.InvoiceListView;
-import com.wac.autocore.view.InvoiceView;
+import com.wac.autocore.view.invoice.InvoiceDetailsView;
+import com.wac.autocore.view.invoice.InvoiceListView;
+import com.wac.autocore.view.invoice.InvoiceView;
 import javafx.scene.Parent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class InvoiceController {
 
@@ -17,6 +21,12 @@ public class InvoiceController {
     private final InvoiceView invoiceView;
 
     private final InvoiceDAO invoiceDAO = new InvoiceDAO();
+    private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
+    private final BookingDAO bookingDAO = new BookingDAO();
+    private final VehicleDAO vehicleDAO = new VehicleDAO();
+    private final CustomerDAO customerDAO = new CustomerDAO();
+    private final MechanicDAO mechanicDAO = new MechanicDAO();
+    private final InvoiceLineDAO invoiceLineDAO = new InvoiceLineDAO();
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -52,32 +62,116 @@ public class InvoiceController {
             }
         });
 
+        invoiceView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+
         invoiceListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+
+        invoiceListView.setOnViewInvoice(invoice -> {
+
+            WorkOrder workOrder = findWorkOrderById(invoice.getWorkOrderId());
+            if (workOrder == null) {
+                return;
+            }
+
+            Booking booking = findBookingById(workOrder.getBookingId());
+            if (booking == null) {
+                return;
+            }
+
+            Vehicle vehicle = findVehicleById(booking.getVehicleId());
+            if (vehicle == null) {
+                return;
+            }
+
+            Customer customer = findCustomerById(vehicle.getCustomerId());
+            if (customer == null) {
+                return;
+            }
+
+            Mechanic mechanic = findMechanicById(workOrder.getMechanicId());
+            if (mechanic == null) {
+                return;
+            }
+
+            List<InvoiceLine> invoiceLines = findInvoiceLinesByInvoiceId(invoice.getId());
+
+            InvoiceDetailsView detailsView = new InvoiceDetailsView(invoice, booking,
+                    vehicle, customer, mechanic, invoiceLines);
+
+            detailsView.setOnBack(() -> {
+                app.showView(invoiceListView.getView());
+            });
+
+            app.showView(detailsView.getView());
+
+        });
     }
 
     private void refreshLists() {
-
         invoiceListView.getInvoiceTable().getItems().setAll(invoiceDAO.findAll());
+    }
 
-//        invoiceListView.getInvoiceTable().getItems().clear();
-//            String invoiceInfo = invoice.getId() + " | "
-//                    + languageManager.getString("workOrderIdInTable")
-//                    + ": " + invoice.getWorkOrderId() + " | "
-//                    + languageManager.getString("dateInTable")
-//                    + ": " + invoice.getInvoiceDate() + " | "
-//                    + languageManager.getString("amountInTable")
-//                    + ": " + invoice.getAmount() + " SEK | "
-//                    + languageManager.getString("discountInTable")
-//                    + ": " + invoice.getDiscount() + " SEK | "
-//                    + languageManager.getString("totalInTable")
-//                    + ": " + invoice.getTotalAmount() + " SEK | "
-//                    + languageManager.getString("paidInTable")
-//                    + ": " + (invoice.isPaid()
-//                    ? languageManager.getString("yes")
-//                    : languageManager.getString("no"));
-//
-//            invoiceListView.getInvoiceTable().getItems().add(invoiceInfo);
+    private WorkOrder findWorkOrderById(int workOrderId) {
 
+        for (WorkOrder workOrder : workOrderDAO.findAll()) {
+            if (workOrder.getId() == workOrderId) {
+                return workOrder;
+            }
+        }
+        return null;
+    }
+
+    private Booking findBookingById(int bookingId) {
+
+        for (Booking booking : bookingDAO.findAll()) {
+            if (booking.getId() == bookingId) {
+                return booking;
+            }
+        }
+        return null;
+    }
+
+    private Vehicle findVehicleById(int vehicleId) {
+
+        for (Vehicle vehicle : vehicleDAO.findAll()) {
+            if (vehicle.getId() == vehicleId) {
+                return vehicle;
+            }
+        }
+
+        return null;
+    }
+
+    private Customer findCustomerById(int customerId) {
+
+        for (Customer customer : customerDAO.findAll()) {
+            if (customer.getId() == customerId) {
+                return customer;
+            }
+        }
+        return null;
+    }
+
+    private Mechanic findMechanicById(int mechanicId) {
+        for (Mechanic mechanic : mechanicDAO.findAll()) {
+            if (mechanic.getId() == mechanicId) {
+                return mechanic;
+            }
+        }
+        return null;
+    }
+
+    private List<InvoiceLine> findInvoiceLinesByInvoiceId(int invoiceId) {
+
+        List<InvoiceLine> invoiceLines = new ArrayList<>();
+
+        for (InvoiceLine invoiceLine : invoiceLineDAO.findAll()) {
+            if (invoiceLine.getInvoiceId() == invoiceId) {
+                invoiceLines.add(invoiceLine);
+            }
+        }
+
+        return invoiceLines;
     }
 
     public Parent getInvoiceListView() {

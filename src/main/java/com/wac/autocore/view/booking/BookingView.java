@@ -1,4 +1,4 @@
-package com.wac.autocore.view;
+package com.wac.autocore.view.booking;
 
 import com.wac.autocore.dao.CustomerDAO;
 import com.wac.autocore.dao.VehicleDAO;
@@ -8,12 +8,12 @@ import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.dao.ServiceItemDAO;
 
+import com.wac.autocore.view.UIComponents;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
