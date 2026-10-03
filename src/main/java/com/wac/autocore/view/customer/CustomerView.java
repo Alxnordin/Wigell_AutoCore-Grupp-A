@@ -1,4 +1,4 @@
-package com.wac.autocore.view;
+package com.wac.autocore.view.customer;
 
 import com.wac.autocore.util.LanguageManager;
 import javafx.geometry.Insets;

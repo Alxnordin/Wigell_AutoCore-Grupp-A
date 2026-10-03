@@ -5,7 +5,7 @@ import com.wac.autocore.dao.VehicleDAO;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.service.GarageSystem;
-import com.wac.autocore.view.VehicleView;
+import com.wac.autocore.view.vehicle.VehicleView;
 import javafx.scene.Parent;
 
 

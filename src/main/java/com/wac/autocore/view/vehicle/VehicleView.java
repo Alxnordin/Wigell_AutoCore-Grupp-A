@@ -1,6 +1,7 @@
-package com.wac.autocore.view;
+package com.wac.autocore.view.vehicle;
 
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.view.UIComponents;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;

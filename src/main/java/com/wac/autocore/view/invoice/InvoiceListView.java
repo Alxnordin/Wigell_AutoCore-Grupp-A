@@ -3,6 +3,7 @@ package com.wac.autocore.view.invoice;
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -24,10 +25,11 @@ public class InvoiceListView {
     private final TableColumn<Invoice, Double> amountColumn;
     private final TableColumn<Invoice, Double> discountColumn;
     private final TableColumn<Invoice, Double> totalColumn;
-    private final TableColumn<Invoice, Boolean> paidColumn;
+    private final TableColumn<Invoice, String> paidColumn;
     private final TableColumn<Invoice, Void> actionColumn;
 
     private Consumer<Invoice> onViewInvoice;
+
     private Button backButton;
 
     LanguageManager languageManager = LanguageManager.getInstance();
@@ -46,18 +48,31 @@ public class InvoiceListView {
         amountColumn = new TableColumn<>(languageManager.getString("amountInTable"));
         discountColumn = new TableColumn<>(languageManager.getString("discountInTable"));
         totalColumn = new TableColumn<>(languageManager.getString("totalInTable"));
-        paidColumn = new TableColumn<>(languageManager.getString("paidInTable"));
+        paidColumn = new TableColumn<>(languageManager.getString("statusLabel"));
         actionColumn = new TableColumn<>(languageManager.getString("actionInTable"));
+
         invoiceIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         workOrderIdColumn.setCellValueFactory(new PropertyValueFactory<>("workOrderId"));
         invoiceDateColumn.setCellValueFactory(new PropertyValueFactory<>("invoiceDate"));
         amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
         discountColumn.setCellValueFactory(new PropertyValueFactory<>("discount"));
         totalColumn.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
-        paidColumn.setCellValueFactory(new PropertyValueFactory<>("paid"));
+        paidColumn.setCellValueFactory(cellData -> {
+            Invoice invoice = cellData.getValue();
+            String text;
+
+            if (invoice.isPaid()) {
+                text = languageManager.getString("paid");
+            } else {
+                text = languageManager.getString("unpaid");
+            }
+
+            return new SimpleStringProperty(text);
+        });
+
         actionColumn.setCellFactory(column -> new TableCell<Invoice, Void>() {
 
-            private final Button viewButton =
+            Button viewButton =
                     UIComponents.createViewButton(languageManager.getString("viewInvoice"));
 
             {
@@ -77,10 +92,12 @@ public class InvoiceListView {
                 if (empty) {
                     setGraphic(null);
                 } else {
+                    viewButton.setText(languageManager.getString("viewInvoice"));
                     setGraphic(viewButton);
                 }
             }
         });
+
 
         invoiceTable.getColumns().addAll(invoiceIdColumn, workOrderIdColumn,
                 invoiceDateColumn, amountColumn, discountColumn, totalColumn,
@@ -99,8 +116,11 @@ public class InvoiceListView {
     }
 
     public Parent getView() { return root; }
+
     public TableView<Invoice> getInvoiceTable() {return invoiceTable;}
+
     public Button getBackButton() { return backButton; }
+
     public void setOnViewInvoice(Consumer<Invoice> onViewInvoice) {
         this.onViewInvoice = onViewInvoice;
     }
@@ -115,9 +135,11 @@ public class InvoiceListView {
         amountColumn.setText(languageManager.getString("amountInTable"));
         discountColumn.setText(languageManager.getString("discountInTable"));
         totalColumn.setText(languageManager.getString("totalInTable"));
-        paidColumn.setText(languageManager.getString("paidInTable"));
+        paidColumn.setText(languageManager.getString("statusLabel"));
         actionColumn.setText(languageManager.getString("actionInTable"));
 
         backButton.setText(languageManager.getString("backButton"));
+
+        invoiceTable.refresh();
     }
 }

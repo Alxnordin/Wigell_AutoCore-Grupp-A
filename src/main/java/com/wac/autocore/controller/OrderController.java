@@ -5,9 +5,9 @@ import com.wac.autocore.dao.*;
 import com.wac.autocore.model.*;
 import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.util.LanguageManager;
-import com.wac.autocore.view.OrderDetailsView;
-import com.wac.autocore.view.OrderFormView;
-import com.wac.autocore.view.OrderListView;
+import com.wac.autocore.view.order.OrderDetailsView;
+import com.wac.autocore.view.order.OrderFormView;
+import com.wac.autocore.view.order.OrderListView;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 
@@ -197,10 +197,12 @@ public class OrderController {
             List<ServiceItem> orderServices = new ArrayList<>();
 
             for (ServiceItem serviceItem : allServices) {
+
                 if (workOrder.getServiceItemIds().contains(serviceItem.getId())) {
                     orderServices.add(serviceItem);
                 }
             }
+
 
             OrderDetailsView detailsView = new OrderDetailsView(
                     workOrder,

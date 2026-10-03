@@ -9,8 +9,8 @@ import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.WorkOrder;
 import com.wac.autocore.service.GarageSystem;
-import com.wac.autocore.view.MechanicView;
-import com.wac.autocore.view.ServiceItemView;
+import com.wac.autocore.view.mechanic.MechanicView;
+import com.wac.autocore.view.service.ServiceItemView;
 import javafx.scene.Parent;
 import javafx.scene.control.TextInputDialog;
 

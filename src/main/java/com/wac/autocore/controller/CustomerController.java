@@ -5,7 +5,7 @@ import com.wac.autocore.dao.CustomerDAO;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.service.GarageSystem;
-import com.wac.autocore.view.CustomerView;
+import com.wac.autocore.view.customer.CustomerView;
 import javafx.scene.Parent;
 
 //Kopplar CustomerView till GarageSystem — hanterar visning och skapande av kunder

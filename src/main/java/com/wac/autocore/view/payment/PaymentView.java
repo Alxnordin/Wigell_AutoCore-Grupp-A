@@ -1,7 +1,7 @@
-package com.wac.autocore.view;
+package com.wac.autocore.view.payment;
 
 import com.wac.autocore.util.LanguageManager;
-import javafx.geometry.Insets;
+import com.wac.autocore.view.UIComponents;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;

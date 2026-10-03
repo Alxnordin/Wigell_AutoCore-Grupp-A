@@ -1,4 +1,4 @@
-package com.wac.autocore.view;
+package com.wac.autocore.view.service;
 
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.util.LanguageManager;

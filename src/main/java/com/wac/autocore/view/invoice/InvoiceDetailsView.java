@@ -5,6 +5,7 @@ import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -19,26 +20,18 @@ public class InvoiceDetailsView {
 
     private final Parent root;
 
-    private Label title;
-    private Label subtitle;
+    private final Label title;
+    private final Label subtitle;
 
-    private Label invoiceDate;
-    private Label customerNameLabel;
-    private Label customerPhoneLabel;
-    private Label vehicleLabel;
-    private Label mechanicNameLabel;
+    private final Label invoiceDate;
+    private final Label customerNameLabel;
+    private final Label customerPhoneLabel;
+    private final Label vehicleLabel;
+    private final Label mechanicNameLabel;
 
-    private Label invoiceDateValue;
-    private Label customerNameValue;
-    private Label customerPhoneValue;
-    private Label vehicleValue;
-    private Label mechanicNameValue;
-
-    private VBox invoiceDateBox;
-    private VBox customerNameBox;
-    private VBox customerPhoneBox;
-    private VBox vehicleBox;
-    private VBox mechanicBox;
+    private final Label statusLabel;
+    private Label statusValue;
+    String statusText;
 
     private final Invoice invoice;
 
@@ -48,12 +41,9 @@ public class InvoiceDetailsView {
     private final TableColumn<InvoiceLine, String> discountColumn;
     private final TableColumn<InvoiceLine, String> totalAmount;
 
-    private Label companyNameLabel;
-    private Label companyAddressLabel1;
-    private Label companyAddressLabel2;
-    private Label organizationNumberLabel;
+    Label totalTitle;
 
-    private Button backButton;
+    private final Button backButton;
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -73,35 +63,49 @@ public class InvoiceDetailsView {
         VBox invoiceInfoBox = UIComponents.createSectionBox();
 
         invoiceDate = UIComponents.createInfoLabel(languageManager.getString("invoiceDate"));
-        invoiceDateValue = UIComponents.createValueLabel(invoice.getInvoiceDate());
-        invoiceDateBox = UIComponents.createVBoxWithSpacing6();
+        Label invoiceDateValue = UIComponents.createValueLabel(invoice.getInvoiceDate());
+        VBox invoiceDateBox = UIComponents.createVBoxWithSpacing6();
         invoiceDateBox.getChildren().addAll(invoiceDate, invoiceDateValue);
 
         customerNameLabel = UIComponents.createInfoLabel(languageManager.getString("customerNameLabel"));
-        customerNameValue = UIComponents.createValueLabel(customer.getName());
-        customerNameBox = UIComponents.createVBoxWithSpacing6();
+        Label customerNameValue = UIComponents.createValueLabel(customer.getName());
+        VBox customerNameBox = UIComponents.createVBoxWithSpacing6();
         customerNameBox.getChildren().addAll(customerNameLabel, customerNameValue);
 
         customerPhoneLabel = UIComponents.createInfoLabel(languageManager.getString("customerPhoneLabel"));
-        customerPhoneValue = UIComponents.createValueLabel(customer.getPhone());
-        customerPhoneBox = UIComponents.createVBoxWithSpacing6();
+        Label customerPhoneValue = UIComponents.createValueLabel(customer.getPhone());
+        VBox customerPhoneBox = UIComponents.createVBoxWithSpacing6();
         customerPhoneBox.getChildren().addAll(customerPhoneLabel, customerPhoneValue);
 
         vehicleLabel = UIComponents.createInfoLabel(languageManager.getString("vehicleLabelInvoice"));
-        vehicleValue = UIComponents.createValueLabel(vehicle.getRegistrationNumber());
-        vehicleBox = UIComponents.createVBoxWithSpacing6();
+        Label vehicleValue = UIComponents.createValueLabel(vehicle.getRegistrationNumber());
+        VBox vehicleBox = UIComponents.createVBoxWithSpacing6();
         vehicleBox.getChildren().addAll(vehicleLabel, vehicleValue);
 
         mechanicNameLabel = UIComponents.createInfoLabel(languageManager.getString("mechanicNameLabel"));
-        mechanicNameValue = UIComponents.createValueLabel(mechanic.getName());
-        mechanicBox = UIComponents.createVBoxWithSpacing6();
+        Label mechanicNameValue = UIComponents.createValueLabel(mechanic.getName());
+        VBox mechanicBox = UIComponents.createVBoxWithSpacing6();
         mechanicBox.getChildren().addAll(mechanicNameLabel, mechanicNameValue);
 
-        HBox informationRow = new HBox(45);
-        informationRow.getChildren().addAll( invoiceDateBox,
-                customerNameBox, customerPhoneBox, vehicleBox, mechanicBox);
+        statusLabel = UIComponents.createInfoLabel(languageManager.getString("statusLabel"));
 
-        invoiceInfoBox.getChildren().add(informationRow);
+        if (invoice.isPaid()) {
+            statusText = languageManager.getString("paid");
+        } else {
+            statusText = languageManager.getString("unpaid");
+        }
+
+        statusValue = UIComponents.createInvoiceStatusValueLabel(statusText, invoice.isPaid());
+
+        VBox statusBox = UIComponents.createVBoxWithSpacing6();
+        VBox.setMargin(statusBox, new Insets(15, 0, 0, 0));
+        statusBox.getChildren().addAll(statusLabel, statusValue);
+
+        HBox informationRow = new HBox(45);
+        informationRow.getChildren().addAll(invoiceDateBox, customerNameBox, customerPhoneBox,
+                vehicleBox, mechanicBox);
+
+        invoiceInfoBox.getChildren().addAll(informationRow, statusBox);
 
         VBox invoiceLinesBox = UIComponents.createSectionBox();
 
@@ -110,6 +114,15 @@ public class InvoiceDetailsView {
         priceColumn = new TableColumn<>(languageManager.getString("priceColumn"));
         discountColumn = new TableColumn<>(languageManager.getString("discountColumn"));
         totalAmount = new TableColumn<>(languageManager.getString("totalPriceColumn"));
+
+        totalTitle = new Label(languageManager.getString("totalPriceColumn"));
+        Label totalValue = new Label(String.format("%.2f kr", invoice.getTotalAmount()));
+
+        VBox totalCard = UIComponents.createSummaryCard("fa-money", totalTitle, totalValue);
+        HBox totalBox = new HBox();
+        totalBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        totalBox.getChildren().add(totalCard);
+        totalCard.setPrefWidth(330);
 
         serviceColumn.setCellValueFactory(
                 cellData -> new SimpleStringProperty(cellData.getValue()
@@ -132,15 +145,19 @@ public class InvoiceDetailsView {
 
         invoiceTableView.getItems().addAll(invoiceLines);
         invoiceTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        invoiceLinesBox.getChildren().add(invoiceTableView);
+        invoiceLinesBox.getChildren().addAll(invoiceTableView, totalBox);
 
-        companyNameLabel = new Label("Wigell AutoCore");
-        companyAddressLabel1 = new Label("Låtsasgatan 15");
-        companyAddressLabel2 = new Label("855 92 Ankeborg");
-        organizationNumberLabel = new Label("Org.nr. 12464-4544");
-        VBox companyBox = new VBox(4);companyBox.getChildren().
-                addAll(companyNameLabel, companyAddressLabel1,
+        Label companyNameLabel = UIComponents.createCompanyNameLabel("Wigell AutoCore");
+        Label companyAddressLabel1 = new Label("Låtsasgatan 15");
+        Label companyAddressLabel2 = new Label("855 92 Ankeborg");
+        Label organizationNumberLabel = new Label("Org.nr. 12464-4544");
+
+        VBox companyBox = UIComponents.createCompanyInfoBox();
+        companyBox.getChildren().addAll(companyNameLabel, companyAddressLabel1,
                 companyAddressLabel2, organizationNumberLabel);
+
+        HBox companyRow = new HBox(companyBox);
+        companyRow.setAlignment(Pos.TOP_RIGHT);
 
         backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
 
@@ -157,18 +174,26 @@ public class InvoiceDetailsView {
     public Parent getView() {return root;}
 
     public void changeTextAllComponents() {
-
         title.setText(languageManager.getString("invoiceTitle") + " #" + invoice.getId());
         subtitle.setText(languageManager.getString("invoiceSubtitle"));
+
         invoiceDate.setText(languageManager.getString("invoiceDate"));
         customerNameLabel.setText(languageManager.getString("customerNameLabel"));
         customerPhoneLabel.setText(languageManager.getString("customerPhoneLabel"));
         vehicleLabel.setText(languageManager.getString("vehicleLabelInvoice"));
         mechanicNameLabel.setText(languageManager.getString("mechanicNameLabel"));
+
+        if (invoice.isPaid()) {
+            statusValue.setText(languageManager.getString("paid"));
+        } else {
+            statusValue.setText(languageManager.getString("unpaid"));
+        }
+
         serviceColumn.setText(languageManager.getString("serviceColumn"));
         priceColumn.setText(languageManager.getString("priceColumn"));
         discountColumn.setText(languageManager.getString("discountColumn"));
         totalAmount.setText(languageManager.getString("totalPriceColumn"));
+        totalTitle.setText(languageManager.getString("totalPriceColumn"));
     }
 
     public void setOnBack(Runnable action) {

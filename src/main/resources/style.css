@@ -402,3 +402,28 @@ ListView .list-cell:filled:selected {
     -fx-text-fill: #397A47;
 }
 
+.company-info {
+    -fx-padding: 10 5 10 10;
+}
+
+.company-info .label {
+    -fx-text-fill: #59636b;
+    -fx-font-size: 12px;
+}
+
+.company-info .company-name {
+    -fx-text-fill: #202a38;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.status-paid {
+    -fx-background-color: #CDE3D1;
+    -fx-text-fill: #397A47;
+}
+
+.status-unpaid {
+    -fx-background-color: #F6D98B;
+    -fx-text-fill: #D86F2D;
+}
+

@@ -137,6 +137,13 @@ public class UIComponents {
         return valueLabel;
     }
 
+    //Skapar labels som har stylingen "status-value"
+    public static Label createStatusValueLabel(String text) {
+        Label label = new Label(text);
+        label.getStyleClass().add("status-value");
+        return label;
+    }
+
     //Skapar VBoxar som har spacing 6
     public static VBox createVBoxWithSpacing6() {
         VBox vBox = new VBox(6);
@@ -174,6 +181,32 @@ public class UIComponents {
         }
 
         return box;
+    }
+
+    //Företagsinfo på faktura
+    public static Label createCompanyNameLabel(String text) {
+        Label label = new Label(text);
+        label.getStyleClass().add("company-name");
+        return label;
+    }
+    //Företagsinfo på faktura VBox
+    public static VBox createCompanyInfoBox() {
+        VBox companyBox = new VBox(4);
+        companyBox.getStyleClass().add("company-info");
+        companyBox.setAlignment(Pos.TOP_RIGHT);
+        return companyBox;
+    }
+
+    public static Label createInvoiceStatusValueLabel(String text, boolean paid) {
+        Label label = createStatusValueLabel(text);
+
+        if (paid) {
+            label.getStyleClass().add("status-paid");
+        } else {
+            label.getStyleClass().add("status-unpaid");
+        }
+
+        return label;
     }
 
 }

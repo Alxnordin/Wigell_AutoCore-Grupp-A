@@ -1,7 +1,8 @@
-package com.wac.autocore.view;
+package com.wac.autocore.view.order;
 
 import com.wac.autocore.model.WorkOrder;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;

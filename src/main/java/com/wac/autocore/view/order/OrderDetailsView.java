@@ -1,7 +1,8 @@
-package com.wac.autocore.view;
+package com.wac.autocore.view.order;
 
 import com.wac.autocore.model.*;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.view.UIComponents;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -74,42 +75,31 @@ public class OrderDetailsView {
         // Information
         VBox bookingInfoBox = UIComponents.createSectionBox();
 
-        // Customer
-        customerLabel = new Label(languageManager.getString("customerLabel"));
-        customerLabel.getStyleClass().add("info-label");
+        // Customer;
+        customerLabel = UIComponents.createInfoLabel(languageManager.getString("customerLabel"));
+        Label customerValue = UIComponents.createValueLabel(customer.getName());
 
-        Label customerValue = new Label(customer.getName());
-        customerValue.getStyleClass().add("info-value");
-
-        VBox customerBox = new VBox(6);
+        VBox customerBox = UIComponents.createVBoxWithSpacing6();
         customerBox.getChildren().addAll(
                 customerLabel,
                 customerValue
         );
 
-
         // Vehicle
-        vehicleLabel = new Label(languageManager.getString("vehicleLabel"));
-        vehicleLabel.getStyleClass().add("info-label");
+        vehicleLabel = UIComponents.createInfoLabel(languageManager.getString("vehicleLabel"));
+        Label vehicleValue = UIComponents.createValueLabel(vehicle.getRegistrationNumber());
 
-        Label vehicleValue = new Label(vehicle.getRegistrationNumber());
-        vehicleValue.getStyleClass().add("info-value");
-
-
-        VBox vehicleBox = new VBox(6);
+        VBox vehicleBox = UIComponents.createVBoxWithSpacing6();
         vehicleBox.getChildren().addAll(
                 vehicleLabel,
                 vehicleValue
         );
 
         // Booking date
-        dateLabel = new Label(languageManager.getString("dateLabel"));
-        dateLabel.getStyleClass().add("info-label");
+        dateLabel = UIComponents.createInfoLabel(languageManager.getString("dateLabel"));
+        Label dateValue = UIComponents.createValueLabel(booking.getDate().toString());
 
-        Label dateValue = new Label(booking.getDate().toString());
-        dateValue.getStyleClass().add("info-value");
-
-        VBox dateBox = new VBox(6);
+        VBox dateBox = UIComponents.createVBoxWithSpacing6();
         dateBox.getChildren().addAll(
                 dateLabel,
                 dateValue
@@ -125,8 +115,7 @@ public class OrderDetailsView {
         );
 
         // Mechanic
-        mechanicLabel = new Label(languageManager.getString("mechanicLabel"));
-        mechanicLabel.getStyleClass().add("info-label");
+        mechanicLabel = UIComponents.createInfoLabel(languageManager.getString("mechanicLabel"));
 
         mechanicComboBox = UIComponents.createComboBox();
         mechanicComboBox.getItems().addAll(mechanics);
@@ -147,7 +136,7 @@ public class OrderDetailsView {
             }
         });
 
-        VBox mechanicBox = new VBox(6);
+        VBox mechanicBox = UIComponents.createVBoxWithSpacing6();
         mechanicBox.getChildren().addAll(
                 mechanicLabel,
                 mechanicComboBox
@@ -194,7 +183,7 @@ public class OrderDetailsView {
             }
         });
 
-        VBox statusBox = new VBox(6);
+        VBox statusBox = UIComponents.createVBoxWithSpacing6();
         statusBox.getChildren().addAll(
                 statusLabel,
                 statusValue,
@@ -282,6 +271,7 @@ public class OrderDetailsView {
         );
 
         servicesTable.getItems().addAll(orderServices);
+        System.out.println("Antal services i tabellen: " + servicesTable.getItems().size());
         servicesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         servicesBox.getChildren().addAll(servicesTitle, servicesTable);
 

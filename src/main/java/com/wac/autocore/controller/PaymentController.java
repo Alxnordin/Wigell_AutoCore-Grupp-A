@@ -5,7 +5,7 @@ import com.wac.autocore.dao.PaymentDAO;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Payment;
 import com.wac.autocore.service.GarageSystem;
-import com.wac.autocore.view.PaymentView;
+import com.wac.autocore.view.payment.PaymentView;
 import javafx.scene.Parent;
 
 
