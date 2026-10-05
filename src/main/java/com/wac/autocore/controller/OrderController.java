@@ -213,6 +213,16 @@ public class OrderController {
                     orderServices
             );
 
+            detailsView.setOnDeleteService(serviceItem -> {
+                System.out.println("Antal services före delete " + workOrder.getServiceItemIds().size());
+                if(workOrder.getServiceItemIds().size() <=1){
+                    showWarning(languageManager.getString("lastServiceWarning"));
+                    return;
+                }
+                garageSystem.removeServiceItemFromWorkOrder(workOrder,serviceItem.getId());
+                detailsView.removeServiceFromTable(serviceItem);
+            });
+
             detailsView.showSummary(
                     formatTotalTime(orderServices),
                     formatTotalPrice(orderServices)

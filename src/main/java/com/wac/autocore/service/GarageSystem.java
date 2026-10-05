@@ -399,6 +399,18 @@ public class GarageSystem {
         return workOrder;
     }
 
+    public void removeServiceItemFromWorkOrder(WorkOrder workOrder, int serviceItemId){
+
+
+        if (workOrder == null) {
+            return;
+        }
+        workOrder.removeServiceItem(serviceItemId);
+        workOrderDAO.removeServiceItem(workOrder.getId(), serviceItemId);
+
+        System.out.println("ServiceItem " + serviceItemId + " removed from workOrder " + workOrder.getId());
+    }
+
     public void startWorkOrder(int workOrderId) {
         WorkOrder workOrder = findWorkOrder(workOrderId);
 
