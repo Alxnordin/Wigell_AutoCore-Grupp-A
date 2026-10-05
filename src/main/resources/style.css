@@ -1,0 +1,429 @@
+.root {
+    -fx-background-color: #F5F7F4;
+    /*-fx-font-family: "Segoe UI", sans-serif;*/
+    -fx-font-family: Arial;
+}
+
+Label {
+    -fx-text-fill:#10182b;
+}
+
+Button {
+    -fx-text-fill: #F5F7F4;
+    -fx-background-color: #2E7D32;
+    -fx-background-radius: 8px;
+    -fx-border-color: #235e27;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 10px 18px;
+    -fx-cursor: hand;
+}
+
+Button:hover {
+    -fx-background-color: #37963d;
+    -fx-border-color: #2E7D32;
+}
+
+.category-button {
+    -fx-background-color: #2E7D32;
+    -fx-text-fill: #F5F7F4;
+    -fx-font-size: 15px;
+    -fx-font-weight: 500;
+    -fx-background-radius: 10px;
+    -fx-border-color: #235e27;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+    -fx-padding: 20px 16px;
+    -fx-cursor: hand;
+}
+
+.category-button:hover {
+    -fx-background-color: #37963d;
+    -fx-border-color: #E8F0EB;
+}
+
+.submenu Button {
+    -fx-background-color: #E8F0EB;
+    -fx-text-fill: #10182b;
+    -fx-border-color: #cfe0d6;
+    -fx-font-size: 13px;
+}
+
+.submenu Button:hover {
+    -fx-background-color: #2E7D32;
+    -fx-text-fill: #F5F7F4;
+    -fx-border-color: #235e27;
+}
+
+.exit-button {
+    -fx-background-color: #d47b3b;
+    -fx-text-fill: #111112;
+    -fx-font-size: 14px;
+    -fx-border-color: #d98f5f;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 24px;
+    -fx-cursor: hand;
+
+}
+
+.exit-button:hover {
+    -fx-background-color: #f5e2d8;
+}
+
+.menu-title {
+    -fx-text-fill: #10182b;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.submenu {
+    -fx-padding: 4px 0 8px 0;
+    -fx-spacing: 6px;
+}
+
+.header {
+    -fx-background-color: #E8F0EB;
+    -fx-padding: 16px;
+    -fx-border-color: transparent transparent  #cfe0d6 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.footer {
+    -fx-background-color: #E8F0EB;
+    -fx-padding: 12px;
+    -fx-border-color: #cfe0d6 transparent transparent transparent;
+    -fx-border-width: 1px 0 0 0;
+}
+
+.main-menu {
+    -fx-background-color: #E8F0EB;
+    -fx-padding: 16px 8px;
+    -fx-spacing: 6px;
+    -fx-pref-width: 240px;
+    -fx-border-color: transparent #cfe0d6 transparent transparent;
+    -fx-border-width: 0 1px 0 0;
+}
+
+ListView .list-cell {
+    -fx-background-color: #E8F0EB;
+    -fx-text-fill: #10182b;
+}
+
+ListView .list-cell:filled:selected {
+    -fx-background-color: #2E7D32;
+    -fx-text-fill: #F5F7F4;
+}
+
+/*BookingView*/
+.page-title {
+    -fx-text-fill: #10182b;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.page-subtitle {
+    -fx-text-fill: #6b756e;
+    -fx-font-size: 14px;
+}
+
+.section-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 18px;
+}
+
+.section-title {
+    -fx-text-fill: #10182b;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.placeholder-text {
+    -fx-text-fill: #6b756e;
+    -fx-font-size: 14px;
+}
+
+.summary-value {
+    -fx-text-fill: #10182b;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+/*bookingview -> section 2. service*/
+/* Services table */
+
+.services-table {
+    -fx-background-color: #F8FAF8;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 12px;
+}
+
+.table-header {
+    -fx-text-fill: #10182b;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.add-service-button {
+    -fx-background-color: #E8F0EB;
+    -fx-text-fill: #10182b;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.add-service-button:hover {
+    -fx-background-color: #2E7D32;
+    -fx-text-fill: #F5F7F4;
+}
+
+/*Styling combobox*/
+.standard-combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 6px;
+}
+
+/*styling textfält*/
+.standard-text-field {
+    -fx-background-color: white;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 10px;
+}
+
+/*styling välja-datumfältet*/
+.standard-date-picker {
+    -fx-background-color: white;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-pref-height: 43px;
+}
+
+/*styling tabeller*/
+.standard-table {
+    -fx-background-color: white;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-table-cell-border-color: #dce7df;
+}
+
+/* Tabellens header */
+.standard-table .column-header-background {
+    -fx-background-color: #E8F0EB;
+    -fx-background-radius: 7px 7px 0 0;
+}
+
+.standard-table .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent #d5e2d9 transparent transparent;
+    -fx-border-width: 0 1px 0 0;
+    -fx-size: 38px;
+}
+
+/* Texten i headern */
+.standard-table .column-header .label {
+    -fx-text-fill: #10182b;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+/* Vanliga tabellceller */
+.standard-table .table-cell {
+    -fx-text-fill: #10182b;
+    -fx-padding: 10px 12px;
+    -fx-font-size: 13px;
+}
+
+/* Rader */
+.standard-table .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #e1e9e3 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+/* Hover på rad */
+.standard-table .table-row-cell:hover {
+    -fx-background-color: #F3F7F4;
+}
+
+/* När en rad är markerad */
+.standard-table .table-row-cell:selected {
+    -fx-background-color: #E8F0EB;
+    -fx-text-fill: #10182b;
+}
+
+/*design för soptunnan i tabellen för servicar*/
+  .delete-button {
+      -fx-background-color: transparent;
+      -fx-border-color: transparent;
+      -fx-padding: 5px;
+  }
+
+.delete-button:hover {
+    -fx-background-color: #FBEAEA;
+    -fx-border-color: transparent;
+}
+
+.delete-icon {
+    -fx-icon-color: #984216;
+}
+
+
+/*styling sektion 3*/
+/*styling summakorten*/
+.summary-card {
+    -fx-background-color: #F8FAF8;
+    -fx-border-color: #dce7df;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 15px;
+}
+
+.summary-label {
+    -fx-text-fill: #6b756e;
+    -fx-font-size: 13px;
+    -fx-font-weight: normal;
+}
+
+.summary-value {
+    -fx-text-fill: #10182b;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/*design ikon summeringkort*/
+.summary-icon {
+    -fx-icon-color: #2E7D32;
+}
+
+/*Styling för <- tillbakaknappen*/
+.back-button {
+    -fx-background-color: #E8F0EB;
+    -fx-text-fill: #2E7D32;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 9px 16px;
+}
+
+.back-button:hover {
+    -fx-background-color: #dce9df;
+}
+
+
+/*Styling för startsidan*/
+.start-view {
+    -fx-background-color: #F5F7F4;
+}
+
+.start-icon {
+    -fx-icon-color: #2E7D32;
+}
+
+.start-title {
+    -fx-text-fill: #10182b;
+    -fx-font-size: 50px;
+    -fx-font-weight: bold;
+}
+
+.start-subtitle {
+    -fx-text-fill: #2E7D32;
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+}
+
+.start-instruction {
+    -fx-text-fill: #6b756e;
+    -fx-font-size: 18px;
+}
+
+/*styling för visa knapp i tabellerna*/
+.view-button {
+    -fx-background-color: #D8893A;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-padding: 5 14;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.view-button:hover {
+    -fx-background-color: #C4772D;
+}
+
+/*styling infolabel i workingorder*/
+.info-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #555555;
+}
+
+.info-value {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #222222;
+}
+
+/*design statusruta*/
+.status-value {
+    -fx-background-color: white;
+    -fx-border-color: #DCE7E1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 10 12;
+    -fx-pref-width: 250px;
+    -fx-text-fill: #333333;
+}
+
+.status-created {
+    -fx-background-color: #F6D98B;
+    -fx-text-fill: #D86F2D;
+}
+
+.status-in-progress {
+    -fx-background-color: #C9DDE8;
+    -fx-text-fill: #356B8A;
+}
+
+.status-completed {
+    -fx-background-color: #CDE3D1;
+    -fx-text-fill: #397A47;
+}
+
+.company-info {
+    -fx-padding: 10 5 10 10;
+}
+
+.company-info .label {
+    -fx-text-fill: #59636b;
+    -fx-font-size: 12px;
+}
+
+.company-info .company-name {
+    -fx-text-fill: #202a38;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.status-paid {
+    -fx-background-color: #CDE3D1;
+    -fx-text-fill: #397A47;
+}
+
+.status-unpaid {
+    -fx-background-color: #F6D98B;
+    -fx-text-fill: #D86F2D;
+}
+
