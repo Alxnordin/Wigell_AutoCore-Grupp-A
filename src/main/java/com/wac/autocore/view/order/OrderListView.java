@@ -5,10 +5,13 @@ import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import java.util.function.Consumer;
 
@@ -31,6 +34,8 @@ public class OrderListView {
     private final Label subtitle;
 
     private final Button backButton;
+    private final Button createOrderButton;
+    private Runnable onCreateOrder;
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -42,6 +47,30 @@ public class OrderListView {
         //title
         title = new Label(languageManager.getString("ordersTitle"));
         HBox titleBox = UIComponents.createPageTitle(title, "fa-list-ul");
+
+        //Knapp för att skapa ny arbetsorder
+        createOrderButton = new Button(
+                languageManager.getString("createOrderButton")
+        );
+        createOrderButton.getStyleClass().add("create-order-button");
+
+        createOrderButton.setOnAction(event -> {
+            if (onCreateOrder != null) {
+                onCreateOrder.run();
+            }
+        });
+
+        HBox orderHeader = new HBox();
+        orderHeader.setAlignment(Pos.CENTER_LEFT);
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        orderHeader.getChildren().addAll(
+                titleBox,
+                spacer,
+                createOrderButton
+        );
 
         //Underrubrik
         subtitle = UIComponents.createSubtitle(languageManager.getString("ordersSubtitle"));
@@ -108,9 +137,11 @@ public class OrderListView {
         //tillbakaknapp
         backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
 
+
+
         //lägg till allt i layouten
         box.getChildren().addAll(
-                titleBox,
+                orderHeader,
                 subtitle,
                 orderTable,
                 backButton
@@ -129,6 +160,10 @@ public class OrderListView {
     public void setOnViewOrder(Consumer<WorkOrder> onViewOrder) {
         this.onViewOrder = onViewOrder;}
 
+    public void setOnCreateOrder(Runnable onCreateOrder) {
+        this.onCreateOrder = onCreateOrder;
+    }
+
 
     public void changeTextAllComponents() {
         title.setText(languageManager.getString("ordersTitle"));
@@ -140,5 +175,6 @@ public class OrderListView {
         statusColumn.setText(languageManager.getString("statusInTable"));
         actionColumn.setText(languageManager.getString("actionInTable"));
         backButton.setText(languageManager.getString("backButton"));
+        createOrderButton.setText(languageManager.getString("createOrderButton"));
     }
 }
