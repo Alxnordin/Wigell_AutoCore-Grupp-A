@@ -67,7 +67,7 @@ public class GarageSystem {
     public void showServiceItems() {
         System.out.println();
         System.out.println("=== SERVICES ===");
-        //FREDRIK - ändrat
+
         if (serviceItemDAO.findAll().isEmpty()) {
             System.out.println("No services found.");
             return;
@@ -346,7 +346,7 @@ public class GarageSystem {
     //true om bokningen redan har en arbetsorder (en bokning kan bara ha en)
     public boolean hasWorkOrder(int bookingId) {
         for (WorkOrder workOrder : workOrderDAO.findAll()) {
-            if (workOrder.getBookingId() == bookingId) {
+            if (workOrder.getBookingId() == bookingId && !workOrder.isComplaint()) {
                 return true;
             }
         }
@@ -364,6 +364,13 @@ public class GarageSystem {
             System.out.println("Booking with ID " + bookingId + " does not exist.");
             return null;
         }
+
+        Vehicle vehicle = findVehicle(booking.getVehicleId());
+        if(vehicle == null) {
+            System.out.println("Vehicle with ID " + booking.getVehicleId() + " does not exist.");
+        }
+        int vehicleId = vehicle.getId();
+        int customerId = vehicle.getCustomerId();
 
         Mechanic mechanic = findMechanic(mechanicId);
 
@@ -391,6 +398,9 @@ public class GarageSystem {
                 mechanicId
         );
 
+        workOrder.setCustomerId(customerId);
+        workOrder.setVehicleId(vehicleId);
+
         for (int serviceItemId : serviceItemIds) {
             ServiceItem serviceItem = findServiceItem(serviceItemId);
             workOrder.addServiceItem(serviceItemId, serviceItem.getPrice());
@@ -405,6 +415,72 @@ public class GarageSystem {
 
         return workOrder;
     }
+    //DROP-IN workOrder
+    public WorkOrder createDropInWorkOrder(int customerId,
+                                           int vehicleId,
+                                            int mechanicId,
+                                             int... serviceItemIds) {
+
+        Customer customer = findCustomer(customerId);
+
+        if (customer == null) {
+            System.out.println("Customer with ID " + customerId + " does not exist.");
+            return null;
+        }
+
+        Vehicle vehicle = findVehicle(vehicleId);
+        if(vehicle == null) {
+            System.out.println("Vehicle with ID " + vehicleId + " does not exist.");
+            return null;
+        }
+        if (vehicle.getCustomerId() != customerId){
+            System.out.println("Vehicle does not belong to customer " + customerId + ".");
+            return null;
+        }
+
+        Mechanic mechanic = findMechanic(mechanicId);
+
+        if (mechanic == null) {
+            System.out.println("Mechanic with ID " + mechanicId + " does not exist.");
+            return null;
+        }
+
+        if (!mechanic.isAvailable()) {
+            System.out.println("Mechanic " + mechanic.getName() + " is not available.");
+            return null;
+        }
+
+        for (int serviceItemId : serviceItemIds) {
+            if (findServiceItem(serviceItemId) == null) {
+                System.out.println(
+                        "Service item with ID " + serviceItemId + " does not exist."
+                );
+                return null;
+            }
+        }
+
+        WorkOrder workOrder = new WorkOrder(
+                0,
+                null,
+                mechanicId
+        );
+
+        workOrder.setCustomerId(customerId);
+        workOrder.setVehicleId(vehicleId);
+
+        for (int serviceItemId : serviceItemIds) {
+            ServiceItem serviceItem = findServiceItem(serviceItemId);
+            workOrder.addServiceItem(serviceItemId, serviceItem.getPrice());
+        }
+
+        workOrderDAO.save(workOrder);
+
+        System.out.println("Drop-in work order created successfully.");
+        System.out.println(workOrder);
+
+        return workOrder;
+    }
+
 
     public void removeServiceItemFromWorkOrder(WorkOrder workOrder, int serviceItemId){
 
@@ -770,6 +846,33 @@ public class GarageSystem {
         }
         serviceItemDAO.updatePrice(serviceItemId,newPrice);
         serviceItem.setPrice(newPrice);
+    }
+    //skapa reklamation - prototype-mönster
+    public WorkOrder createComplaint(int originalWorkOrderId){
+        WorkOrder original = findWorkOrder(originalWorkOrderId);
+
+        if(original == null){
+            System.out.println("WorkOrder with ID " + originalWorkOrderId + " does not exist.");
+            return null;
+        }
+
+        if(!original.getStatus().equals("COMPLETED")){
+            System.out.println("A complaint can only be created for a completed work order");
+            return null;
+        }
+        WorkOrder complaint = original.clone();
+
+        complaint.setId(0);
+        complaint.setStatus("CREATED");
+        complaint.setComplaint(true);
+
+        complaint.setOriginalWorkOrderId(original.getId());
+
+        workOrderDAO.save(complaint);
+
+        System.out.println("Complaint created");
+        System.out.println(complaint);
+        return complaint;
     }
 
 }

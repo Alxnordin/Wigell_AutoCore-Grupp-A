@@ -6,22 +6,48 @@ import java.util.List;
 import java.util.Map;
 
 public class WorkOrder {
-    /*lagt till ny map för att kunna para ihop pris med tjänst
-* och spara priset så som det såg ut just när ordern skapades*/
+    //Ändrar bookingId från int till integer för att den behöver
+    //kunna vara null vid drop in.
     private int id;
-    private int bookingId;
+    private Integer bookingId;
+    private int customerId;
+    private int vehicleId;
     private int mechanicId;
     private List<Integer> serviceItemIds;
     private Map<Integer, Double> serviceItemPrices;
     private String status;
+    //reklamation
+    private boolean complaint;
+    private Integer originalWorkOrderId;
 
-    public WorkOrder(int id, int bookingId, int mechanicId) {
+    public WorkOrder(int id, Integer bookingId, int mechanicId) {
         this.id = id;
         this.bookingId = bookingId;
         this.mechanicId = mechanicId;
         this.serviceItemIds = new ArrayList<Integer>();
         this.serviceItemPrices = new HashMap<Integer, Double>();
         this.status = "CREATED";
+        //Reklamation
+        this.complaint = false;
+        this.originalWorkOrderId = null;
+    }
+
+    //Prototypemönster - för reklamation
+
+    public WorkOrder clone(){
+        WorkOrder copy = new WorkOrder(this.id,this.bookingId,this.mechanicId);
+
+        copy.customerId = this.customerId;
+        copy.vehicleId = this.vehicleId;
+
+        copy.serviceItemIds = new ArrayList<>(this.serviceItemIds);
+        copy.serviceItemPrices = new HashMap<>(this.serviceItemPrices);
+
+        copy.status = this.status;
+        copy.complaint = this.complaint;
+        copy.originalWorkOrderId = this.originalWorkOrderId;
+
+        return copy;
     }
 
     public int getId() {
@@ -32,11 +58,11 @@ public class WorkOrder {
         this.id = id;
     }
 
-    public int getBookingId() {
+    public Integer getBookingId() {
         return bookingId;
     }
 
-    public void setBookingId(int bookingId) {
+    public void setBookingId(Integer bookingId) {
         this.bookingId = bookingId;
     }
 
@@ -62,6 +88,33 @@ public class WorkOrder {
 
     public void setServiceItemPrices(Map<Integer, Double> serviceItemPrices) {
         this.serviceItemPrices = serviceItemPrices;
+    }
+    public boolean isComplaint() {
+        return complaint;
+    }
+    public void setComplaint(boolean complaint){
+        this.complaint = complaint;
+    }
+
+    public Integer getOriginalWorkOrderId(){
+        return originalWorkOrderId;
+    }
+
+    public void setOriginalWorkOrderId(Integer originalWorkOrderId){
+        this.originalWorkOrderId = originalWorkOrderId;
+    }
+
+    public int getCustomerId() {
+        return customerId;
+    }
+    public void setCustomerId(int customerId){
+        this.customerId = customerId;
+    }
+    public int getVehicleId() {
+        return vehicleId;
+    }
+    public void setVehicleId(int vehicleId){
+        this.vehicleId = vehicleId;
     }
 
     public String getStatus() {
