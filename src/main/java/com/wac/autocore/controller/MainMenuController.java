@@ -1,20 +1,17 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
-import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.MainMenuView;
 import javafx.scene.layout.BorderPane;
 
 
 //Bygger och visar huvudmenyn, kopplar menyknapparna till respektive vy via AutoCoreApplication.
 public class MainMenuController {
-    private final GarageSystem garageSystem;
     private final AutoCoreApplication app;
     private final BorderPane borderPane;
     private final MainMenuView view;
 
-    public MainMenuController (GarageSystem garageSystem,AutoCoreApplication app, BorderPane borderPane) {
-        this.garageSystem = garageSystem;
+    public MainMenuController (AutoCoreApplication app, BorderPane borderPane) {
         this.app = app;
         this.borderPane = borderPane;
         this.view = new MainMenuView();
@@ -37,9 +34,6 @@ public class MainMenuController {
 
         view.getShowOrdersButton().setOnAction(e -> app.showOrderListView());
         view.getAddOrderButton().setOnAction(e -> app.showOrderFormView());
-
-        //view.getStartCompleteOrderButton().setOnAction(e -> app.showOrderFormView());
-
 
         view.getShowInvoicesButton().setOnAction(e -> app.showInvoiceListView());
         view.getAddInvoiceButton().setOnAction(e -> app.showInvoiceView());

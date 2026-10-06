@@ -4,7 +4,6 @@ import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.service.CustomerService;
-import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.service.VehicleService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.vehicle.VehicleListView;
@@ -14,7 +13,7 @@ import javafx.scene.control.Alert;
 
 import java.text.MessageFormat;
 
-//Kopplar VehicleView/VehicleListView till GarageSystem — hanterar skapande och visning av fordon samt navigering.
+
 public class VehicleController {
 
     private final VehicleService vehicleService;
@@ -37,7 +36,6 @@ public class VehicleController {
         wireEvents();
         refreshVehicleList();
 
-        //kunderna som kan väljas i formuläret hämtas via customerService
         vehicleView.getCustomerComboBox().getItems().addAll(customerService.getAllCustomers());
     }
 
@@ -92,7 +90,6 @@ public class VehicleController {
         showInformation(MessageFormat.format(languageManager.getString("vehicleCreatedInfo"), registrationNumber));
     }
 
-    //fordonen hämtas via GarageSystem
     private void refreshVehicleList() {
         vehicleListView.getVehicleTable().getItems().setAll(vehicleService.getVehicles());
     }

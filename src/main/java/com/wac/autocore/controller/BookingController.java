@@ -8,7 +8,6 @@ import com.wac.autocore.service.ServiceItemService;
 import com.wac.autocore.service.WorkOrderService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Booking;
-import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.booking.BookingListView;
 import com.wac.autocore.view.booking.BookingView;
 import javafx.collections.ListChangeListener;
@@ -17,10 +16,8 @@ import javafx.scene.control.Alert;
 import java.time.LocalDate;
 import java.util.List;
 
-//Den klass som kopplar BookingView/BookingListView till GarageSystem samt hanterar skapande av bokningar och navigering.
 public class BookingController {
 
-    private final GarageSystem garageSystem;
     private final ServiceItemService serviceItemService;
     private final BookingService bookingService;
     private final WorkOrderService workOrderService;
@@ -31,10 +28,9 @@ public class BookingController {
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
-    public BookingController(GarageSystem garageSystem, ServiceItemService serviceItemService,
+    public BookingController(ServiceItemService serviceItemService,
                              BookingService bookingService, WorkOrderService workOrderService, AutoCoreApplication app,
                              BookingView bookingView, BookingListView bookingListView) {
-        this.garageSystem = garageSystem;
         this.serviceItemService = serviceItemService;
         this.bookingService = bookingService;
         this.workOrderService = workOrderService;
@@ -55,11 +51,9 @@ public class BookingController {
     private void wireEvents() {
         // ===== Skapa bokning (BookingView) =====
 
-        //Alexander
         // "Lägg till tjänst" lägger den valda tjänsten i tabellen med valda tjänster
         bookingView.getAddServiceButton().setOnAction(actionEvent -> addServiceToNewBooking());
 
-        //Alexander
         //summeringen räknas om varje gång listan med valda tjänster ändras
         //(tjänst läggs till, tas bort med soptunnan eller listan töms efter en bokning)
         bookingView.getServicesTable().getItems().addListener(
@@ -69,7 +63,6 @@ public class BookingController {
             Vehicle selectedVehicle = bookingView.getVehicleComboBox().getValue();
             LocalDate date = bookingView.getDate().getValue();
             String description = bookingView.getDescriptionField().getText();
-            //Alexander
             //tjänsterna som användaren har valt
             List<ServiceItem> selectedServices = bookingView.getServicesTable().getItems();
 
@@ -83,7 +76,6 @@ public class BookingController {
                 return;
             }
 
-            //Alexander
             //en bokning ska innehålla minst en tjänst
             if (selectedServices.isEmpty()) {
                 showWarning(languageManager.getString("noServiceSelectedWarning"));
@@ -93,7 +85,6 @@ public class BookingController {
             try {
                 int vehicleId = selectedVehicle.getId();
 
-                //Alexander
                 //gör om de valda tjänsterna till deras ID:n, det är dem GarageSystem tar emot
                 int[] serviceItemIds = new int[selectedServices.size()];
                 for (int i = 0; i < selectedServices.size(); i++) {
@@ -107,7 +98,6 @@ public class BookingController {
                     bookingView.getVehicleComboBox().setValue(null);
                     bookingView.getDate().setValue(null);
                     bookingView.getDescriptionField().clear();
-                    //Alexander
                     //töm de valda tjänsterna, summeringen nollställs då av lyssnaren ovan
                     bookingView.getServiceComboBox().setValue(null);
                     bookingView.getServicesTable().getItems().clear();

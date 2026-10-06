@@ -1,27 +1,24 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
-import com.wac.autocore.dao.PaymentDAO;
+import com.wac.autocore.service.PaymentService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Payment;
-import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.payment.PaymentView;
 import javafx.scene.Parent;
 
 
-//Kopplar PaymentView till GarageSystem — hanterar fakturor och betalningar.
 public class PaymentController {
 
-    private final GarageSystem garageSystem;
+    private final PaymentService paymentService;
+
     private final AutoCoreApplication app;
     private final PaymentView paymentView;
 
-    private final PaymentDAO paymentDAO = new PaymentDAO();
-
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
-    public PaymentController(GarageSystem garageSystem, AutoCoreApplication app, PaymentView paymentView) {
-        this.garageSystem = garageSystem;
+    public PaymentController(PaymentService paymentService, AutoCoreApplication app, PaymentView paymentView) {
+        this.paymentService = paymentService;
         this.app = app;
         this.paymentView = paymentView;
         wireEvents();
@@ -45,7 +42,7 @@ public class PaymentController {
             try {
                 int invoiceId = Integer.parseInt(paymentView.getInvoiceIdField().getText());
 
-                Payment payment = garageSystem.processPayment(invoiceId, paymentType);
+                Payment payment = paymentService.processPayment(invoiceId, paymentType);
 
                 if (payment != null) {
                     refreshLists();
@@ -63,7 +60,8 @@ public class PaymentController {
     private void refreshLists() {
 
         paymentView.getPaymentListView().getItems().clear();
-        for (Payment payment : paymentDAO.findAll()) {
+        for (Payment payment : paymentService.findAll()) {
+
             String paymentInfo = payment.getId() + " | "
                     + languageManager.getString("invoiceIdInTable")
                     + ": " + payment.getInvoiceId() + " | "

@@ -37,22 +37,23 @@ import javafx.scene.image.ImageView;
 //JavaFX startpunkt, bygger upp scenen/fönstret, skapar vyer och kontroller, och styr växling mellan de olika vyerna
 public class AutoCoreApplication extends Application {
 
-    private final MechanicService mechanicService =
-            new MechanicService();
-    private final CustomerService customerService =
-            new CustomerService();
-    private final VehicleService vehicleService =
-            new VehicleService(customerService);
-    private final ServiceItemService serviceItemService =
-            new ServiceItemService();
+    private final InvoiceLineService invoiceLineService = new InvoiceLineService();
+    private final MechanicService mechanicService = new MechanicService();
+    private final CustomerService customerService = new CustomerService();
+    private final VehicleService vehicleService = new VehicleService(customerService);
+    private final ServiceItemService serviceItemService = new ServiceItemService();
+
     private final BookingService bookingService =
             new BookingService(vehicleService, serviceItemService);
+
     private final WorkOrderService workOrderService = new WorkOrderService(
             bookingService, mechanicService, serviceItemService);
 
-    private final GarageSystem garageSystem = new GarageSystem(vehicleService,
-            customerService, serviceItemService, bookingService,
-            mechanicService, workOrderService);
+    private final InvoiceService invoiceService = new InvoiceService(
+            workOrderService, bookingService, vehicleService,
+            customerService, serviceItemService);
+
+    private final PaymentService paymentService = new PaymentService(invoiceService);
 
     private BorderPane borderPane;
     private Stage stage;
@@ -70,7 +71,6 @@ public class AutoCoreApplication extends Application {
         Label headerLabel = new Label("WAC AutoCore");
         Button languageButton = new Button(LanguageManager.getInstance().getString("language"));
 
-        // Logotyp
         Image logoImage = new Image(getClass().getResourceAsStream("/WAC_1.png"));
         ImageView logoView = new ImageView(logoImage);
         logoView.setFitHeight(40);
@@ -105,7 +105,7 @@ public class AutoCoreApplication extends Application {
         footer.getStyleClass().add("footer");
         borderPane.setBottom(footer);
 
-        new MainMenuController(garageSystem, this, borderPane);
+        new MainMenuController(this, borderPane);
         showMainMenu();
 
         showMainMenu();
@@ -132,8 +132,6 @@ public class AutoCoreApplication extends Application {
         borderPane.setCenter(customerController.getCustomerView());
     }
 
-    //Alexander
-    //fordon är uppdelat i två sidor på samma sätt som bokningar
     public void showVehicleView() {
         VehicleController controller = new VehicleController(vehicleService, customerService,
                 this, new VehicleView(), new VehicleListView());
@@ -158,14 +156,14 @@ public class AutoCoreApplication extends Application {
         borderPane.setCenter(controller.getMechanicView());
     }
     public void showBookingView() {
-        BookingController controller = new BookingController(garageSystem, serviceItemService,
+        BookingController controller = new BookingController(serviceItemService,
                 bookingService, workOrderService,
                 this, new BookingView(), new BookingListView());
         borderPane.setCenter(controller.getBookingFormView());
     }
 
     public void showBookingListView() {
-        BookingController controller = new BookingController(garageSystem, serviceItemService,
+        BookingController controller = new BookingController(serviceItemService,
                 bookingService, workOrderService,
                 this, new BookingView(), new BookingListView());
         borderPane.setCenter(controller.getBookingListPane());
@@ -179,7 +177,6 @@ public class AutoCoreApplication extends Application {
         borderPane.setCenter(controller.getOrderFormView());
     }
 
-    //Alexander
     //öppnar "Skapa order" med en bokning redan ifylld (från knappen i bokningslistan)
     public void showOrderFormView(Booking booking) {
         OrderController controller = new OrderController(bookingService,
@@ -203,17 +200,22 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showPaymentView() {
-        borderPane.setCenter(new PaymentController(garageSystem, this, new PaymentView()).getView());
+        borderPane.setCenter(new PaymentController(paymentService,
+                this, new PaymentView()).getView());
     }
 
     public void showInvoiceListView() {
-        InvoiceController invoiceController = new InvoiceController(garageSystem,
+        InvoiceController invoiceController = new InvoiceController(invoiceService,
+            workOrderService, bookingService, vehicleService, customerService,
+                mechanicService, invoiceLineService,
                 this, new InvoiceListView(), new InvoiceView());
         borderPane.setCenter(invoiceController.getInvoiceListView());
     }
 
     public void showInvoiceView() {
-        InvoiceController invoiceController = new InvoiceController(garageSystem,
+        InvoiceController invoiceController = new InvoiceController(invoiceService,
+                workOrderService, bookingService, vehicleService, customerService,
+                mechanicService, invoiceLineService,
                 this, new InvoiceListView(), new InvoiceView());
         borderPane.setCenter(invoiceController.getInvoiceView());
     }

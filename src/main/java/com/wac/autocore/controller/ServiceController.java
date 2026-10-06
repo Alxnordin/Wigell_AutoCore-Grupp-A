@@ -2,21 +2,17 @@ package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.dao.MechanicDAO;
-import com.wac.autocore.dao.ServiceItemDAO;
 import com.wac.autocore.dao.WorkOrderDAO;
 import com.wac.autocore.service.ServiceItemService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.WorkOrder;
-import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.mechanic.MechanicView;
 import com.wac.autocore.view.service.ServiceItemView;
 import javafx.scene.Parent;
 import javafx.scene.control.TextInputDialog;
 
-
-//Kopplar ServiceItemView/MechanicView till GarageSystem — visar tjänster, mekaniker och vald mekanikers tilldelade arbete
 public class ServiceController {
 
     private final ServiceItemService serviceItemService;
@@ -26,7 +22,6 @@ public class ServiceController {
     private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
     private final ServiceItemView serviceItemView;
     private final MechanicView mechanicView;
-
 
     LanguageManager languageManager = LanguageManager.getInstance();
 

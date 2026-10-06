@@ -2,7 +2,6 @@ package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.service.CustomerService;
-import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.view.customer.CustomerListView;
 import com.wac.autocore.view.customer.CustomerView;
@@ -15,8 +14,6 @@ public class CustomerController {
     private final CustomerView customerView;
     private final CustomerListView customerListView;
 
-    private final LanguageManager languageManager = LanguageManager.getInstance();
-
     public CustomerController(CustomerService customerService,
             AutoCoreApplication app, CustomerView customerView,
             CustomerListView customerListView) {
@@ -26,10 +23,6 @@ public class CustomerController {
         this.customerListView = customerListView;
         wireEvents();
         refreshCustomerList();
-
-        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
-            refreshCustomerList();
-        });
     }
 
     //Saknas översättning på felmeddelandena
