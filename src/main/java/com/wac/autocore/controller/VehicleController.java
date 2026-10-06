@@ -3,7 +3,8 @@ package com.wac.autocore.controller;
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.model.Vehicle;
-import com.wac.autocore.service.GarageSystem;
+import com.wac.autocore.service.CustomerService;
+import com.wac.autocore.service.VehicleService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.vehicle.VehicleListView;
 import com.wac.autocore.view.vehicle.VehicleView;
@@ -12,26 +13,30 @@ import javafx.scene.control.Alert;
 
 import java.text.MessageFormat;
 
-//Kopplar VehicleView/VehicleListView till GarageSystem — hanterar skapande och visning av fordon samt navigering.
+
 public class VehicleController {
-    private final GarageSystem garageSystem;
+
+    private final VehicleService vehicleService;
+    private final CustomerService customerService;
+
     private final AutoCoreApplication app;
     private final VehicleView vehicleView;
     private final VehicleListView vehicleListView;
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
-    public VehicleController(GarageSystem garageSystem, AutoCoreApplication app,
-                             VehicleView vehicleView, VehicleListView vehicleListView) {
-        this.garageSystem = garageSystem;
+    public VehicleController(VehicleService vehicleService, CustomerService customerService,
+                             AutoCoreApplication app, VehicleView vehicleView,
+                             VehicleListView vehicleListView) {
+        this.customerService = customerService;
+        this.vehicleService = vehicleService;
         this.app = app;
         this.vehicleView = vehicleView;
         this.vehicleListView = vehicleListView;
         wireEvents();
         refreshVehicleList();
 
-        //kunderna som kan väljas i formuläret hämtas via GarageSystem
-        vehicleView.getCustomerComboBox().getItems().addAll(garageSystem.getCustomers());
+        vehicleView.getCustomerComboBox().getItems().addAll(customerService.getAllCustomers());
     }
 
     private void wireEvents() {
@@ -67,7 +72,7 @@ public class VehicleController {
             return;
         }
 
-        Vehicle vehicle = garageSystem.createVehicle(registrationNumber, brand, model, year, selectedCustomer.getId());
+        Vehicle vehicle = vehicleService.createVehicle(registrationNumber, brand, model, year, selectedCustomer.getId());
 
         if (vehicle == null) {
             showWarning(languageManager.getString("vehicleNotCreatedWarning"));
@@ -85,9 +90,8 @@ public class VehicleController {
         showInformation(MessageFormat.format(languageManager.getString("vehicleCreatedInfo"), registrationNumber));
     }
 
-    //fordonen hämtas via GarageSystem
     private void refreshVehicleList() {
-        vehicleListView.getVehicleTable().getItems().setAll(garageSystem.getVehicles());
+        vehicleListView.getVehicleTable().getItems().setAll(vehicleService.getVehicles());
     }
 
     private void showWarning(String message) {

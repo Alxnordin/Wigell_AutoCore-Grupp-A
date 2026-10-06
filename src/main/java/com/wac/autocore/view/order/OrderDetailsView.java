@@ -65,7 +65,6 @@ public class OrderDetailsView {
 
         this.workOrder = workOrder;
 
-
         VBox box = new VBox(12);
         box.setPadding(new Insets(20));
 
