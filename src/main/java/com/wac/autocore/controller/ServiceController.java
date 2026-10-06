@@ -4,6 +4,7 @@ import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.dao.MechanicDAO;
 import com.wac.autocore.dao.ServiceItemDAO;
 import com.wac.autocore.dao.WorkOrderDAO;
+import com.wac.autocore.service.ServiceItemService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.model.ServiceItem;
@@ -17,9 +18,10 @@ import javafx.scene.control.TextInputDialog;
 
 //Kopplar ServiceItemView/MechanicView till GarageSystem — visar tjänster, mekaniker och vald mekanikers tilldelade arbete
 public class ServiceController {
-    private final GarageSystem garageSystem;
+
+    private final ServiceItemService serviceItemService;
+
     private final AutoCoreApplication app;
-    private final ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
     private final MechanicDAO mechanicDAO = new MechanicDAO();
     private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
     private final ServiceItemView serviceItemView;
@@ -28,9 +30,9 @@ public class ServiceController {
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
-    public ServiceController(GarageSystem garageSystem, AutoCoreApplication app,
+    public ServiceController(ServiceItemService serviceItemService, AutoCoreApplication app,
                              ServiceItemView serviceItemView, MechanicView mechanicView) {
-        this.garageSystem = garageSystem;
+        this.serviceItemService = serviceItemService;
         this.app = app;
         this.serviceItemView = serviceItemView;
         this.mechanicView = mechanicView;
@@ -46,12 +48,9 @@ public class ServiceController {
 
         serviceItemView.getServiceItemTableView().getItems().clear();
 
-        for (ServiceItem item : serviceItemDAO.findAll()) {
-
-            serviceItemView.getServiceItemTableView().getItems().add(item);
-
+        for (ServiceItem item : serviceItemService.getServiceItems())   {
+                serviceItemView.getServiceItemTableView().getItems().add(item);
         }
-
 
         mechanicView.getMechanicListView().getItems().clear();
 
@@ -80,9 +79,7 @@ public class ServiceController {
 
         }
 
-
         mechanicView.getMechanicWorkListView().getItems().clear();
-
     }
 
     private void wireEvents() {
@@ -102,7 +99,7 @@ public class ServiceController {
             dialog.showAndWait().ifPresent(input -> {
                         try {
                             double newPrice = Double.parseDouble(input);
-                            garageSystem.changeServicePrice(serviceItem.getId(), newPrice);
+                            serviceItemService.changeServicePrice(serviceItem.getId(), newPrice);
                             refreshLists();
                         }catch(NumberFormatException e) {
                             System.out.println("Invalid price: " + input);
