@@ -427,7 +427,21 @@ ListView .list-cell:filled:selected {
     -fx-text-fill: #D86F2D;
 }
 
-<<<<<<< HEAD
+
+/***** Styling för formulär *******/
+
+/*Label ovanför inputfälten*/
+.form-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/*Label för fel input i formulär*/
+.wrong-input-label {
+    -fx-text-fill: #c62828;
+    -fx-font-size: 12px;
+}
+
 /*styling för ikonerna på menyknapparna*/
 .category-button .ikonli-font-icon {
     -fx-icon-color: white;
@@ -448,18 +462,4 @@ ListView .list-cell:filled:selected {
     -fx-background-color: #C66C2B;
 }
 
-
-/***** Styling för formulär *******/
-
-/*Label ovanför inputfälten*/
-.form-label {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-}
-
-/*Label för fel input i formulär*/
-.wrong-input-label {
-    -fx-text-fill: #c62828;
-    -fx-font-size: 12px;
-}
 

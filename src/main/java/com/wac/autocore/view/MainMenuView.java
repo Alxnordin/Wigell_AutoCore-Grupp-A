@@ -63,10 +63,9 @@ public class MainMenuView {
         showOrdersButton = new Button(languageManager.getString("showOrders"));
         addOrderButton = new Button(languageManager.getString("addOrder"));
 
-        ordersButton = UIComponents.createMenuButton(languageManager.getString("ordersButton"), "fa-clipboard");
-
-      //startCompleteOrderButton = new Button(languageManager.getString("startCompleteOrder"));
+        //startCompleteOrderButton = new Button(languageManager.getString("startCompleteOrder"));
         ordersButton = new Button(languageManager.getString("ordersButton"));
+        ordersButton = UIComponents.createMenuButton(languageManager.getString("ordersButton"), "fa-clipboard");
 
         menu.getChildren().add(buildSection(ordersButton, showOrdersButton, addOrderButton));
 
