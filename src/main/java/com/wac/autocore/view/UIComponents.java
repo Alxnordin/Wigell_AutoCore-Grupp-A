@@ -235,6 +235,7 @@ public class UIComponents {
         return label;
     }
 
+
     //Label ovanför inputfälten i formulär, css-klass "form-label"
     public static Label createFormLabel(String formLabelText)   {
         Label formLabel = new Label(formLabelText);
@@ -247,6 +248,21 @@ public class UIComponents {
         Label wrongInputLabel = new Label(text);
         wrongInputLabel.getStyleClass().add("wrong-input-label");
         return wrongInputLabel;
+    }
+
+    // Huvudknappar i huvudmenyn med ikon
+    public static Button createMenuButton(String text, String icon) {
+        Button button = new Button(text);
+
+        FontIcon menuIcon = new FontIcon(icon);
+        menuIcon.setIconSize(18);
+
+        button.setGraphic(menuIcon);
+
+        button.setGraphicTextGap(10);
+
+        return button;
+
     }
 
 }

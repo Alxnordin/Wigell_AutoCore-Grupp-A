@@ -85,7 +85,7 @@ public class AutoCoreApplication extends Application {
         header.getStyleClass().add("header");
         borderPane.setTop(header);
 
-        Label footerLabel = new Label("Footer");
+        Label footerLabel = new Label("Wigell AutoCore  |  All rights reserved");
         HBox footer = new HBox(footerLabel);
         footer.setAlignment(Pos.CENTER);
         footer.getStyleClass().add("footer");

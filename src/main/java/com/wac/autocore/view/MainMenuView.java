@@ -42,35 +42,38 @@ public class MainMenuView {
 
         showCustomersButton = new Button(languageManager.getString("showCustomers"));
         addCustomerButton = new Button(languageManager.getString("addCustomer"));
-        customersButton = new Button(languageManager.getString("customersButton"));
+        customersButton = UIComponents.createMenuButton(languageManager.getString("customersButton"), "fa-user");
         menu.getChildren().add(buildSection(customersButton, showCustomersButton, addCustomerButton));
 
         showVehiclesButton = new Button(languageManager.getString("showVehicles"));
         addVehicleButton = new Button(languageManager.getString("addVehicle"));
-        vehiclesButton = new Button(languageManager.getString("vehiclesButton"));
+        vehiclesButton = UIComponents.createMenuButton(languageManager.getString("vehiclesButton"), "fa-car");
         menu.getChildren().add(buildSection(vehiclesButton, showVehiclesButton, addVehicleButton));
 
         showBookingsButton = new Button(languageManager.getString("showBookings"));
         addBookingButton = new Button(languageManager.getString("addBooking"));
-        bookingsButton = new Button(languageManager.getString("bookingsButton"));
+        bookingsButton = UIComponents.createMenuButton(languageManager.getString("bookingsButton"), "fa-calendar");
         menu.getChildren().add(buildSection(bookingsButton, showBookingsButton, addBookingButton));
 
         showServicesButton = new Button(languageManager.getString("showServices"));
         showMechanicsButton = new Button(languageManager.getString("showMechanicsButton"));
-        servicesButton = new Button(languageManager.getString("servicesButton"));
+        servicesButton = UIComponents.createMenuButton(languageManager.getString("servicesButton"), "fa-wrench");
         menu.getChildren().add(buildSection(servicesButton, showServicesButton, showMechanicsButton));
 
         showOrdersButton = new Button(languageManager.getString("showOrders"));
         addOrderButton = new Button(languageManager.getString("addOrder"));
+
         //startCompleteOrderButton = new Button(languageManager.getString("startCompleteOrder"));
         ordersButton = new Button(languageManager.getString("ordersButton"));
+        ordersButton = UIComponents.createMenuButton(languageManager.getString("ordersButton"), "fa-clipboard");
+
         menu.getChildren().add(buildSection(ordersButton, showOrdersButton, addOrderButton));
 
         showInvoicesButton = new Button(languageManager.getString("showInvoices"));
         addInvoiceButton = new Button(languageManager.getString("addInvoice"));
         showPaymentsButton = new Button(languageManager.getString("showPayments"));
         addPaymentButton = new Button(languageManager.getString("addPayment"));
-        paymentsButton = new Button(languageManager.getString("paymentsButton"));
+        paymentsButton = UIComponents.createMenuButton(languageManager.getString("paymentsButton"), "fa-credit-card");
         menu.getChildren().add(buildSection(paymentsButton, showInvoicesButton, addInvoiceButton, showPaymentsButton, addPaymentButton));
 
         exitButton = new Button(languageManager.getString("quit"));
@@ -161,7 +164,9 @@ public class MainMenuView {
     public Button getShowMechanicsButton() { return showMechanicsButton; }
     public Button getShowOrdersButton() { return showOrdersButton; }
     public Button getAddOrderButton() { return addOrderButton; }
+
     //public Button getStartCompleteOrderButton() { return startCompleteOrderButton; }
+
     public Button getShowInvoicesButton() { return showInvoicesButton; }
     public Button getAddInvoiceButton() { return addInvoiceButton; }
     public Button getShowPaymentsButton() { return showPaymentsButton; }

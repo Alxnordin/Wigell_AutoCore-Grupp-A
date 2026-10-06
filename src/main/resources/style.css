@@ -427,6 +427,7 @@ ListView .list-cell:filled:selected {
     -fx-text-fill: #D86F2D;
 }
 
+
 /***** Styling för formulär *******/
 
 /*Label ovanför inputfälten*/
@@ -440,3 +441,25 @@ ListView .list-cell:filled:selected {
     -fx-text-fill: #c62828;
     -fx-font-size: 12px;
 }
+
+/*styling för ikonerna på menyknapparna*/
+.category-button .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+/*styling för create order button inne i order*/
+.create-order-button {
+    -fx-background-color: #D97A32;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 18px;
+    -fx-cursor: hand;
+}
+
+.create-order-button:hover {
+    -fx-background-color: #C66C2B;
+}
+
+
