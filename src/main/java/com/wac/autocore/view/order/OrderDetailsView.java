@@ -43,8 +43,11 @@ public class OrderDetailsView {
     private final TableColumn<ServiceItem, String> serviceColumn;
     private final TableColumn<ServiceItem, Integer> timeColumn;
     private final TableColumn<ServiceItem, String> priceColumn;
+    private final TableColumn<ServiceItem, Button> deleteServiceColumn;
+    private final TableView<ServiceItem> servicesTable;
 
     private Consumer<String> onStatusChange;
+    private Consumer<ServiceItem> onDeleteService;
 
     private final Button backButton;
     private Runnable onBack;
@@ -57,9 +60,11 @@ public class OrderDetailsView {
             Vehicle vehicle,
             Customer customer,
             List<Mechanic> mechanics,
-            List<ServiceItem> orderServices) {
+            List<ServiceItem> orderServices
+            ) {
 
         this.workOrder = workOrder;
+
 
         VBox box = new VBox(12);
         box.setPadding(new Insets(20));
@@ -227,11 +232,13 @@ public class OrderDetailsView {
         VBox servicesBox = UIComponents.createSectionBox();
         servicesTitle = UIComponents.createSectionTitle(languageManager.getString("servicesTitle"));
 
-        TableView<ServiceItem> servicesTable = UIComponents.createTable();
+        //TableView<ServiceItem> servicesTable = UIComponents.createTable();
+        servicesTable = UIComponents.createTable();
 
         serviceColumn = new TableColumn<>(languageManager.getString("serviceInTable"));
         timeColumn = new TableColumn<>(languageManager.getString("estimatedTimeInTable"));
         priceColumn = new TableColumn<>(languageManager.getString("priceInTable"));
+        deleteServiceColumn = new TableColumn<>(languageManager.getString("deleteServiceInTable"));
 
         serviceColumn.setCellValueFactory(
                 cellData -> new javafx.beans.property.SimpleStringProperty(
@@ -264,10 +271,40 @@ public class OrderDetailsView {
                 }
         );
 
+        //FREDRIK
+        //ta bort tjänst från en workorder
+
+        deleteServiceColumn.setCellFactory(column -> new TableCell<ServiceItem, Button>(){
+            private final Button deleteButton = new Button(languageManager.getString("deleteServiceInTable"));{
+                deleteButton.setOnAction(event -> {
+                    ServiceItem serviceItem = getTableView().getItems().get(getIndex());
+
+                    if (onDeleteService != null){
+                        onDeleteService.accept(serviceItem);
+                    }
+
+                });
+            }
+            @Override
+            protected void updateItem(Button item, boolean empty){
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(deleteButton);
+                }
+
+                }
+
+                }
+        );
+
+
         servicesTable.getColumns().addAll(
                 serviceColumn,
                 timeColumn,
-                priceColumn
+                priceColumn,
+                deleteServiceColumn
         );
 
         servicesTable.getItems().addAll(orderServices);
@@ -365,10 +402,29 @@ public class OrderDetailsView {
     public void setOnStatusChange(Consumer<String> onStatusChange) {
         this.onStatusChange = onStatusChange;
     }
+    public void setOnDeleteService(Consumer<ServiceItem> onDeleteService){
+        this.onDeleteService = onDeleteService;
+    }
 
     public void showSummary(String totalTime, String totalPrice) {
         totalTimeValue.setText(totalTime);
         totalPriceValue.setText(totalPrice);
+    }
+    public void removeServiceFromTable(ServiceItem serviceItem){
+        servicesTable.getItems().remove(serviceItem);
+        updateSummary(servicesTable.getItems());
+    }
+
+    private void updateSummary(List<ServiceItem> services){
+        if (services.isEmpty()) {
+            showSummary("--", "--");
+            return;
+        }
+        int totalMinutes = services.stream().mapToInt(ServiceItem::getEstimatedMinutes).sum();
+        double totalPrice = services.stream().mapToDouble(serviceItem ->
+                workOrder.getServiceItemPrices().getOrDefault(serviceItem.getId(), serviceItem.getPrice())).sum();
+
+        showSummary(totalMinutes + " min", String.format("%.0f kr", totalPrice));
     }
 
 
