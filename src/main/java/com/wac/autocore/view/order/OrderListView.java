@@ -35,7 +35,17 @@ public class OrderListView {
 
     private final Button backButton;
     private final Button createOrderButton;
-    private Runnable onCreateOrder;
+    private Consumer<String> onCreateOrderType;
+    private final ContextMenu createOrderMenu;
+
+    private final Label plannedOrderTitle;
+    private final Label plannedOrderDescription;
+
+    private final Label dropInOrderTitle;
+    private final Label dropInOrderDescription;
+
+    private final Label warrantyOrderTitle;
+    private final Label warrantyOrderDescription;
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -54,11 +64,68 @@ public class OrderListView {
         );
         createOrderButton.getStyleClass().add("create-order-button");
 
-        createOrderButton.setOnAction(event -> {
-            if (onCreateOrder != null) {
-                onCreateOrder.run();
+        //Skapa dropdownmeny för dom olika typerna av order man kan skapa
+        createOrderMenu = new ContextMenu();
+        plannedOrderTitle = new Label(languageManager.getString("plannedOrder"));
+        plannedOrderDescription = new Label(languageManager.getString("plannedOrderDescription"));
+        dropInOrderTitle = new Label(languageManager.getString("dropInOrder"));
+        dropInOrderDescription = new Label(languageManager.getString("dropInOrderDescription"));
+        warrantyOrderTitle = new Label(languageManager.getString("warrantyOrder"));
+        warrantyOrderDescription = new Label(languageManager.getString("warrantyOrderDescription"));
+
+        MenuItem plannedOrderItem = UIComponents.createOrderMenuItem(
+                plannedOrderTitle,
+                plannedOrderDescription,
+                "fa-calendar"
+        );
+
+        MenuItem dropInOrderItem = UIComponents.createOrderMenuItem(
+                dropInOrderTitle,
+                dropInOrderDescription,
+                "fa-user"
+        );
+
+        MenuItem warrantyOrderItem = UIComponents.createOrderMenuItem(
+                warrantyOrderTitle,
+                warrantyOrderDescription,
+                "fa-refresh"
+        );
+
+        //vad händer när man väljer en odertyp:
+        plannedOrderItem.setOnAction(event -> {
+            if (onCreateOrderType != null) {
+                onCreateOrderType.accept("planned");
             }
         });
+
+        dropInOrderItem.setOnAction(event -> {
+            if (onCreateOrderType != null) {
+                onCreateOrderType.accept("dropIn");
+            }
+        });
+
+        warrantyOrderItem.setOnAction(event -> {
+            if (onCreateOrderType != null) {
+                onCreateOrderType.accept("warranty");
+            }
+        });
+
+        createOrderMenu.getItems().addAll(
+                plannedOrderItem,
+                dropInOrderItem,
+                warrantyOrderItem
+        );
+
+        createOrderButton.setOnAction(event -> {
+            createOrderMenu.show(
+                    createOrderButton,
+                    javafx.geometry.Side.BOTTOM,
+                    0,
+                    0
+            );
+        });
+
+
 
         HBox orderHeader = new HBox();
         orderHeader.setAlignment(Pos.CENTER_LEFT);
@@ -160,8 +227,8 @@ public class OrderListView {
     public void setOnViewOrder(Consumer<WorkOrder> onViewOrder) {
         this.onViewOrder = onViewOrder;}
 
-    public void setOnCreateOrder(Runnable onCreateOrder) {
-        this.onCreateOrder = onCreateOrder;
+    public void setOnCreateOrderType(Consumer<String> onCreateOrderType) {
+        this.onCreateOrderType = onCreateOrderType;
     }
 
 
@@ -176,5 +243,12 @@ public class OrderListView {
         actionColumn.setText(languageManager.getString("actionInTable"));
         backButton.setText(languageManager.getString("backButton"));
         createOrderButton.setText(languageManager.getString("createOrderButton"));
+
+        plannedOrderTitle.setText(languageManager.getString("plannedOrder"));
+        plannedOrderDescription.setText(languageManager.getString("plannedOrderDescription"));
+        dropInOrderTitle.setText(languageManager.getString("dropInOrder"));
+        dropInOrderDescription.setText(languageManager.getString("dropInOrderDescription"));
+        warrantyOrderTitle.setText(languageManager.getString("warrantyOrder"));
+        warrantyOrderDescription.setText(languageManager.getString("warrantyOrderDescription"));
     }
 }
