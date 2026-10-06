@@ -78,11 +78,23 @@ public class CustomerController {
                 customerView.getLastNameField().clear();
                 customerView.getPhoneField().clear();
                 customerView.getEmailField().clear();
+
+                //Ej klar med denna
+                customerView.getConfirmationLabel().setText(
+                        "Kund " + firstName + " " + lastName + " har lagts till.");
             }
 
         });
 
-        customerView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+        //customerView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+        customerView.getBackButton().setOnAction(actionEvent -> {
+            app.showCustomerListView();
+        });
+
+        customerListView.getCreateCustomerButton().setOnAction(actionEvent -> {
+            app.showView(customerView.getView());
+        });
+
         customerListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
     }
 

@@ -109,10 +109,6 @@ public class WorkOrderService {
         System.out.println("ServiceItem " + serviceItemId + " removed from workOrder " + workOrder.getId());
     }
 
-    public void updateStatus(WorkOrder workOrder) {
-        workOrderDAO.updateStatus(workOrder);
-    }
-
     // Kontrollera mekaniker
     public boolean isMechanicBookedOnDate(int mechanicId,
                                           LocalDate date, int excludingBookingId) {

@@ -320,4 +320,12 @@ public class UIComponents {
 
         return deleteButton;
     }
+
+    //Skapar Lägg till-knapp
+    public static Button createCreateButton(String text)   {
+        Button createButton = new Button(text);
+        createButton.getStyleClass().add("create-order-button");
+
+        return createButton;
+    }
 }

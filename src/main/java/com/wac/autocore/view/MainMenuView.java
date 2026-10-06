@@ -40,10 +40,10 @@ public class MainMenuView {
         VBox menu = new VBox();
         menu.getStyleClass().add("main-menu");
 
-        showCustomersButton = new Button(languageManager.getString("showCustomers"));
-        addCustomerButton = new Button(languageManager.getString("addCustomer"));
+//        showCustomersButton = new Button(languageManager.getString("showCustomers"));
+//        addCustomerButton = new Button(languageManager.getString("addCustomer"));
         customersButton = UIComponents.createMenuButton(languageManager.getString("customersButton"), "fa-user");
-        menu.getChildren().add(buildSection(customersButton, showCustomersButton, addCustomerButton));
+        menu.getChildren().add(buildSection(customersButton));
 
         showVehiclesButton = new Button(languageManager.getString("showVehicles"));
         addVehicleButton = new Button(languageManager.getString("addVehicle"));
@@ -63,7 +63,6 @@ public class MainMenuView {
         showOrdersButton = new Button(languageManager.getString("showOrders"));
         addOrderButton = new Button(languageManager.getString("addOrder"));
 
-        //startCompleteOrderButton = new Button(languageManager.getString("startCompleteOrder"));
         ordersButton = new Button(languageManager.getString("ordersButton"));
         ordersButton = UIComponents.createMenuButton(languageManager.getString("ordersButton"), "fa-clipboard");
 
@@ -90,8 +89,8 @@ public class MainMenuView {
 
     public void changeTextAllComponents() {
         customersButton.setText(languageManager.getString("customersButton"));
-        showCustomersButton.setText(languageManager.getString("showCustomers"));
-        addCustomerButton.setText(languageManager.getString("addCustomer"));
+//        showCustomersButton.setText(languageManager.getString("showCustomers"));
+//        addCustomerButton.setText(languageManager.getString("addCustomer"));
 
         vehiclesButton.setText(languageManager.getString("vehiclesButton"));
         showVehiclesButton.setText(languageManager.getString("showVehicles"));
@@ -108,7 +107,6 @@ public class MainMenuView {
         ordersButton.setText(languageManager.getString("ordersButton"));
         showOrdersButton.setText(languageManager.getString("showOrders"));
         addOrderButton.setText(languageManager.getString("addOrder"));
-        //startCompleteOrderButton.setText(languageManager.getString("startCompleteOrder"));
 
         paymentsButton.setText(languageManager.getString("paymentsButton"));
         showInvoicesButton.setText(languageManager.getString("showInvoices"));
@@ -154,8 +152,9 @@ public class MainMenuView {
 
     public Parent getView() { return root; }
 
-    public Button getShowCustomersButton() { return showCustomersButton; }
-    public Button getAddCustomerButton() { return addCustomerButton; }
+//    public Button getShowCustomersButton() { return showCustomersButton; }
+//    public Button getAddCustomerButton() { return addCustomerButton; }
+    public Button getCustomersButton() { return customersButton; }
     public Button getShowVehiclesButton() { return showVehiclesButton; }
     public Button getAddVehicleButton() { return addVehicleButton; }
     public Button getShowBookingsButton() { return showBookingsButton; }
@@ -164,9 +163,7 @@ public class MainMenuView {
     public Button getShowMechanicsButton() { return showMechanicsButton; }
     public Button getShowOrdersButton() { return showOrdersButton; }
     public Button getAddOrderButton() { return addOrderButton; }
-
     //public Button getStartCompleteOrderButton() { return startCompleteOrderButton; }
-
     public Button getShowInvoicesButton() { return showInvoicesButton; }
     public Button getAddInvoiceButton() { return addInvoiceButton; }
     public Button getShowPaymentsButton() { return showPaymentsButton; }

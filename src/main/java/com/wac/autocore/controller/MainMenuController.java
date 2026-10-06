@@ -20,8 +20,9 @@ public class MainMenuController {
     }
 
     public void wireEvents() {
-        view.getShowCustomersButton().setOnAction(e -> app.showCustomerListView());
-        view.getAddCustomerButton().setOnAction(e -> app.showCustomerView());
+//        view.getShowCustomersButton().setOnAction(e -> app.showCustomerListView());
+//        view.getAddCustomerButton().setOnAction(e -> app.showCustomerView());
+        view.getCustomersButton().setOnAction(event -> app.showCustomerListView());
 
         view.getShowVehiclesButton().setOnAction(e -> app.showVehicleListView());
         view.getAddVehicleButton().setOnAction(e -> app.showVehicleView());
