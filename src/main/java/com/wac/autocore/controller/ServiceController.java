@@ -44,26 +44,12 @@ public class ServiceController {
 
     public void refreshLists() {
 
-        serviceItemView.getServiceItemListView().getItems().clear();
+        serviceItemView.getServiceItemTableView().getItems().clear();
 
         for (ServiceItem item : serviceItemDAO.findAll()) {
 
-            serviceItemView.getServiceItemListView().getItems().add(item);
-            /*
+            serviceItemView.getServiceItemTableView().getItems().add(item);
 
-            String serviceItemInfo =
-                    item.getId() + " | "
-                            + languageManager.getString("serviceItemName")
-                            + ": " + item.getName() + " | "
-                            + languageManager.getString("serviceItemDescription")
-                            + ": " + item.getDescription() + " | "
-                            + languageManager.getString("serviceItemPrice")
-                            + ": " + item.getPrice() + " | "
-                            + languageManager.getString("serviceItemEstimatedMinutes")
-                            + ": " + item.getEstimatedMinutes() + " | ";
-
-            serviceItemView.getServiceItemListView().getItems().add(serviceItemInfo);
-            */
         }
 
 

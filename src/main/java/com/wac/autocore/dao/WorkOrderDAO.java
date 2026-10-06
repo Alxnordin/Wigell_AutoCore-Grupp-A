@@ -94,6 +94,22 @@ public class WorkOrderDAO {
             }
         }
     }
+    public void removeServiceItem(int workOrderId, int serviceItemId){
+        String sql = "DELETE FROM work_order_service_item " +
+                "WHERE work_order_id = ? AND service_item_id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql)){
+            statement.setInt(1, workOrderId);
+            statement.setInt(2, serviceItemId);
+
+            statement.executeUpdate();
+        } catch(Exception e) {
+            throw new RuntimeException("Could not remove serviceItem from workOrder. ", e);
+        }
+
+    }
+
     public void updateStatus (WorkOrder workOrder){
         String sql = "UPDATE work_order SET status = ? where id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
