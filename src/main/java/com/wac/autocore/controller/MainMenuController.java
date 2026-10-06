@@ -1,7 +1,5 @@
 package com.wac.autocore.controller;
 
-
-
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.view.MainMenuView;
@@ -15,7 +13,6 @@ public class MainMenuController {
     private final BorderPane borderPane;
     private final MainMenuView view;
 
-
     public MainMenuController (GarageSystem garageSystem,AutoCoreApplication app, BorderPane borderPane) {
         this.garageSystem = garageSystem;
         this.app = app;
@@ -26,7 +23,7 @@ public class MainMenuController {
     }
 
     public void wireEvents() {
-        view.getShowCustomersButton().setOnAction(e -> app.showCustomerView());
+        view.getShowCustomersButton().setOnAction(e -> app.showCustomerListView());
         view.getAddCustomerButton().setOnAction(e -> app.showCustomerView());
 
         view.getShowVehiclesButton().setOnAction(e -> app.showVehicleListView());
@@ -40,6 +37,9 @@ public class MainMenuController {
 
         view.getShowOrdersButton().setOnAction(e -> app.showOrderListView());
         view.getAddOrderButton().setOnAction(e -> app.showOrderFormView());
+
+        //view.getStartCompleteOrderButton().setOnAction(e -> app.showOrderFormView());
+
 
         view.getShowInvoicesButton().setOnAction(e -> app.showInvoiceListView());
         view.getAddInvoiceButton().setOnAction(e -> app.showInvoiceView());

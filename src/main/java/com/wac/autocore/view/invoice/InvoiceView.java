@@ -35,7 +35,7 @@ public class InvoiceView {
 //        workOrderIdField = UIComponents.createTextField();
 //        workOrderIdField.setPromptText(languageManager.getString("workOrderIdField"));
 
-        discountCodeComboBox = UIComponents.createComboBox();
+        discountCodeComboBox = UIComponents.createComboBoxWithNoWidth();
         discountCodeComboBox.setPromptText(languageManager.getString("discountCodeField"));
         discountCodeComboBox.getItems().addAll("WELCOME10", "SERVICE200");
 

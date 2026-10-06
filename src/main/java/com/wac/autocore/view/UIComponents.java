@@ -11,11 +11,17 @@ import org.kordamp.ikonli.javafx.FontIcon;
 public class UIComponents {
 
     //dropdownemenyerna
-    public static <T> ComboBox<T> createComboBox(){
-        ComboBox <T> comboBox = new ComboBox<>();
+    public static <T> ComboBox<T> createComboBox() {
+        ComboBox<T> comboBox = new ComboBox<>();
         comboBox.setPrefWidth(250);
         comboBox.getStyleClass().add("standard-combo-box");
 
+        return comboBox;
+    }
+
+    public static <T> ComboBox<T> createComboBoxWithNoWidth() {
+        ComboBox<T> comboBox = new ComboBox<>();
+        comboBox.getStyleClass().add("standard-combo-box");
         return comboBox;
     }
 
@@ -28,7 +34,7 @@ public class UIComponents {
     }
 
     //datumruta
-    public static DatePicker createDatePicker(){
+    public static DatePicker createDatePicker() {
         DatePicker datePicker = new DatePicker();
         datePicker.setPrefWidth(250);
         datePicker.getStyleClass().add("standard-date-picker");
@@ -37,7 +43,7 @@ public class UIComponents {
     }
 
     //tabell
-    public static <T> TableView<T> createTable(){
+    public static <T> TableView<T> createTable() {
         TableView<T> table = new TableView<>();
         table.getStyleClass().add("standard-table");
 
@@ -102,10 +108,10 @@ public class UIComponents {
     //Visa knapp i tabeller
     public static Button createViewButton(String text) {
 
-            Button button = new Button(text);
-            button.getStyleClass().add("view-button");
+        Button button = new Button(text);
+        button.getStyleClass().add("view-button");
 
-            return button;
+        return button;
     }
 
     //Skapa vBox som är grunden i alla viewklasser.
@@ -115,8 +121,8 @@ public class UIComponents {
         return vBox;
     }
 
-    //Skapa underrubrik i viewklasserna
-    public static Label createSubtitle (String text)  {
+    //Skapa underrubrik i viewklasserna, css-klassen "page-subtitle"
+    public static Label createSubtitle(String text) {
         Label subtitle = new Label(text);
         subtitle.getStyleClass().add("page-subtitle");
         return subtitle;
@@ -147,6 +153,12 @@ public class UIComponents {
     //Skapar VBoxar som har spacing 6
     public static VBox createVBoxWithSpacing6() {
         VBox vBox = new VBox(6);
+        return vBox;
+    }
+
+    //Skapar VBoxar som har spacing 5
+    public static VBox createVBoxWithSpacing5() {
+        VBox vBox = new VBox(5);
         return vBox;
     }
 
@@ -183,12 +195,26 @@ public class UIComponents {
         return box;
     }
 
+    //HBox för skapa- och tillbakaknapp, placering CENTER_RIGHT
+    public static HBox createButtonBox() {
+        HBox buttonBox = new HBox(10);
+        buttonBox.setAlignment(Pos.CENTER_RIGHT);
+        return buttonBox;
+    }
+
+    //HBox med spacing 15
+    public static HBox createHBoxWithSpacing15() {
+        HBox hBox = new HBox(15);
+        return hBox;
+    }
+
     //Företagsinfo på faktura
     public static Label createCompanyNameLabel(String text) {
         Label label = new Label(text);
         label.getStyleClass().add("company-name");
         return label;
     }
+
     //Företagsinfo på faktura VBox
     public static VBox createCompanyInfoBox() {
         VBox companyBox = new VBox(4);
@@ -223,4 +249,17 @@ public class UIComponents {
         return button;
     }
 
+    //Label ovanför inputfälten i formulär, css-klass "form-label"
+    public static Label createFormLabel(String formLabelText) {
+        Label formLabel = new Label(formLabelText);
+        formLabel.getStyleClass().add("form-label");
+        return formLabel;
+    }
+
+    //Label med felmeddelande om fel input i formulär, css-klass "validation-error"
+    public static Label createWrongInputLabel(String text) {
+        Label wrongInputLabel = new Label(text);
+        wrongInputLabel.getStyleClass().add("wrong-input-label");
+        return wrongInputLabel;
+    }
 }

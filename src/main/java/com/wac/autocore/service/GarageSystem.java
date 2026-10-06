@@ -20,21 +20,18 @@ public class GarageSystem {
     private final PaymentDAO paymentDAO = new PaymentDAO();
     private final InvoiceLineDAO invoiceLineDAO = new InvoiceLineDAO();
 
-    public void showCustomers() {
-        System.out.println();
-        System.out.println("=== CUSTOMERS ===");
-
-        if(customerDAO.findAll().isEmpty()){
-            System.out.println("No customers found.");
-            return;
-        }
-        for (Customer customer : customerDAO.findAll()){
-            System.out.println(customer);
-        }
-
-
-
-    }
+//    public void showCustomers() {
+//        System.out.println();
+//        System.out.println("=== CUSTOMERS ===");
+//
+//        if(customerDAO.findAll().isEmpty()){
+//            System.out.println("No customers found.");
+//            return;
+//        }
+//        for (Customer customer : customerDAO.findAll()){
+//            System.out.println(customer);
+//        }
+//    }
 
     public void showVehicles() {
         System.out.println();
@@ -142,16 +139,16 @@ public class GarageSystem {
 
     }
 
-    public Customer createCustomer(String name, String phone, String email) {
-
-        Customer customer = new Customer(0, name, phone, email);
-        customerDAO.save(customer);
-
-        System.out.println("Customer created successfully.");
-        System.out.println(customer);
-
-        return customer;
-    }
+//    public Customer createCustomer(String name, String phone, String email) {
+//
+//        Customer customer = new Customer(0, name, phone, email);
+//        customerDAO.save(customer);
+//
+//        System.out.println("Customer created successfully.");
+//        System.out.println(customer);
+//
+//        return customer;
+//    }
 
     public Vehicle createVehicle(String registrationNumber,
                                  String brand,
@@ -484,86 +481,6 @@ public class GarageSystem {
 
         System.out.println("Work order " + workOrderId + " has been completed.");
     }
-
-
-    //Ändrat så att det tidigare priset hämtas från workOrder istället för det aktuella
-//    public Invoice createInvoice(int workOrderId, String discountCode) {
-//        WorkOrder workOrder = findWorkOrder(workOrderId);
-//
-//        if (workOrder == null) {
-//            System.out.println("Work order with ID " + workOrderId + " does not exist.");
-//            return null;
-//        }
-//
-//        if (!workOrder.getStatus().equals("COMPLETED")) {
-//            System.out.println("Invoice can only be created for a completed work order.");
-//            return null;
-//        }
-//
-//        double amount = 0.0;
-//
-//        for (Integer serviceItemId : workOrder.getServiceItemIds()) {
-//            Double price = workOrder.getServiceItemPrices().get(serviceItemId);
-//
-//            if (price != null) {
-//                amount += price;
-//            }
-//        }
-//
-//        double discount = 0.0;
-//
-//        Booking booking = findBooking(workOrder.getBookingId());
-//
-//        if (booking != null) {
-//            Vehicle vehicle = findVehicle(booking.getVehicleId());
-//
-//            if (vehicle != null) {
-//                Customer customer = findCustomer(vehicle.getCustomerId());
-//
-//                if (customer != null && customer.isVip()) {
-//                    discount += amount * 0.10;
-//                    System.out.println("VIP discount applied: 10%");
-//                }
-//            }
-//        }
-//
-//        if (discountCode != null && !discountCode.trim().isEmpty()) {
-//
-//            if (discountCode.equalsIgnoreCase("WELCOME10")) {
-//                discount += amount * 0.10;
-//                System.out.println("Discount code WELCOME10 applied.");
-//
-//            } else if (discountCode.equalsIgnoreCase("SERVICE200")) {
-//                discount += 200.0;
-//                System.out.println("Discount code SERVICE200 applied.");
-//
-//            } else {
-//                System.out.println("Unknown discount code. No code discount applied.");
-//            }
-//        }
-//
-//        if (discount > amount) {
-//            discount = amount;
-//        }
-//
-//        Invoice invoice = new Invoice(
-//                0,
-//                workOrderId,
-//                LocalDate.now(),
-//                amount
-//        );
-//
-//        invoice.setDiscount(discount);
-//        invoiceDAO.save(invoice);
-//
-//        System.out.println("Invoice created successfully.");
-//        System.out.println(invoice);
-//
-//        System.out.println("Sending invoice notification to customer...");
-//        System.out.println("Notification sent.");
-//
-//        return invoice;
-//    }
 
     public Invoice createInvoice(int workOrderId, String discountCode) {
 
