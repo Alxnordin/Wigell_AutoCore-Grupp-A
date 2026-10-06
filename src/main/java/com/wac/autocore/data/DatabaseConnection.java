@@ -99,6 +99,15 @@ public class DatabaseConnection {
                 "service_item_id INT NOT NULL, " +
                 "PRIMARY KEY (booking_id, service_item_id)" +
                 ")";
+        String servicePackageSql = "CREATE TABLE IF NOT EXISTS service_package (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY," +
+                "name VARCHAR(250) NOT NULL"+
+                ")";
+        String servicePackageItemSql = "CREATE TABLE IF NOT EXISTS service_package_item (" +
+                "service_package_id INT NOT NULL," +
+                "service_item_id INT NOT NULL," +
+                "PRIMARY KEY (service_package_id, service_item_id)" +
+                ")";
         try (Connection connection = getConnection();
         Statement statement = connection.createStatement()){
             statement.execute(sql);
@@ -112,6 +121,8 @@ public class DatabaseConnection {
             statement.execute(workOrderSql);
             statement.execute(workOrderServiceItemSql);
             statement.execute(bookingServiceItemSql);
+            statement.execute(servicePackageSql);
+            statement.execute(servicePackageItemSql);
 
             //För att kunna lägga till pris i nya kolumnen
             try {

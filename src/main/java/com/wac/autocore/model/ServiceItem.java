@@ -1,6 +1,9 @@
 package com.wac.autocore.model;
 
-public class ServiceItem {
+import java.util.Collections;
+import java.util.List;
+
+public class ServiceItem implements ServiceComponent {
 
     private int id;
     private String name;
@@ -51,6 +54,11 @@ public class ServiceItem {
 
     public int getEstimatedMinutes() {
         return estimatedMinutes;
+    }
+
+    @Override
+    public List<ServiceItem> getServiceItems() {
+        return Collections.emptyList();
     }
 
     public void setEstimatedMinutes(int estimatedMinutes) {
