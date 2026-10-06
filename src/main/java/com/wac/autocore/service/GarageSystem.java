@@ -291,6 +291,16 @@ public class GarageSystem {
         return bookingDAO.findAll();
     }
 
+    //Alexander
+    //kunder och fordon hämtas också via GarageSystem
+    public List<Customer> getCustomers() {
+        return customerDAO.findAll();
+    }
+
+    public List<Vehicle> getVehicles() {
+        return vehicleDAO.findAll();
+    }
+
     public List<ServiceItem> getServiceItems() {
         return serviceItemDAO.findAll();
     }

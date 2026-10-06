@@ -1,85 +1,151 @@
 package com.wac.autocore.view.vehicle;
 
+import com.wac.autocore.model.Customer;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
-import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 
-
-
-//UI klass med formulär för att skapa och visa fordon
+//UI-vy med formulär för att skapa ett nytt fordon (kund, registreringsnummer, märke, modell, årsmodell).
+//Listan över fordon ligger i VehicleListView.
 public class VehicleView {
 
     private final Parent root;
 
+    private ComboBox<Customer> customerComboBox;
     private TextField registrationNumberField;
     private TextField brandField;
     private TextField modelField;
     private TextField yearField;
-    private TextField customerIdField;
+
     private Button createVehicleButton;
     private Button backButton;
-    private ListView<String> vehicleListView;
 
-    LanguageManager languageManager =  LanguageManager.getInstance();
+    private Label title;
+    private Label subtitle;
+    private Label vehicleInformationTitle;
+    private Label customerLabel;
+    private Label registrationNumberLabel;
+    private Label brandLabel;
+    private Label modelLabel;
+    private Label yearLabel;
+
+    LanguageManager languageManager = LanguageManager.getInstance();
 
     public VehicleView() {
-        VBox box = new VBox(12);
-        box.setPadding(new Insets(20));
+        //huvudcontainer
+        VBox box = UIComponents.createVBoxForViews();
 
-        registrationNumberField = new TextField();
-        registrationNumberField.setPromptText(languageManager.getString("registrationNumber"));
+        //titel
+        title = new Label(languageManager.getString("vehicleTitle"));
+        HBox titleBox = UIComponents.createPageTitle(title, "fa-car");
 
-        brandField = new TextField();
-        brandField.setPromptText(languageManager.getString("vehicleBrand"));
+        //underrubrik
+        subtitle = UIComponents.createSubtitle(languageManager.getString("vehicleSubtitle"));
 
-        modelField = new TextField();
-        modelField.setPromptText(languageManager.getString("vehicleModel"));
+        //sektion -> fordonsinformation
+        vehicleInformationTitle = UIComponents.createSectionTitle(languageManager.getString("vehicleInformationTitle"));
 
-        yearField = new TextField();
-        yearField.setPromptText(languageManager.getString("vehicleYear"));
+        //kunden väljs i en rullista, controllern fyller den via GarageSystem
+        customerComboBox = UIComponents.createComboBox();
 
-        customerIdField= new TextField();
-        customerIdField.setPromptText(languageManager.getString("customerId"));
+        //visa kundens namn i rullistan
+        customerComboBox.setConverter(new StringConverter<Customer>() {
+            @Override
+            public String toString(Customer customer) {
+                return customer == null ? "" : customer.getName();
+            }
+            @Override
+            public Customer fromString(String string) {
+                return null;
+            }
+        });
 
+        registrationNumberField = createField();
+        brandField = createField();
+        modelField = createField();
+        yearField = createField();
+
+        customerLabel = new Label(languageManager.getString("customerLabel"));
+        registrationNumberLabel = new Label(languageManager.getString("registrationNumber"));
+        brandLabel = new Label(languageManager.getString("vehicleBrand"));
+        modelLabel = new Label(languageManager.getString("vehicleModel"));
+        yearLabel = new Label(languageManager.getString("vehicleYear"));
+
+        //rad 1: kund + registreringsnummer
+        HBox ownerFields = new HBox(15);
+        ownerFields.getChildren().addAll(
+                createLabeledBox(customerLabel, customerComboBox),
+                createLabeledBox(registrationNumberLabel, registrationNumberField));
+
+        //rad 2: märke + modell + årsmodell
+        HBox vehicleFields = new HBox(15);
+        vehicleFields.getChildren().addAll(
+                createLabeledBox(brandLabel, brandField),
+                createLabeledBox(modelLabel, modelField),
+                createLabeledBox(yearLabel, yearField));
+
+        VBox vehicleInformation = UIComponents.createSectionBox();
+        vehicleInformation.setSpacing(15);
+        vehicleInformation.getChildren().addAll(vehicleInformationTitle, ownerFields, vehicleFields);
+
+        //knappar
         createVehicleButton = new Button(languageManager.getString("createVehicleButton"));
         backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
 
-        vehicleListView = new ListView<>();
+        HBox buttonBox = new HBox(10);
+        buttonBox.setAlignment(Pos.CENTER_RIGHT);
+        buttonBox.getChildren().addAll(backButton, createVehicleButton);
 
-        box.getChildren().addAll(registrationNumberField, brandField,
-                modelField,yearField,vehicleListView,customerIdField,createVehicleButton,
-                backButton);
+        box.getChildren().addAll(titleBox, subtitle, vehicleInformation, buttonBox);
         this.root = box;
 
+        //ändra språk
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
             changeTextAllComponents();
         });
     }
 
-    public Parent getView() {return  root;}
+    //textfält i samma bredd som rullistan
+    private TextField createField() {
+        TextField textField = UIComponents.createTextField();
+        textField.setPrefWidth(250);
+        return textField;
+    }
 
+    //etikett ovanför fältet, på samma sätt som i BookingView
+    private VBox createLabeledBox(Label label, javafx.scene.Node field) {
+        VBox labeledBox = new VBox(5);
+        labeledBox.getChildren().addAll(label, field);
+        return labeledBox;
+    }
+
+    public Parent getView() {return root;}
+
+    public ComboBox<Customer> getCustomerComboBox() {return customerComboBox;}
     public TextField getRegistrationNumberField() {return registrationNumberField;}
     public TextField getBrandField() {return brandField;}
     public TextField getModelField() {return modelField;}
     public TextField getYearField() {return yearField;}
-    public TextField getCustomerIdField() {return customerIdField;}
     public Button getCreateVehicleButton() {return createVehicleButton;}
-    public Button getBackButton() {return backButton;
-    }
-    public ListView<String> getVehicleListView() {return vehicleListView;}
+    public Button getBackButton() {return backButton;}
 
-    //HÄR ÄR DET FEL - ska vara setPromptText() och inte setText.
     public void changeTextAllComponents() {
-        registrationNumberField.setText(languageManager.getString("registrationNumber"));
-        brandField.setText(languageManager.getString("vehicleBrand"));
-        modelField.setText(languageManager.getString("vehicleModel"));
-        yearField.setText(languageManager.getString("vehicleYear"));
-        customerIdField.setText(languageManager.getString("customerId"));
+        title.setText(languageManager.getString("vehicleTitle"));
+        subtitle.setText(languageManager.getString("vehicleSubtitle"));
+        vehicleInformationTitle.setText(languageManager.getString("vehicleInformationTitle"));
+        customerLabel.setText(languageManager.getString("customerLabel"));
+        registrationNumberLabel.setText(languageManager.getString("registrationNumber"));
+        brandLabel.setText(languageManager.getString("vehicleBrand"));
+        modelLabel.setText(languageManager.getString("vehicleModel"));
+        yearLabel.setText(languageManager.getString("vehicleYear"));
         createVehicleButton.setText(languageManager.getString("createVehicleButton"));
         backButton.setText(languageManager.getString("backButton"));
     }

@@ -29,7 +29,7 @@ public class MainMenuController {
         view.getShowCustomersButton().setOnAction(e -> app.showCustomerView());
         view.getAddCustomerButton().setOnAction(e -> app.showCustomerView());
 
-        view.getShowVehiclesButton().setOnAction(e -> app.showVehicleView());
+        view.getShowVehiclesButton().setOnAction(e -> app.showVehicleListView());
         view.getAddVehicleButton().setOnAction(e -> app.showVehicleView());
 
         view.getShowBookingsButton().setOnAction(e -> app.showBookingListView());
