@@ -4,6 +4,7 @@ import com.wac.autocore.controller.*;
 import com.wac.autocore.model.Booking;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.service.CustomerService;
+import com.wac.autocore.view.vehicle.VehicleListView;
 import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.*;
@@ -118,8 +119,16 @@ public class AutoCoreApplication extends Application {
         borderPane.setCenter(customerController.getCustomerView());
     }
 
+    //Alexander
+    //fordon är uppdelat i två sidor på samma sätt som bokningar
     public void showVehicleView() {
-        borderPane.setCenter(new VehicleController(garageSystem, this, new VehicleView()).getView());
+        VehicleController controller = new VehicleController(garageSystem, this, new VehicleView(), new VehicleListView());
+        borderPane.setCenter(controller.getVehicleFormView());
+    }
+
+    public void showVehicleListView() {
+        VehicleController controller = new VehicleController(garageSystem, this, new VehicleView(), new VehicleListView());
+        borderPane.setCenter(controller.getVehicleListPane());
     }
 
     public void showServiceItemView() {
