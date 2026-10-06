@@ -40,7 +40,6 @@ public class MainMenuController {
 
         view.getShowOrdersButton().setOnAction(e -> app.showOrderListView());
         view.getAddOrderButton().setOnAction(e -> app.showOrderFormView());
-        view.getStartCompleteOrderButton().setOnAction(e -> app.showOrderFormView());
 
         view.getShowInvoicesButton().setOnAction(e -> app.showInvoiceListView());
         view.getAddInvoiceButton().setOnAction(e -> app.showInvoiceView());

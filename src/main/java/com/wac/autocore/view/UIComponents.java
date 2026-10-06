@@ -209,4 +209,18 @@ public class UIComponents {
         return label;
     }
 
+    // Huvudknappar i huvudmenyn med ikon
+    public static Button createMenuButton(String text, String icon) {
+        Button button = new Button(text);
+
+        FontIcon menuIcon = new FontIcon(icon);
+        menuIcon.setIconSize(18);
+
+        button.setGraphic(menuIcon);
+
+        button.setGraphicTextGap(10);
+
+        return button;
+    }
+
 }
