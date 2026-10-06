@@ -1,27 +1,29 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
-import com.wac.autocore.dao.CustomerDAO;
+import com.wac.autocore.service.CustomerService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Customer;
-import com.wac.autocore.service.GarageSystem;
+import com.wac.autocore.view.customer.CustomerListView;
 import com.wac.autocore.view.customer.CustomerView;
 import javafx.scene.Parent;
 
-//Kopplar CustomerView till GarageSystem — hanterar visning och skapande av kunder
 public class CustomerController {
-    private final GarageSystem garageSystem;
+
+    private final CustomerService customerService;
     private final AutoCoreApplication app;
     private final CustomerView customerView;
-    //FREDRIK - lagt till
-    private final CustomerDAO customerDAO = new CustomerDAO();
+    private final CustomerListView customerListView;
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
-    public CustomerController(GarageSystem garageSystem, AutoCoreApplication app, CustomerView customerView) {
-        this.garageSystem =garageSystem;
+    public CustomerController(CustomerService customerService,
+            AutoCoreApplication app, CustomerView customerView,
+            CustomerListView customerListView) {
+        this.customerService = customerService;
         this.app = app;
         this.customerView = customerView;
+        this.customerListView = customerListView;
         wireEvents();
         refreshCustomerList();
 
@@ -30,55 +32,81 @@ public class CustomerController {
         });
     }
 
+    //Saknas översättning på felmeddelandena
     public void wireEvents() {
         customerView.getCreateCustomerButton().setOnAction(actionEvent -> {
-            String name = customerView.getNameField().getText();
-            String phone = customerView.getPhoneField().getText();
-            String email = customerView.getEmailField().getText();
 
-            Customer customer = garageSystem.createCustomer(name,phone,email);
+            boolean validInput = true;
+
+            String firstName = customerView.getFirstNameField().getText();
+            String lastName = customerView.getLastNameField().getText();
+            String fullName = firstName.trim() + " " + lastName.trim();
+
+            if (customerService.isInputFieldEmpty(firstName)) {
+                customerView.getFirstNameWrongInputLabel().setText("Du måste fylla i namn");
+                validInput = false;
+            } else {
+                customerView.getFirstNameWrongInputLabel().setText("");
+            }
+
+            if (customerService.isInputFieldEmpty(lastName)) {
+                customerView.getLastNameWrongInputLabel().setText("Du måste fylla i namn");
+                validInput = false;
+            } else {
+                customerView.getLastNameWrongInputLabel().setText("");
+            }
+
+            String phoneNumber = customerView.getPhoneField().getText().trim();
+            if (customerService.isInputFieldEmpty(phoneNumber)) {
+                customerView.getPhoneWrongInputLabel().setText("Du måste fylla i telefonnummer");
+                validInput = false;
+            } else {
+                customerView.getPhoneWrongInputLabel().setText("");
+            }
+
+            String email = customerView.getEmailField().getText();
+            if (customerService.isInputFieldEmpty(email)) {
+                customerView.getEmailWrongInputLabel().setText("Du måste fylla i e-post");
+                validInput = false;
+            } else {
+                customerView.getEmailWrongInputLabel().setText("");
+            }
+
+            if (!validInput) {
+                return;
+            }
+
+            Customer customer = customerService.createCustomer(fullName, phoneNumber, email);
 
             if (customer != null) {
-            refreshCustomerList();
-            customerView.getNameField().clear();
-            customerView.getPhoneField().clear();
-            customerView.getEmailField().clear();
-        }
-    });
-        customerView.getBackButton().setOnAction(actionEvent ->
-                app.showMainMenu());
-    }
+                refreshCustomerList();
 
+                customerView.getFirstNameField().clear();
+                customerView.getLastNameField().clear();
+                customerView.getPhoneField().clear();
+                customerView.getEmailField().clear();
+            }
+
+        });
+
+        customerView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+        customerListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+    }
 
     private void refreshCustomerList() {
-    customerView.getCustomerListView().getItems().clear();
+        customerListView.getCustomerListView().getItems().clear();
 
-
-    for (Customer customer : customerDAO.findAll()){
-     
-        String vipYesOrNo;
-        if (customer.isVip()) {
-            vipYesOrNo = languageManager.getString("vipYes");
+        for (Customer customer : customerService.getAllCustomers()) {
+            customerListView.getCustomerListView().getItems().add(customer);
         }
-        else {
-            vipYesOrNo = languageManager.getString("vipNo");
-        }
-
-        String customerInfo = customer.getId() + " | "
-                + languageManager.getString("nameInTable")
-                + ": " + customer.getName() + " | "
-                + languageManager.getString("phoneInTable")
-                + ": " + customer.getPhone() + " | "
-                + languageManager.getString("emailInTable")
-                + ": " + customer.getEmail() + " | "
-                + "VIP: " + vipYesOrNo;
-
-        customerView.getCustomerListView().getItems().add(customerInfo);
-
     }
-}
 
-    public Parent getView() {
+    public Parent getCustomerView() {
         return customerView.getView();
     }
+
+    public Parent getCustomerListView() {
+        return customerListView.getView();
+    }
+
 }

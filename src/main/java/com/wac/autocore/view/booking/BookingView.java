@@ -79,9 +79,7 @@ public class BookingView {
         HBox titleBox = UIComponents.createPageTitle(title, "fa-calendar-plus-o");
 
         //underrubrik
-        bookingSubtitle = new Label(languageManager.getString("bookingSubtitle"));
-        bookingSubtitle.getStyleClass().add("page-subtitle");
-
+        bookingSubtitle = UIComponents.createSubtitle(languageManager.getString("bookingSubtitle"));
 
         //sektion 1 -> bokningsinformation
         bookingInformationTitle = new Label("1. " + languageManager.getString("bookingInformationTitle"));

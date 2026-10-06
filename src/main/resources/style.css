@@ -427,3 +427,16 @@ ListView .list-cell:filled:selected {
     -fx-text-fill: #D86F2D;
 }
 
+/***** Styling för formulär *******/
+
+/*Label ovanför inputfälten*/
+.form-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/*Label för fel input i formulär*/
+.wrong-input-label {
+    -fx-text-fill: #c62828;
+    -fx-font-size: 12px;
+}

@@ -20,7 +20,7 @@ public class MainMenuView {
     private Button showVehiclesButton, addVehicleButton;
     private Button showBookingsButton, addBookingButton;
     private Button showServicesButton, showMechanicsButton;
-    private Button showOrdersButton, addOrderButton, startCompleteOrderButton;
+    private Button showOrdersButton, addOrderButton;
 
     private Button showInvoicesButton, addInvoiceButton, showPaymentsButton, addPaymentButton;
 
@@ -62,9 +62,9 @@ public class MainMenuView {
 
         showOrdersButton = new Button(languageManager.getString("showOrders"));
         addOrderButton = new Button(languageManager.getString("addOrder"));
-        startCompleteOrderButton = new Button(languageManager.getString("startCompleteOrder"));
+        //startCompleteOrderButton = new Button(languageManager.getString("startCompleteOrder"));
         ordersButton = new Button(languageManager.getString("ordersButton"));
-        menu.getChildren().add(buildSection(ordersButton, showOrdersButton, addOrderButton, startCompleteOrderButton));
+        menu.getChildren().add(buildSection(ordersButton, showOrdersButton, addOrderButton));
 
         showInvoicesButton = new Button(languageManager.getString("showInvoices"));
         addInvoiceButton = new Button(languageManager.getString("addInvoice"));
@@ -105,7 +105,7 @@ public class MainMenuView {
         ordersButton.setText(languageManager.getString("ordersButton"));
         showOrdersButton.setText(languageManager.getString("showOrders"));
         addOrderButton.setText(languageManager.getString("addOrder"));
-        startCompleteOrderButton.setText(languageManager.getString("startCompleteOrder"));
+        //startCompleteOrderButton.setText(languageManager.getString("startCompleteOrder"));
 
         paymentsButton.setText(languageManager.getString("paymentsButton"));
         showInvoicesButton.setText(languageManager.getString("showInvoices"));
@@ -161,7 +161,7 @@ public class MainMenuView {
     public Button getShowMechanicsButton() { return showMechanicsButton; }
     public Button getShowOrdersButton() { return showOrdersButton; }
     public Button getAddOrderButton() { return addOrderButton; }
-    public Button getStartCompleteOrderButton() { return startCompleteOrderButton; }
+    //public Button getStartCompleteOrderButton() { return startCompleteOrderButton; }
     public Button getShowInvoicesButton() { return showInvoicesButton; }
     public Button getAddInvoiceButton() { return addInvoiceButton; }
     public Button getShowPaymentsButton() { return showPaymentsButton; }

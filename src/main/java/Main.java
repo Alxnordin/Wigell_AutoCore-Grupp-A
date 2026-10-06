@@ -25,11 +25,11 @@ public class Main {
             switch (choice) {
 
                 case 1:
-                    garageSystem.showCustomers();
+                    //garageSystem.showCustomers();
                     break;
 
                 case 2:
-                    createCustomer();
+                    //createCustomer();
                     break;
 
                 case 3:
@@ -136,29 +136,29 @@ public class Main {
         System.out.println("===========================================");
     }
 
-    private static void createCustomer() {
-
-        System.out.println();
-        System.out.println("=== CREATE CUSTOMER ===");
-
-        System.out.print("Name: ");
-        String name = scanner.nextLine();
-
-        System.out.print("Phone: ");
-        String phone = scanner.nextLine();
-
-        System.out.print("Email: ");
-        String email = scanner.nextLine();
-
-        garageSystem.createCustomer(name, phone, email);
-    }
+//    private static void createCustomer() {
+//
+//        System.out.println();
+//        System.out.println("=== CREATE CUSTOMER ===");
+//
+//        System.out.print("Name: ");
+//        String name = scanner.nextLine();
+//
+//        System.out.print("Phone: ");
+//        String phone = scanner.nextLine();
+//
+//        System.out.print("Email: ");
+//        String email = scanner.nextLine();
+//
+//        garageSystem.createCustomer(name, phone, email);
+//    }
 
     private static void createVehicle() {
 
         System.out.println();
         System.out.println("=== CREATE VEHICLE ===");
 
-        garageSystem.showCustomers();
+        //garageSystem.showCustomers();
 
         int customerId = readInt("Customer ID: ");
 

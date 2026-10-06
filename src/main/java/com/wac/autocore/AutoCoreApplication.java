@@ -3,11 +3,13 @@ package com.wac.autocore;
 import com.wac.autocore.controller.*;
 import com.wac.autocore.model.Booking;
 import com.wac.autocore.data.DatabaseConnection;
+import com.wac.autocore.service.CustomerService;
 import com.wac.autocore.service.GarageSystem;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.*;
 import com.wac.autocore.view.booking.BookingListView;
 import com.wac.autocore.view.booking.BookingView;
+import com.wac.autocore.view.customer.CustomerListView;
 import com.wac.autocore.view.customer.CustomerView;
 import com.wac.autocore.view.invoice.InvoiceListView;
 import com.wac.autocore.view.invoice.InvoiceView;
@@ -36,6 +38,8 @@ import javafx.scene.image.ImageView;
 public class AutoCoreApplication extends Application {
 
     private final GarageSystem garageSystem = new GarageSystem();
+
+    private final CustomerService customerService = new CustomerService();
     private BorderPane borderPane;
     private Stage stage;
 
@@ -102,8 +106,16 @@ public class AutoCoreApplication extends Application {
         borderPane.setCenter(new StartView().getView());
     }
 
+    public void showCustomerListView() {
+        CustomerController customerController = new CustomerController(customerService,
+                this, new CustomerView(), new CustomerListView());
+        borderPane.setCenter(customerController.getCustomerListView());
+    }
+
     public void showCustomerView() {
-        borderPane.setCenter(new CustomerController(garageSystem, this, new CustomerView()).getView());
+         CustomerController customerController = new CustomerController(customerService,
+                this, new CustomerView(), new CustomerListView());
+        borderPane.setCenter(customerController.getCustomerView());
     }
 
     public void showVehicleView() {
