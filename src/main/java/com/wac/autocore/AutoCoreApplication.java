@@ -47,7 +47,8 @@ public class AutoCoreApplication extends Application {
             new BookingService(vehicleService, serviceItemService);
 
     private final WorkOrderService workOrderService = new WorkOrderService(
-            bookingService, mechanicService, serviceItemService);
+            bookingService, mechanicService, serviceItemService,
+            customerService, vehicleService);
 
     private final InvoiceService invoiceService = new InvoiceService(
             workOrderService, bookingService, vehicleService,
