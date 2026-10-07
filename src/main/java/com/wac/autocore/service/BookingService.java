@@ -94,6 +94,7 @@ public class BookingService {
 
         if (isWorkStarted(booking)) {
            System.out.println("Work on booking " + bookingId + " has started. Services can no longer be changed.");
+           return false;
         }
 
         if (serviceItemService.findServiceItem(serviceItemId) == null) {
