@@ -60,7 +60,6 @@ public class InvoiceController {
         });
 
         invoiceView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
-
         invoiceListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
 
         invoiceListView.setOnViewInvoice(invoice -> {

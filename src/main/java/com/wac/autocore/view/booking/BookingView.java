@@ -16,7 +16,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class BookingView {
     private ComboBox<ServiceItem> serviceComboBox;
     private DatePicker date;
     private TextField descriptionField;
-    //Alexander
+
     //tabellen är ett fält så att controllern kan läsa de valda tjänsterna
     private TableView<ServiceItem> servicesTable;
 
@@ -51,7 +50,7 @@ public class BookingView {
     private Label title;
     private Label bookingInformationTitle;
     private Label customerLabel;
-    private Label vehicleLabel;
+    private Label vehicleRegistrationNumber;
     private Label dateLabel;
     private Label descriptionLabel;
     private Label servicesTitle;
@@ -125,11 +124,19 @@ public class BookingView {
 
         VBox customerBox = new VBox(5);
         customerLabel = new Label(languageManager.getString("customerLabel"));
-        customerBox.getChildren().addAll(customerLabel, customerComboBox);
+
+        //************** OBS EJ KLAR med knappen för ny kund, testar bara ***********
+        Button newCustomerButton = new Button("+ Ny kund");
+        newCustomerButton.getStyleClass().add("create-new-if-missing-button");
+        customerBox.getChildren().addAll(customerLabel, customerComboBox, newCustomerButton);
 
         VBox vehicleBox = new VBox(5);
-        vehicleLabel = new Label(languageManager.getString("vehicleLabel"));
-        vehicleBox.getChildren().addAll(vehicleLabel, vehicleComboBox);
+        vehicleRegistrationNumber = new Label(languageManager.getString("vehicleRegistrationNumber"));
+
+        //************** OBS EJ KLAR med knappen för nytt fordon, testar bara ***********
+        Button newVehicleButton = new Button("+ Nytt fordon");
+        newVehicleButton.getStyleClass().add("create-new-if-missing-button");
+        vehicleBox.getChildren().addAll(vehicleRegistrationNumber, vehicleComboBox, newVehicleButton);
 
         VBox dateBox = new VBox(5);
         dateLabel = new Label(languageManager.getString("dateLabel"));
@@ -199,7 +206,6 @@ public class BookingView {
         deleteColumn.setCellFactory(column -> new TableCell<ServiceItem, Void>() {
             private final Button deleteButton = new Button();
             {
-                //Alexander
                 // soptunnan centreras och får mindre luft så att raden inte blir högre än övriga
                 setAlignment(Pos.CENTER);
                 setStyle("-fx-padding: 2 4 2 4;");
@@ -232,7 +238,6 @@ public class BookingView {
         deleteColumn.setMinWidth(56);
         deleteColumn.setSortable(false);
 
-        //Alexander
         //tabellen får alltid plats med minst tre valda tjänster
         servicesTable.setMinHeight(165);
 
@@ -250,7 +255,6 @@ public class BookingView {
                 servicesTable);
 
 
-        //Alexander
         //knappen "Lägg till tjänst" kopplas i BookingController (wireEvents)
 
 
@@ -339,7 +343,7 @@ public class BookingView {
         title.setText(languageManager.getString("bookingTitle"));
         bookingSubtitle.setText(languageManager.getString("bookingSubtitle"));
         bookingInformationTitle.setText("1. " + languageManager.getString("bookingInformationTitle"));
-        vehicleLabel.setText(languageManager.getString("vehicleLabel"));
+        vehicleRegistrationNumber.setText(languageManager.getString("vehicleRegistrationNumber"));
         dateLabel.setText(languageManager.getString("dateLabel"));
         descriptionLabel.setText(languageManager.getString("descriptionLabel"));
         servicesTitle.setText("2. " + languageManager.getString("servicesTitle"));

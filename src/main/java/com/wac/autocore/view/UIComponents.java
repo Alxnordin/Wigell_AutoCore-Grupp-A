@@ -237,7 +237,6 @@ public class UIComponents {
         return label;
     }
 
-
     //Label ovanför inputfälten i formulär, css-klass "form-label"
     public static Label createFormLabel(String formLabelText) {
         Label formLabel = new Label(formLabelText);
@@ -328,4 +327,49 @@ public class UIComponents {
 
         return createButton;
     }
+
+    public static Label createPlaceholderLabel(String text) {
+        Label label = new Label(text);
+        label.getStyleClass().add("placeholder-text");
+        return label;
+    }
+
+    public static Button createAddRemoveServiceButton(String text) {
+        Button button = new Button(text);
+        button.getStyleClass().add("add-service-button");
+        return button;
+    }
+
+    //Skapar redigera-knapp som visas när man är i redigera-läge på t.ex. en bokning.
+    //css-klass "editing-button"
+    public static Button createIsEditingButton(String text) {
+        Button button = new Button(text);
+
+        FontIcon icon = new FontIcon("fa-pencil");
+        button.setGraphic(icon);
+        button.getStyleClass().add("editing-button");
+
+        return button;
+    }
+
+    public static Button createSaveEditingButton(String text) {
+        Button button = new Button(text);
+
+        FontIcon icon = new FontIcon("fa-check");
+        button.setGraphic(icon);
+        button.getStyleClass().add("save-editing-button");
+
+        return button;
+    }
+
+    public static Button createCancelEditingButton(String text) {
+        Button button = new Button(text);
+
+        FontIcon icon = new FontIcon("fa-times");
+        button.setGraphic(icon);
+        button.getStyleClass().add("cancel-editing-button");
+
+        return button;
+    }
+
 }

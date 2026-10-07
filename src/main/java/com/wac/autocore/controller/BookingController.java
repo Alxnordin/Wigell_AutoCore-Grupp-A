@@ -1,18 +1,19 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
+import com.wac.autocore.model.Booking;
+import com.wac.autocore.model.Customer;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.Vehicle;
-import com.wac.autocore.service.BookingService;
-import com.wac.autocore.service.ServiceItemService;
-import com.wac.autocore.service.WorkOrderService;
+import com.wac.autocore.service.*;
 import com.wac.autocore.util.LanguageManager;
-import com.wac.autocore.model.Booking;
+import com.wac.autocore.view.booking.BookingDetailsView;
 import com.wac.autocore.view.booking.BookingListView;
 import com.wac.autocore.view.booking.BookingView;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,6 +22,8 @@ public class BookingController {
     private final ServiceItemService serviceItemService;
     private final BookingService bookingService;
     private final WorkOrderService workOrderService;
+    private final VehicleService vehicleService;
+    private final CustomerService customerService;
 
     private final AutoCoreApplication app;
     private final BookingView bookingView;
@@ -29,18 +32,22 @@ public class BookingController {
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
     public BookingController(ServiceItemService serviceItemService,
-                             BookingService bookingService, WorkOrderService workOrderService, AutoCoreApplication app,
-                             BookingView bookingView, BookingListView bookingListView) {
+                             BookingService bookingService, WorkOrderService workOrderService,
+                             VehicleService vehicleService, CustomerService customerService,
+                             AutoCoreApplication app, BookingView bookingView,
+                             BookingListView bookingListView) {
         this.serviceItemService = serviceItemService;
         this.bookingService = bookingService;
         this.workOrderService = workOrderService;
+        this.vehicleService = vehicleService;
+        this.customerService = customerService;
         this.app = app;
         this.bookingView = bookingView;
         this.bookingListView = bookingListView;
         wireEvents();
         refreshBookingList();
 
-        bookingListView.getServiceComboBox().getItems().addAll(serviceItemService.getServiceItems());
+//        bookingListView.getServiceComboBox().getItems().addAll(serviceItemService.getServiceItems());
 
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
             refreshBookingList();
@@ -49,13 +56,9 @@ public class BookingController {
     }
 
     private void wireEvents() {
-        // ===== Skapa bokning (BookingView) =====
 
-        // "Lägg till tjänst" lägger den valda tjänsten i tabellen med valda tjänster
         bookingView.getAddServiceButton().setOnAction(actionEvent -> addServiceToNewBooking());
 
-        //summeringen räknas om varje gång listan med valda tjänster ändras
-        //(tjänst läggs till, tas bort med soptunnan eller listan töms efter en bokning)
         bookingView.getServicesTable().getItems().addListener(
                 (ListChangeListener<ServiceItem>) change -> updateNewBookingSummary());
 
@@ -63,7 +66,6 @@ public class BookingController {
             Vehicle selectedVehicle = bookingView.getVehicleComboBox().getValue();
             LocalDate date = bookingView.getDate().getValue();
             String description = bookingView.getDescriptionField().getText();
-            //tjänsterna som användaren har valt
             List<ServiceItem> selectedServices = bookingView.getServicesTable().getItems();
 
             if (selectedVehicle == null) {
@@ -76,7 +78,6 @@ public class BookingController {
                 return;
             }
 
-            //en bokning ska innehålla minst en tjänst
             if (selectedServices.isEmpty()) {
                 showWarning(languageManager.getString("noServiceSelectedWarning"));
                 return;
@@ -85,7 +86,6 @@ public class BookingController {
             try {
                 int vehicleId = selectedVehicle.getId();
 
-                //gör om de valda tjänsterna till deras ID:n, det är dem GarageSystem tar emot
                 int[] serviceItemIds = new int[selectedServices.size()];
                 for (int i = 0; i < selectedServices.size(); i++) {
                     serviceItemIds[i] = selectedServices.get(i).getId();
@@ -98,7 +98,6 @@ public class BookingController {
                     bookingView.getVehicleComboBox().setValue(null);
                     bookingView.getDate().setValue(null);
                     bookingView.getDescriptionField().clear();
-                    //töm de valda tjänsterna, summeringen nollställs då av lyssnaren ovan
                     bookingView.getServiceComboBox().setValue(null);
                     bookingView.getServicesTable().getItems().clear();
                 }
@@ -107,26 +106,18 @@ public class BookingController {
             }
         });
 
-        // ===== Bokningslistan (BookingListView) =====
+//        bookingListView.getBookingTable().getSelectionModel().selectedItemProperty().addListener(
+//                (observable, oldBooking, newBooking) -> showServicesForSelectedBooking());
+//        bookingListView.getAddServiceButton().setOnAction(actionEvent -> addServiceToSelectedBooking());
+//        bookingListView.getRemoveServiceButton().setOnAction(actionEvent -> removeServiceFromSelectedBooking());
 
-        //Alexander
-        //när en bokning markeras visas dess tjänster och summering
-        bookingListView.getBookingTable().getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldBooking, newBooking) -> showServicesForSelectedBooking());
-
-        bookingListView.getAddServiceButton().setOnAction(actionEvent -> addServiceToSelectedBooking());
-        bookingListView.getRemoveServiceButton().setOnAction(actionEvent -> removeServiceFromSelectedBooking());
-
-        //Alexander
-        //knappen "Skapa arbetsorder" på varje bokning
         bookingListView.setOnCreateWorkOrder(booking -> openCreateWorkOrder(booking));
+        bookingListView.setOnViewBooking(booking -> openBookingDetails(booking));
 
         bookingView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
         bookingListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
     }
 
-    //Alexander
-    //lägger vald tjänst i listan för den nya bokningen (samma tjänst kan bara väljas en gång)
     private void addServiceToNewBooking() {
         ServiceItem selectedService = bookingView.getServiceComboBox().getValue();
         List<ServiceItem> selectedServices = bookingView.getServicesTable().getItems();
@@ -137,102 +128,179 @@ public class BookingController {
         }
     }
 
-    //Alexander
-    //total tid och totalt pris för de valda tjänsterna i den nya bokningen
     private void updateNewBookingSummary() {
         List<ServiceItem> selectedServices = bookingView.getServicesTable().getItems();
 
         bookingView.showSummary(formatTotalTime(selectedServices), formatTotalPrice(selectedServices));
     }
 
-    //Alexander
-    //visar tjänsterna och summeringen för den bokning som är markerad i bokningslistan
-    private void showServicesForSelectedBooking() {
-        Booking booking = bookingListView.getBookingTable().getSelectionModel().getSelectedItem();
+//    private void showServicesForSelectedBooking() {
+//        Booking booking = bookingListView.getBookingTable().getSelectionModel().getSelectedItem();
+//
+//        if (booking == null) {
+//            bookingListView.getBookingServicesTable().getItems().clear();
+//            bookingListView.showSummary("--", "--");
+//            bookingListView.setServiceEditingDisabled(true);
+//            bookingListView.setLockedMessageVisible(false);
+//            return;
+//        }
+//
+//        List<ServiceItem> services = bookingService.getServicesForBooking(booking.getId());
+//        bookingListView.getBookingServicesTable().getItems().setAll(services);
+//        bookingListView.showSummary(formatTotalTime(services), formatTotalPrice(services));
+//
+//        boolean workStarted = bookingService.isWorkStarted(booking);
+//        bookingListView.setServiceEditingDisabled(workStarted);
+//        bookingListView.setLockedMessageVisible(workStarted);
+//    }
 
-        if (booking == null) {
-            bookingListView.getBookingServicesTable().getItems().clear();
-            bookingListView.showSummary("--", "--");
-            bookingListView.setServiceEditingDisabled(true);
-            bookingListView.setLockedMessageVisible(false);
-            return;
-        }
-
-        List<ServiceItem> services = bookingService.getServicesForBooking(booking.getId());
-        bookingListView.getBookingServicesTable().getItems().setAll(services);
-        bookingListView.showSummary(formatTotalTime(services), formatTotalPrice(services));
-
-        //tjänsterna får bara ändras innan arbetet har påbörjats (krav 2)
-        boolean workStarted = bookingService.isWorkStarted(booking);
-        bookingListView.setServiceEditingDisabled(workStarted);
-        bookingListView.setLockedMessageVisible(workStarted);
-    }
-
-    //Alexander
-    //lägg till en tjänst i en befintlig bokning
-    private void addServiceToSelectedBooking() {
-        Booking booking = bookingListView.getBookingTable().getSelectionModel().getSelectedItem();
-        ServiceItem service = bookingListView.getServiceComboBox().getValue();
-
-        if (booking == null || service == null) {
+    private boolean addServiceToBooking(Booking booking, ServiceItem service) {
+        if (service == null) {
             showWarning(languageManager.getString("selectServiceToAddWarning"));
-            return;
+            return false;
         }
 
         if (booking.containsServiceItem(service.getId())) {
             showWarning(languageManager.getString("serviceAlreadyInBookingWarning"));
-            return;
+            return false;
         }
 
         if (!bookingService.addServiceToBooking(booking.getId(), service.getId())) {
             showWarning(languageManager.getString("serviceAlreadyInBookingWarning"));
+            return false;
         }
 
-        bookingListView.getServiceComboBox().setValue(null);
-        refreshBookingList();
+        return true;
     }
 
-    //Alexander
-    //ta bort den markerade tjänsten från en befintlig bokning
-    private void removeServiceFromSelectedBooking() {
-        Booking booking = bookingListView.getBookingTable().getSelectionModel().getSelectedItem();
-        ServiceItem service = bookingListView.getBookingServicesTable().getSelectionModel().getSelectedItem();
+//    private void addServiceToSelectedBooking() {
+//        Booking booking = bookingListView.getBookingTable().getSelectionModel().getSelectedItem();
+//        ServiceItem service = bookingListView.getServiceComboBox().getValue();
+//
+//        if (booking == null) {
+//            showWarning(languageManager.getString("selectServiceToAddWarning"));
+//            return;
+//        }
+//
+//        if (addServiceToBooking(booking, service)) {
+//            bookingListView.getServiceComboBox().setValue(null);
+//            refreshBookingList();
+//        }
+//    }
 
-        if (booking == null || service == null) {
+    private boolean removeServiceFromBooking(Booking booking, ServiceItem service) {
+        if (service == null) {
             showWarning(languageManager.getString("selectServiceToRemoveWarning"));
-            return;
+            return false;
         }
 
-        if (booking.getServiceItemIds().size() <= 1) {
+        List<ServiceItem> services = bookingService.getServicesForBooking(booking.getId());
+
+        if (services.size() <= 1) {
             showWarning(languageManager.getString("lastServiceWarning"));
-            return;
+            return false;
         }
 
-        //kontrollerar reglerna och sparar i databasen
         if (!bookingService.removeServiceFromBooking(booking.getId(), service.getId())) {
             showWarning(languageManager.getString("serviceChangeFailedWarning"));
+            return false;
         }
 
-        refreshBookingList();
+        return true;
     }
 
-    //Alexander
-    //går till sidan "Skapa arbetsorder" med bokningen ifylld.
-    //En bokning kan bara ha en arbetsorder, så finns det redan en visas en varning istället.
+//    private void removeServiceFromSelectedBooking() {
+//        Booking booking = bookingListView.getBookingTable().getSelectionModel().getSelectedItem();
+//        ServiceItem service = bookingListView.getBookingServicesTable().getSelectionModel().getSelectedItem();
+//
+//        if (booking == null) {
+//            showWarning(languageManager.getString("selectServiceToRemoveWarning"));
+//            return;
+//        }
+//
+//        if (removeServiceFromBooking(booking, service)) {
+//            refreshBookingList();
+//        }
+//    }
+
     private void openCreateWorkOrder(Booking booking) {
         if (workOrderService.hasWorkOrder(booking.getId())) {
             showWarning(languageManager.getString("existingWorkOrder"));
             return;
         }
+
         app.showOrderFormView(booking);
     }
 
-    //Alexander
-    //beräkningen görs i GarageSystem, här görs resultatet bara om till text
+    private void openBookingDetails(Booking booking) {
+        Vehicle vehicle = vehicleService.findVehicle(booking.getVehicleId());
+        if (vehicle == null) {
+            return;
+        }
+
+        Customer customer = customerService.findCustomer(vehicle.getCustomerId());
+        if (customer == null) {
+            return;
+        }
+
+        List<ServiceItem> services = bookingService.getServicesForBooking(booking.getId());
+
+        BookingDetailsView detailsView = new BookingDetailsView(booking, vehicle, customer, services);
+
+        detailsView.setOnBack(() -> {
+            app.showView(bookingListView.getView());
+        });
+
+        detailsView.setOnBookingAction(action -> {
+            if ("edit".equals(action)) {
+                if (bookingService.isWorkStarted(booking)) {
+                    showWarning(languageManager.getString("bookingLockedInfo"));
+                    return;
+                }
+
+                detailsView.showEditServices();
+                detailsView.getServiceComboBox().getItems().setAll(serviceItemService.getServiceItems());
+            }
+        });
+
+        detailsView.getAddServiceButton().setOnAction(event -> {
+            ServiceItem service = detailsView.getServiceComboBox().getValue();
+
+            if (addServiceToBooking(booking, service)) {
+                List<ServiceItem> updatedServices = bookingService.getServicesForBooking(booking.getId());
+
+                detailsView.getServicesTable().getItems().setAll(updatedServices);
+                detailsView.showSummary(
+                        formatTotalTime(updatedServices),
+                        formatTotalPrice(updatedServices)
+                );
+
+                detailsView.getServiceComboBox().setValue(null);
+            }
+        });
+
+        detailsView.getRemoveServiceButton().setOnAction(event -> {
+            ServiceItem service = detailsView.getServicesTable().getSelectionModel().getSelectedItem();
+
+            if (removeServiceFromBooking(booking, service)) {
+                List<ServiceItem> updatedServices = bookingService.getServicesForBooking(booking.getId());
+
+                detailsView.getServicesTable().getItems().setAll(updatedServices);
+                detailsView.showSummary(
+                        formatTotalTime(updatedServices),
+                        formatTotalPrice(updatedServices)
+                );
+            }
+        });
+
+        app.showView(detailsView.getView());
+    }
+
     private String formatTotalTime(List<ServiceItem> services) {
         if (services.isEmpty()) {
             return "--";
         }
+
         return bookingService.calculateTotalMinutes(services) + " min";
     }
 
@@ -240,12 +308,10 @@ public class BookingController {
         if (services.isEmpty()) {
             return "--";
         }
+
         return String.format("%,.0f kr", bookingService.calculateTotalPrice(services));
     }
 
-    //Alexander
-    //bokningarna hämtas via GarageSystem, den bokning som var markerad markeras igen,
-    //dess tjänster visas direkt efter att en tjänst lagts till eller tagits bort.
     private void refreshBookingList() {
         Booking selectedBooking = bookingListView.getBookingTable().getSelectionModel().getSelectedItem();
 
@@ -258,7 +324,8 @@ public class BookingController {
                 }
             }
         }
-        showServicesForSelectedBooking();
+
+        //showServicesForSelectedBooking();
     }
 
     private void showWarning(String message) {

@@ -547,3 +547,69 @@ ListView .list-cell:filled:selected {
 .page-scroll-pane > .viewport {
     -fx-background-color: transparent;
 }
+
+.editing-button {
+    -fx-background-color: #b3261e;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+    -fx-background-radius: 8px;
+    -fx-padding: 6px 12px;
+    -fx-cursor: default;
+}
+
+.editing-button .ikonli-font-icon {
+    -fx-icon-color: white;
+    -fx-icon-size: 14px;
+}
+
+.save-editing-button {
+    -fx-background-color: #D97A32;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+
+.save-editing-button:hover {
+    -fx-background-color: #C66C2B;
+}
+
+.cancel-editing-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5f6368;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-color: #b8b8b8;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 7px 15px;
+    -fx-cursor: hand;
+}
+
+.cancel-editing-button:hover {
+    -fx-background-color: #f1f1f1;
+}
+
+.create-new-if-missing-button {
+    -fx-background-color: #eef6f0;
+    -fx-text-fill: #2f6f44;
+    -fx-border-color: #b8d5c1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 7px;
+    -fx-background-radius: 7px;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 14px;
+    -fx-cursor: hand;
+}
+.create-new-if-missing-button:hover {
+    -fx-background-color: #dfeee4;
+    -fx-border-color: #7faf8d;
+}
+.create-new-if-missing-button:pressed {
+    -fx-background-color: #d2e6d8;
+}
