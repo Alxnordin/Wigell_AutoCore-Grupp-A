@@ -1,7 +1,9 @@
 package com.wac.autocore;
 
+
 import com.wac.autocore.controller.*;
 import com.wac.autocore.model.Booking;
+import com.wac.autocore.view.service.ServicePackageView;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.service.*;
 import com.wac.autocore.view.vehicle.VehicleListView;
@@ -42,6 +44,7 @@ public class AutoCoreApplication extends Application {
     private final CustomerService customerService = new CustomerService();
     private final VehicleService vehicleService = new VehicleService(customerService);
     private final ServiceItemService serviceItemService = new ServiceItemService();
+    private final ServicePackageService servicePackageService = new ServicePackageService(serviceItemService);
 
     private final BookingService bookingService =
             new BookingService(vehicleService, serviceItemService);
@@ -146,8 +149,16 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showServiceItemView() {
+        ServiceItemView serviceItemView = new ServiceItemView();
         ServiceController controller = new ServiceController(serviceItemService,
-                this, new ServiceItemView(), new MechanicView());
+                this, serviceItemView, new MechanicView());
+
+        //Alexander
+        //servicepaketen visas i en egen sektion på samma sida
+        ServicePackageController packageController = new ServicePackageController(
+                servicePackageService, serviceItemService, this, new ServicePackageView());
+        serviceItemView.addSection(packageController.getView());
+
         borderPane.setCenter(controller.getServiceItemView());
     }
 

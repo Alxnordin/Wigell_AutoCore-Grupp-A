@@ -58,7 +58,7 @@ public class ServiceItem implements ServiceComponent {
 
     @Override
     public List<ServiceItem> getServiceItems() {
-        return Collections.emptyList();
+        return Collections.singletonList(this);
     }
 
     public void setEstimatedMinutes(int estimatedMinutes) {
