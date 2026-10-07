@@ -45,6 +45,8 @@ public class UIComponents {
     //tabell
     public static <T> TableView<T> createTable() {
         TableView<T> table = new TableView<>();
+        table.setMaxWidth(Double.MAX_VALUE);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.getStyleClass().add("standard-table");
 
         return table;
@@ -262,6 +264,68 @@ public class UIComponents {
         button.setGraphicTextGap(10);
 
         return button;
+    }
 
+    // Skapar menyval för Create new order med ikon, rubrik och beskrivning
+    public static MenuItem createOrderMenuItem(
+            Label titleLabel,
+            Label descriptionLabel,
+            String icon
+    ) {
+        MenuItem item = new MenuItem();
+
+        FontIcon menuIcon = new FontIcon(icon);
+        menuIcon.setIconSize(22);
+        menuIcon.getStyleClass().add("order-menu-icon");
+
+        titleLabel.getStyleClass().add("order-menu-title");
+        descriptionLabel.getStyleClass().add("order-menu-description");
+
+        VBox textBox = new VBox(2);
+        textBox.getChildren().addAll(titleLabel, descriptionLabel);
+
+        HBox content = new HBox(12);
+        content.setAlignment(Pos.CENTER_LEFT);
+        content.getChildren().addAll(menuIcon, textBox);
+
+        item.setGraphic(content);
+
+        return item;
+    }
+
+
+    //skapa forumäret i creatework order:
+    public static VBox createFormSection() {
+        VBox section = new VBox(10);
+
+        section.setPadding(new Insets(16));
+
+        section.setMaxWidth(Double.MAX_VALUE);
+
+        section.getStyleClass().add("form-section");
+
+        return section;
+    }
+
+    // Standardknapp för att ta bort en rad/tjänst -> soptunna
+    public static Button createDeleteButton() {
+        Button deleteButton = new Button();
+
+        FontIcon deleteIcon = new FontIcon("fa-trash");
+        deleteIcon.setIconSize(18);
+        deleteIcon.getStyleClass().add("delete-icon");
+
+        deleteButton.setGraphic(deleteIcon);
+        deleteButton.getStyleClass().add("delete-button");
+
+        return deleteButton;
+    }
+
+    //Skapar Lägg till-knapp
+    public static Button createCreateButton(String text)   {
+        Button createButton = new Button(text);
+        createButton.getStyleClass().add("create-order-button");
+
+        return createButton;
     }
 }

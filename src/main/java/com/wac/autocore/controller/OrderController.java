@@ -5,6 +5,7 @@ import com.wac.autocore.dao.*;
 import com.wac.autocore.model.*;
 import com.wac.autocore.service.*;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.view.order.CreateWorkOrderView;
 import com.wac.autocore.view.order.OrderDetailsView;
 import com.wac.autocore.view.order.OrderFormView;
 import com.wac.autocore.view.order.OrderListView;
@@ -174,6 +175,20 @@ public class OrderController {
 
             app.showView(detailsView.getView());
         });
+
+        orderListView.setOnCreateOrderType(this::openCreateWorkOrderView);
+
+    }
+
+    private void openCreateWorkOrderView(String orderType) {
+        CreateWorkOrderView createWorkOrderView =
+                new CreateWorkOrderView(orderType);
+
+        createWorkOrderView.getBackButton().setOnAction(event -> {
+            app.showView(orderListView.getView());
+        });
+
+        app.showView(createWorkOrderView.getView());
     }
 
     //Alexander

@@ -198,14 +198,7 @@ public class BookingView {
         //radera raden
         deleteColumn.setCellFactory(column -> new TableCell<ServiceItem, Void>() {
             private final Button deleteButton = new Button();
-
             {
-                FontIcon deleteIcon = new FontIcon("fa-trash");
-                deleteIcon.setIconSize(18);
-                deleteIcon.getStyleClass().add("delete-icon");
-
-                deleteButton.setGraphic(deleteIcon);
-                deleteButton.getStyleClass().add("delete-button");
                 //Alexander
                 // soptunnan centreras och får mindre luft så att raden inte blir högre än övriga
                 setAlignment(Pos.CENTER);

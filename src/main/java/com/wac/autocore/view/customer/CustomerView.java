@@ -18,26 +18,29 @@ public class CustomerView {
     private final Label title;
     private final Label subtitle;
 
+    private final Button createCustomerButton;
+
     private final Label firstNameLabel;
     private final TextField firstNameField;
-    private Label firstNameWrongInputLabel;
+    private final Label firstNameWrongInputLabel;
 
     private final Label lastNameLabel;
     private final TextField lastNameField;
-    private Label lastNameWrongInputLabel;
+    private final Label lastNameWrongInputLabel;
 
     private final Label phoneLabel;
     private final TextField phoneField;
-    private Label phoneWrongInputLabel;
+    private final Label phoneWrongInputLabel;
 
     private final Label emailLabel;
     private final TextField emailField;
-    private Label emailWrongInputLabel;
+    private final Label emailWrongInputLabel;
 
     private final Label vipLabel;
     private final ComboBox<String> vipComboBox;
 
-    private final Button createCustomerButton;
+    private Label confirmationLabel;
+
     private final Button backButton;
 
     LanguageManager languageManager = LanguageManager.getInstance();
@@ -110,15 +113,16 @@ public class CustomerView {
         HBox buttonBox = UIComponents.createButtonBox();
         buttonBox.getChildren().addAll(backButton, createCustomerButton);
 
-//        Label summaryLabel = new Label("Summering");
-//        VBox summarySection = UIComponents.createSectionBox();
-//        summarySection.getChildren().add(summaryLabel);
+        //Ej klar med denna
+        confirmationLabel = new Label("");
+        VBox summarySection = UIComponents.createSectionBox();
+        summarySection.getChildren().add(confirmationLabel);
 
         VBox sectionVBox = UIComponents.createSectionBox();
         sectionVBox.setSpacing(30);
         sectionVBox.getChildren().addAll(hBoxFirstLastName, hBoxemailPhone, vipVBox);
 
-        vBox.getChildren().addAll(titleHBox, subtitle, sectionVBox, /*summarySection,*/buttonBox);
+        vBox.getChildren().addAll(titleHBox, subtitle, sectionVBox, summarySection, buttonBox);
         this.root = vBox;
 
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
@@ -131,25 +135,18 @@ public class CustomerView {
     }
 
     public TextField getFirstNameField() {return firstNameField;}
-    public Label getFirstNameLabel() {return firstNameLabel;}
     public Label getFirstNameWrongInputLabel() {return firstNameWrongInputLabel;}
 
     public TextField getLastNameField() {return lastNameField;}
-    public Label getLastNameLabel() {return lastNameLabel;}
     public Label getLastNameWrongInputLabel() {return lastNameWrongInputLabel;}
 
     public TextField getPhoneField() {return phoneField;}
-    public Label getPhoneLabel() {return phoneLabel;}
     public Label getPhoneWrongInputLabel() {return phoneWrongInputLabel;}
 
     public TextField getEmailField() {return emailField;}
-    public Label getEmailLabel() {return emailLabel;}
     public Label getEmailWrongInputLabel() {return emailWrongInputLabel;}
 
-    public Label getVipLabel() {return vipLabel;}
-    public ComboBox<String> getVipComboBox() {
-        return vipComboBox;
-    }
+    public Label getConfirmationLabel() {return confirmationLabel;}
 
     public Button getCreateCustomerButton() {return createCustomerButton;}
     public Button getBackButton() {return backButton;}
