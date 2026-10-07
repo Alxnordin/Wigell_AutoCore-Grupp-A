@@ -12,6 +12,8 @@ public class WorkOrder {
     private Integer bookingId;
     private int customerId;
     private int vehicleId;
+    //För utkast
+    private String description;
     private int mechanicId;
     private List<Integer> serviceItemIds;
     private Map<Integer, Double> serviceItemPrices;
@@ -39,6 +41,7 @@ public class WorkOrder {
 
         copy.customerId = this.customerId;
         copy.vehicleId = this.vehicleId;
+        copy.description = this.description;
 
         copy.serviceItemIds = new ArrayList<>(this.serviceItemIds);
         copy.serviceItemPrices = new HashMap<>(this.serviceItemPrices);
@@ -115,6 +118,13 @@ public class WorkOrder {
     }
     public void setVehicleId(int vehicleId){
         this.vehicleId = vehicleId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description){
+        this.description = description;
     }
 
     public String getStatus() {
