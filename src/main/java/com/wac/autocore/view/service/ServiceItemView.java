@@ -22,6 +22,9 @@ public class ServiceItemView {
 
     private final Parent root;
 
+    //Alexander
+    //sidans grundbox, sparas så att en sektion till kan läggas in (se addSection)
+    private final VBox box;
 
     private Label serviceLabel;
 
@@ -36,7 +39,7 @@ public class ServiceItemView {
 
     public ServiceItemView(){
 
-        VBox box = UIComponents.createVBoxForViews();
+        box = UIComponents.createVBoxForViews();
 
 
         serviceLabel = UIComponents.createSubtitle(languageManager.getString("serviceLabel"));
@@ -54,7 +57,13 @@ public class ServiceItemView {
 
         box.getChildren().addAll(serviceLabel, serviceItemTableView, backButton);
 
-        this.root = box;
+        //Alexander
+        //sidan kan rullas, eftersom den nu även visar servicepaketen
+        ScrollPane scrollPane = new ScrollPane(box);
+        scrollPane.setFitToWidth(true);
+        scrollPane.getStyleClass().add("edge-to-edge");
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+        this.root = scrollPane;
 
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
             changeTextAllComponents();
@@ -66,8 +75,16 @@ public class ServiceItemView {
     public TableView<ServiceItem> getServiceItemTableView() { return serviceItemTableView; }
     public Button getBackButton() { return backButton; }
 
+    //Alexander
+    //lägger in en sektion till på sidan (servicepaketen), ovanför tillbaka-knappen
+    public void addSection(Node section) {
+        box.getChildren().add(box.getChildren().indexOf(backButton), section);
+        //tabellen med tjänster blir lägre så att sektionen under syns utan att man behöver rulla långt
+        serviceItemTableView.setPrefHeight(230);
+    }
 
-    public void setOnChangePrice(Consumer<ServiceItem> action) {
+
+        public void setOnChangePrice(Consumer<ServiceItem> action) {
 
         actionColumn.setCellFactory(column ->
                 new TableCell<ServiceItem, Void>() {

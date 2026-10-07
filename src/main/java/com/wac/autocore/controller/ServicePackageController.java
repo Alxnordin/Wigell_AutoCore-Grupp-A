@@ -92,7 +92,7 @@ public class ServicePackageController {
                 .getValue();
 
         if (servicePackage == null || service == null) {
-            showWarning(languageManager.getString("selectedPackageAndServiceWarning"));
+            showWarning(languageManager.getString("selectPackageAndServiceWarning"));
             return;
         }
 
@@ -120,7 +120,7 @@ public class ServicePackageController {
                 .getSelectionModel().getSelectedItem();
 
         if (servicePackage == null || service == null) {
-            showWarning(languageManager.getString("selectedServiceToRemoveFromPackageWarning"));
+            showWarning(languageManager.getString("selectServiceToRemoveFromPackageWarning"));
             return;
         }
         if (!servicePackageService.removeServiceFromPackage(servicePackage.getId(),

@@ -1,14 +1,12 @@
 package com.wac.autocore.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-
 //Alexander
-//Composite mönster- ett servicepaket (t.ex. Vinterkontroll) som innehåller flera tjänster.
+//Composite: ett servicepaket (t.ex. Vinterkontroll) som innehåller flera tjänster.
 //Paketet är en mall. När det används i en bokning kopieras tjänsterna in i bokningen,
-//bokningen påverkas inte om paketet ändras senare.
+//så bokningen påverkas inte om paketet ändras senare.
 public class ServicePackage implements ServiceComponent {
 
     private int id;
@@ -20,22 +18,32 @@ public class ServicePackage implements ServiceComponent {
         this.name = name;
     }
 
-    public int getId() {return id;}
-    public void setId(int id) {this.id = id;}
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     @Override
-    public String getName() {return name;}
-    public void setName(String name) {this.name = name;}
+    public String getName() {
+        return name;
+    }
 
-    //lägger till en tjänst i paketet
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    //lägger till en del i paketet (i praktiken en tjänst)
     public void add(ServiceComponent component) {
         components.add(component);
     }
 
-    //paketets pris är summan av tjänsternas pris
+    //paketets pris är summan av delarnas pris
     @Override
     public double getPrice() {
-        return 0;
+        double totalPrice = 0;
 
         for (ServiceComponent component : components) {
             totalPrice += component.getPrice();
@@ -43,13 +51,13 @@ public class ServicePackage implements ServiceComponent {
         return totalPrice;
     }
 
-    //paketets tid är totalen av tjänsternas tid
+    //paketets tid är summan av delarnas tid
     @Override
     public int getEstimatedMinutes() {
-        return 0;
+        int totalMinutes = 0;
 
         for (ServiceComponent component : components) {
-            totalMinutes +=component.getEstimatedMinutes();
+            totalMinutes += component.getEstimatedMinutes();
         }
         return totalMinutes;
     }
@@ -65,12 +73,11 @@ public class ServicePackage implements ServiceComponent {
         return serviceItems;
     }
 
+    //antal tjänster i paketet, visas i tabellen över paket
     public int getServiceCount() {
-        return getServiceCount().size();
+        return getServiceItems().size();
     }
 
-
-    //antal tjänster i paketet
     public boolean containsServiceItem(int serviceItemId) {
         for (ServiceItem serviceItem : getServiceItems()) {
             if (serviceItem.getId() == serviceItemId) {
@@ -87,5 +94,4 @@ public class ServicePackage implements ServiceComponent {
                 " | Price: " + getPrice() + " SEK" +
                 " | Estimated time: " + getEstimatedMinutes() + " min";
     }
-
 }

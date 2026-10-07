@@ -55,7 +55,7 @@ public class ServicePackageView {
     LanguageManager languageManager = LanguageManager.getInstance();
 
     public ServicePackageView() {
-        servicePackagesTitle = UIComponents.createSectionTitle(languageManager.getString("servicePackageTitle"));
+        servicePackagesTitle = UIComponents.createSectionTitle(languageManager.getString("servicePackagesTitle"));
 
         //lista över paket
         packageTable = UIComponents.createTable();
@@ -173,7 +173,7 @@ public class ServicePackageView {
         VBox section = UIComponents.createSectionBox();
         section.setSpacing(12);
         section.getChildren().addAll(
-                packageServicesTitle,
+                servicePackagesTitle,
                 packageTable,
                 newPackageBox,
                 packageServicesTitle,

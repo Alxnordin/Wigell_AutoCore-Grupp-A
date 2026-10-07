@@ -43,11 +43,11 @@ public class ServicePackageDAO {
     //läser in paketets tjänster med namn, pris & tid från service_item
     private void loadServiceItems(Connection connection, ServicePackage servicePackage)
         throws Exception {
-        String sql = "SELECT s.id, s.name, s.description, s.price, s.estimated_minutes" +
-                "FROM servic_package_item p " +
+        String sql = "SELECT s.id, s.name, s.description, s.price, s.estimated_minutes " +
+                "FROM service_package_item p " +
                 "JOIN service_item s ON s.id = p.service_item_id " +
                 "WHERE p.service_package_id = ? " +
-                "ORDER BY s.id";
+                "ORDER BY s.id ";
         try (PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1, servicePackage.getId());
 
@@ -58,7 +58,7 @@ public class ServicePackageDAO {
                             resultSet.getString("name"),
                             resultSet.getString("description"),
                             resultSet.getDouble("price"),
-                            resultSet.getInt("estimated_mintutes")
+                            resultSet.getInt("estimated_minutes")
                     ));
                 }
 
@@ -97,7 +97,7 @@ public class ServicePackageDAO {
 
         try (Connection connection = DatabaseConnection.getConnection();
         PreparedStatement statement = connection.prepareStatement(sql)){
-            statement.setInt(1, serviceItemId);
+            statement.setInt(1, servicePackageId);
             statement.setInt(2, serviceItemId);
 
             statement.executeUpdate();
@@ -109,13 +109,13 @@ public class ServicePackageDAO {
 
     //tar bort en tjänst från ett paket
     public void removeServiceItem(int servicePackageId, int serviceItemId) {
-        String sql = "DELETE FROM service_package " +
+        String sql = "DELETE FROM service_package_item " +
                 "WHERE service_package_id = ? AND service_item_id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
         PreparedStatement statement = connection.prepareStatement(sql)){
-            statement.setInt(1, serviceItemId);
-            statement.setInt(2, servicePackageId);
+            statement.setInt(1, servicePackageId);
+            statement.setInt(2, serviceItemId);
 
             statement.executeUpdate();
         } catch (Exception e) {
