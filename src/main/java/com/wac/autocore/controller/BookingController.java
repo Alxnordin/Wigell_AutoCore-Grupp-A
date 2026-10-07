@@ -224,7 +224,7 @@ public class BookingController {
             showWarning(languageManager.getString("existingWorkOrder"));
             return;
         }
-        app.showOrderFormView(booking);
+        app.showCreateWorkOrderView(booking);
     }
 
     //Alexander

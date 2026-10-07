@@ -125,18 +125,22 @@ public class BookingView {
 
         VBox customerBox = new VBox(5);
         customerLabel = new Label(languageManager.getString("customerLabel"));
+        customerLabel.getStyleClass().add("form-label");
         customerBox.getChildren().addAll(customerLabel, customerComboBox);
 
         VBox vehicleBox = new VBox(5);
         vehicleLabel = new Label(languageManager.getString("vehicleLabel"));
+        vehicleLabel.getStyleClass().add("form-label");
         vehicleBox.getChildren().addAll(vehicleLabel, vehicleComboBox);
 
         VBox dateBox = new VBox(5);
         dateLabel = new Label(languageManager.getString("dateLabel"));
+        dateLabel.getStyleClass().add("form-label");
         dateBox.getChildren().addAll(dateLabel, date);
 
         VBox descriptionBox = new VBox(5);
         descriptionLabel = new Label(languageManager.getString("descriptionLabel"));
+        descriptionLabel.getStyleClass().add("form-label");
         descriptionBox.getChildren().addAll(descriptionLabel, descriptionField);
 
         HBox bookingFields = new HBox(15);
@@ -150,8 +154,10 @@ public class BookingView {
         servicesTitle = new Label("2. " + languageManager.getString("servicesTitle"));
         servicesTitle.getStyleClass().add("section-title");
         selectServiceLabel = new Label(languageManager.getString("selectService"));
+        selectServiceLabel.getStyleClass().add("form-label");
 
         selectedServicesLabel = new Label(languageManager.getString("selectedServices"));
+        selectedServicesLabel.getStyleClass().add("form-label");
         noServicesLabel = new Label(languageManager.getString("noServices"));
         noServicesLabel.getStyleClass().add("placeholder-text");
         addServiceButton = new Button(languageManager.getString("addService"));

@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -327,5 +328,84 @@ public class UIComponents {
         createButton.getStyleClass().add("create-order-button");
 
         return createButton;
+    }
+
+    //hänglåsikon på icke valbara comboboxar som i planned order
+    public static <T> StackPane createLockedComboBox(ComboBox<T> comboBox) {
+
+        comboBox.setMouseTransparent(true);
+        comboBox.setFocusTraversable(false);
+        comboBox.getStyleClass().add("locked-combo-box");
+
+        FontIcon lockIcon = new FontIcon("fa-lock");
+        lockIcon.setIconSize(14);
+        lockIcon.getStyleClass().add("locked-field-icon");
+        lockIcon.setMouseTransparent(true);
+
+        StackPane container = new StackPane();
+
+        container.setMaxWidth(Double.MAX_VALUE);
+
+        container.getChildren().addAll(
+                comboBox,
+                lockIcon
+        );
+
+        StackPane.setAlignment(lockIcon, Pos.CENTER_RIGHT);
+        StackPane.setMargin(lockIcon, new Insets(0, 14, 0, 0));
+
+        return container;
+    }
+
+
+    //hänglåsikon på datepicker
+    public static StackPane createLockedDatePicker(DatePicker datePicker) {
+
+        // Gör DatePicker ej klickbar
+        datePicker.setMouseTransparent(true);
+        datePicker.setFocusTraversable(false);
+
+        // CSS-klass för att gömma kalenderknappen
+        datePicker.getStyleClass().add("locked-date-picker");
+
+        FontIcon lockIcon = new FontIcon("fa-lock");
+        lockIcon.setIconSize(13);
+        lockIcon.getStyleClass().add("locked-field-icon");
+
+        StackPane container = new StackPane();
+        container.setMaxWidth(Double.MAX_VALUE);
+        container.getChildren().addAll(
+                datePicker,
+                lockIcon
+        );
+
+        StackPane.setAlignment(lockIcon, Pos.CENTER_RIGHT);
+        StackPane.setMargin(lockIcon, new Insets(0, 12, 0, 0));
+
+        return container;
+    }
+
+    //hänglåsikon på textrutor
+    public static StackPane createLockedTextField(TextField textField) {
+
+        // Användaren kan inte ändra texten
+        textField.setEditable(false);
+        textField.setFocusTraversable(false);
+
+        FontIcon lockIcon = new FontIcon("fa-lock");
+        lockIcon.setIconSize(13);
+        lockIcon.getStyleClass().add("locked-field-icon");
+
+        StackPane container = new StackPane();
+        container.setMaxWidth(Double.MAX_VALUE);
+        container.getChildren().addAll(
+                textField,
+                lockIcon
+        );
+
+        StackPane.setAlignment(lockIcon, Pos.CENTER_RIGHT);
+        StackPane.setMargin(lockIcon, new Insets(0, 12, 0, 0));
+
+        return container;
     }
 }

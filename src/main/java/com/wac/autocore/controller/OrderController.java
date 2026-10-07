@@ -18,8 +18,10 @@ public class OrderController {
 
     private final BookingService bookingService;
     private final WorkOrderService workOrderService;
+    private final MechanicService mechanicService;
     private final VehicleService vehicleService;
     private final CustomerService customerService;
+    private final ServiceItemService serviceItemService;
 
     private final AutoCoreApplication app;
 
@@ -37,6 +39,8 @@ public class OrderController {
 
         this.bookingService = bookingService;
         this.workOrderService = workOrderService;
+        this.mechanicService = mechanicService;
+        this.serviceItemService = serviceItemService;
         this.vehicleService = vehicleService;
         this.customerService = customerService;
         this.app = app;
@@ -181,15 +185,230 @@ public class OrderController {
     }
 
     private void openCreateWorkOrderView(String orderType) {
-        CreateWorkOrderView createWorkOrderView =
-                new CreateWorkOrderView(orderType);
+        CreateWorkOrderView createWorkOrderView = new CreateWorkOrderView(orderType, null);
+
+        if ("dropIn".equals(orderType)) {
+
+            createWorkOrderView.getCustomerComboBox()
+                    .getItems()
+                    .addAll(customerService.getAllCustomers());
+
+            createWorkOrderView.getVehicleComboBox()
+                    .getItems()
+                    .addAll(vehicleService.getVehicles());
+
+            createWorkOrderView.getMechanicComboBox()
+                    .getItems()
+                    .addAll(mechanicService.getMechanics());
+        }
+
+        // Om det är en planned order ska alla befintliga
+        // bokningar visas i dropdownen
+        if ("planned".equals(orderType)) {
+            createWorkOrderView.getBookingComboBox()
+                    .getItems()
+                    .addAll(bookingService.getBookings());
+        }
+
+        createWorkOrderView.getBookingComboBox()
+                .setOnAction(event -> {
+
+                    Booking selectedBooking = createWorkOrderView.getBookingComboBox().getValue();
+                    fillFromBooking(createWorkOrderView, selectedBooking);
+                    updateAvailableMechanics(createWorkOrderView, selectedBooking);
+                });
 
         createWorkOrderView.getBackButton().setOnAction(event -> {
             app.showView(orderListView.getView());
         });
 
+        createWorkOrderView.getAddServiceButton().setOnAction(event -> {
+            addServiceToWorkOrder(createWorkOrderView);
+        });
+
         app.showView(createWorkOrderView.getView());
     }
+
+
+    public void openCreateWorkOrderView(Booking booking) {
+        CreateWorkOrderView createWorkOrderView = new CreateWorkOrderView("planned", booking);
+
+        createWorkOrderView.getBookingComboBox()
+                .setValue(booking);
+
+        fillFromBooking(
+                createWorkOrderView,
+                booking
+        );
+
+        updateAvailableMechanics(
+                createWorkOrderView,
+                booking
+        );
+
+        createWorkOrderView.getBookingComboBox()
+                .getItems()
+                .addAll(bookingService.getBookings());
+
+        createWorkOrderView.getBookingComboBox()
+                .setValue(booking);
+
+        createWorkOrderView.getBookingComboBox()
+                .setOnAction(event -> {
+
+                    Booking selectedBooking =
+                            createWorkOrderView.getBookingComboBox().getValue();
+
+                    fillFromBooking(
+                            createWorkOrderView,
+                            selectedBooking
+                    );
+                });
+
+        createWorkOrderView.getBackButton().setOnAction(event -> {
+            app.showView(orderListView.getView());
+        });
+
+        createWorkOrderView.getAddServiceButton().setOnAction(event -> {
+            addServiceToWorkOrder(createWorkOrderView);
+        });
+        app.showView(createWorkOrderView.getView());
+    }
+
+    private void fillFromBooking(
+            CreateWorkOrderView view,
+            Booking booking) {
+
+        if (booking == null) {
+            return;
+        }
+
+        // Datum
+        view.getDatePicker().setValue(booking.getDate());
+
+        // Beskrivning
+        view.getDescriptionField().setText(booking.getDescription());
+
+        // Hämta fordonet från bookingens vehicleId
+        Vehicle vehicle = vehicleService.findVehicle(booking.getVehicleId());
+
+        if (vehicle != null) {
+            view.getVehicleComboBox()
+                    .getItems()
+                    .clear();
+
+            view.getVehicleComboBox()
+                    .getItems()
+                    .add(vehicle);
+
+            view.getVehicleComboBox()
+                    .setValue(vehicle);
+
+            Customer customer = customerService.findCustomer(vehicle.getCustomerId());
+
+            if (customer != null) {
+
+                view.getCustomerComboBox()
+                        .getItems()
+                        .clear();
+
+                view.getCustomerComboBox()
+                        .getItems()
+                        .add(customer);
+
+                view.getCustomerComboBox()
+                        .setValue(customer);
+            }
+        }
+
+        // Hämta tjänster från bokningen
+        view.getServicesTable()
+                .getItems()
+                .clear();
+
+        view.setBookingServiceItemIds(
+                booking.getServiceItemIds()
+        );
+
+        for (int serviceItemId : booking.getServiceItemIds()) {
+
+            ServiceItem serviceItem = serviceItemService.findServiceItem(serviceItemId);
+
+            if (serviceItem != null) {
+                view.getServicesTable()
+                        .getItems()
+                        .add(serviceItem);
+            }
+        }
+
+        view.showSummary(
+                formatTotalTime(view.getServicesTable().getItems()),
+                formatTotalPrice(view.getServicesTable().getItems())
+        );
+    }
+
+    private void updateAvailableMechanics(
+            CreateWorkOrderView view,
+            Booking booking) {
+
+        if (booking == null) {
+            view.getMechanicComboBox()
+                    .getItems()
+                    .clear();
+            return;
+        }
+
+        List<Mechanic> allMechanics =
+                mechanicService.getMechanics();
+
+        view.getMechanicComboBox()
+                .getItems()
+                .clear();
+
+        for (Mechanic mechanic : allMechanics) {
+
+            if (!workOrderService.isMechanicBookedOnDate(
+                    mechanic.getId(),
+                    booking.getDate(),
+                    booking.getId())) {
+
+                view.getMechanicComboBox()
+                        .getItems()
+                        .add(mechanic);
+            }
+        }
+
+        view.getMechanicComboBox()
+                .getSelectionModel()
+                .clearSelection();
+    }
+
+
+    private void addServiceToWorkOrder(CreateWorkOrderView view) {
+        ServiceItem selectedService = view.getServiceComboBox().getValue();
+        List<ServiceItem> selectedServices = view.getServicesTable().getItems();
+
+        if (selectedService == null) {
+            return;
+        }
+        boolean alreadyExists = selectedServices.stream()
+                .anyMatch(service ->
+                        service.getId() == selectedService.getId()
+                );
+
+        if (!alreadyExists) {
+            selectedServices.add(selectedService);
+
+            view.getServiceComboBox().setValue(null);
+
+            view.showSummary(
+                    formatTotalTime(selectedServices),
+                    formatTotalPrice(selectedServices)
+            );
+        }
+    }
+
+
 
     //Alexander
     //fyller i formuläret från en bokning (används när man kommer från bokningslistan):

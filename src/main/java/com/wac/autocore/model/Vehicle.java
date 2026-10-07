@@ -72,7 +72,6 @@ public class Vehicle {
         return id + " - " +
                 registrationNumber + " | " +
                 brand + " " + model +
-                " | Year: " + year +
-                " | Customer ID: " + customerId;
+                " | Year: " + year;
     }
 }

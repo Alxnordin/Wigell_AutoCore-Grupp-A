@@ -4,6 +4,8 @@ import com.wac.autocore.util.LanguageManager;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
@@ -75,9 +77,14 @@ public class MainMenuView {
         paymentsButton = UIComponents.createMenuButton(languageManager.getString("paymentsButton"), "fa-credit-card");
         menu.getChildren().add(buildSection(paymentsButton, showInvoicesButton, addInvoiceButton, showPaymentsButton, addPaymentButton));
 
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+
         exitButton = new Button(languageManager.getString("quit"));
         exitButton.getStyleClass().add("exit-button");
         exitButton.setMaxWidth(Double.MAX_VALUE);
+
+        menu.getChildren().add(spacer);
         menu.getChildren().add(exitButton);
 
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {

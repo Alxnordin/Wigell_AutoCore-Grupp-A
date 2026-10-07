@@ -55,20 +55,20 @@ Button:hover {
     -fx-border-color: #235e27;
 }
 
+/*quit knappen*/
 .exit-button {
-    -fx-background-color: #d47b3b;
-    -fx-text-fill: #111112;
-    -fx-font-size: 14px;
-    -fx-border-color: #d98f5f;
+    -fx-background-color: #F5F8F6;
+    -fx-border-color: #A8BDA2;
+    -fx-border-width: 1.5px;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
-    -fx-padding: 10px 24px;
-    -fx-cursor: hand;
-
+    -fx-padding: 8px 14px;
+    -fx-text-fill: #263238;
+    -fx-font-size: 14px;
 }
 
 .exit-button:hover {
-    -fx-background-color: #f5e2d8;
+    -fx-background-color: #EAF1EC;
 }
 
 .menu-title {
@@ -137,7 +137,7 @@ ListView .list-cell:filled:selected {
 }
 
 .section-title {
-    -fx-text-fill: #10182b;
+    -fx-text-fill: #2E7D32;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
@@ -547,3 +547,58 @@ ListView .list-cell:filled:selected {
 .page-scroll-pane > .viewport {
     -fx-background-color: transparent;
 }
+
+/*styling language button*/
+.language-button {
+    -fx-background-color: #F5F8F6;
+    -fx-border-color: #A8BDA2;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 14px;
+}
+
+.language-button:hover {
+    -fx-background-color: #EAF1EC;
+}
+
+.language-button .label {
+    -fx-text-fill: #263238;
+    -fx-font-size: 14px;
+}
+
+/* Låsta fält inne i create: planned order*/
+.combo-box:disabled .list-cell,
+.date-picker:disabled .text-field,
+.text-field:disabled {
+    -fx-text-fill: #4F5752;
+    -fx-opacity: 1.0;
+}
+
+
+/* Locked ComboBox */
+.locked-combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.locked-combo-box .arrow {
+    -fx-opacity: 0;
+}
+
+/* Locked DatePicker */
+.locked-date-picker .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.locked-date-picker .arrow {
+    -fx-opacity: 0;
+}
+
+/* Lock icon */
+.locked-field-icon {
+    -fx-icon-color: #f5ab22;
+}
+
+

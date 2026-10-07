@@ -33,6 +33,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 //JavaFX startpunkt, bygger upp scenen/fönstret, skapar vyer och kontroller, och styr växling mellan de olika vyerna
 public class AutoCoreApplication extends Application {
@@ -69,8 +70,38 @@ public class AutoCoreApplication extends Application {
         borderPane = new BorderPane();
 
         Label headerLabel = new Label("WAC AutoCore");
-        Button languageButton = new Button(LanguageManager.getInstance().getString("language"));
+//        Button languageButton = new Button(LanguageManager.getInstance().getString("language"));
+        LanguageManager languageManager = LanguageManager.getInstance();
 
+        FontIcon globeIcon = new FontIcon("fa-globe");
+        globeIcon.setIconSize(18);
+
+        Label languageLabel = new Label(
+                languageManager.getLocale().getLanguage().equals("sv")
+                        ? "SV"
+                        : "EN"
+        );
+
+        HBox languageContent = new HBox(8, globeIcon, languageLabel);
+        languageContent.setAlignment(Pos.CENTER);
+
+        Button languageButton = new Button();
+        languageButton.setGraphic(languageContent);
+        languageButton.getStyleClass().add("language-button");
+
+        languageButton.setOnAction(e -> {
+            languageManager.changeLanguage();
+        });
+
+        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
+            languageLabel.setText(
+                    newValue.getLanguage().equals("sv")
+                            ? "SV"
+                            : "EN"
+            );
+        });
+
+        //logotyp
         Image logoImage = new Image(getClass().getResourceAsStream("/WAC_1.png"));
         ImageView logoView = new ImageView(logoImage);
         logoView.setFitHeight(40);
@@ -88,12 +119,8 @@ public class AutoCoreApplication extends Application {
 
         header.getChildren().addAll(logoView, headerLabel, languageButton);
 
-        LanguageManager languageManager = LanguageManager.getInstance();
         languageButton.setOnAction(e -> {
             languageManager.changeLanguage();
-        });
-        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
-            languageButton.setText(languageManager.getString("language"));
         });
 
         header.getStyleClass().add("header");
@@ -185,6 +212,21 @@ public class AutoCoreApplication extends Application {
                 this, new OrderFormView(), new OrderListView());
         controller.prefillFromBooking(booking);
         borderPane.setCenter(controller.getOrderFormView());
+    }
+
+    public void showCreateWorkOrderView(Booking booking) {
+        OrderController controller = new OrderController(
+                bookingService,
+                workOrderService,
+                mechanicService,
+                serviceItemService,
+                vehicleService,
+                customerService,
+                this,
+                new OrderFormView(),
+                new OrderListView()
+        );
+        controller.openCreateWorkOrderView(booking);
     }
 
     public void showOrderListView() {
