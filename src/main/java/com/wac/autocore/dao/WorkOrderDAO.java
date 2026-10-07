@@ -6,6 +6,7 @@ import com.wac.autocore.model.WorkOrder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 //Har lagt till price så att detta kan lagras i en workOrder. på sätt sparas
@@ -15,7 +16,8 @@ public class WorkOrderDAO {
     public List<WorkOrder> findAll() {
         List<WorkOrder> workOrders = new ArrayList<WorkOrder>();
 
-        String sql = "SELECT id, booking_id, mechanic_id, status " +
+        String sql = "SELECT id, booking_id, customer_id, vehicle_id, mechanic_id, status, " +
+                "is_complaint, original_work_order_id " +
                 "FROM work_order " +
                 "ORDER BY id";
 
@@ -23,12 +25,26 @@ public class WorkOrderDAO {
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
+
+                Integer bookingId = resultSet.getObject("booking_id", Integer.class);
+                int customerId = resultSet.getInt("customer_id");
+                int vehicleId = resultSet.getInt("vehicle_id");
+                int mechanicId = resultSet.getInt("mechanic_id");
                 WorkOrder workOrder = new WorkOrder(
                         resultSet.getInt("id"),
-                        resultSet.getInt("booking_id"),
-                        resultSet.getInt("mechanic_id")
+                        bookingId,
+                        mechanicId
                 );
+                workOrder.setCustomerId(customerId);
+                workOrder.setVehicleId(vehicleId);
                 workOrder.setStatus(resultSet.getString("status"));
+                workOrder.setComplaint(resultSet.getBoolean("is_complaint"));
+                int originalId = resultSet.getInt("original_work_order_id");
+
+                if (!resultSet.wasNull()){
+                    workOrder.setOriginalWorkOrderId(originalId);
+                }
+
                 loadServiceItems(connection, workOrder);
                 workOrders.add(workOrder);
             }
@@ -57,15 +73,29 @@ public class WorkOrderDAO {
     }
     public WorkOrder save(WorkOrder workOrder){
         String sql = "INSERT INTO work_order " +
-                "(booking_id, mechanic_id, status) " +
-                "VALUES (?, ?, ?)";
+                "(booking_id, customer_id,vehicle_id, mechanic_id, status, is_complaint, original_work_order_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
+            if (workOrder.getBookingId() != null) {
+                statement.setInt(1, workOrder.getBookingId());
+            } else {
+                statement.setNull(1, java.sql.Types.INTEGER);
+            }
+            statement.setInt(2, workOrder.getCustomerId());
+            statement.setInt(3, workOrder.getVehicleId());
+            statement.setInt(4, workOrder.getMechanicId());
+            statement.setString(5, workOrder.getStatus());
+            statement.setBoolean(6, workOrder.isComplaint());
 
-            statement.setInt(1, workOrder.getBookingId());
-            statement.setInt(2, workOrder.getMechanicId());
-            statement.setString(3, workOrder.getStatus());
+
+
+            if (workOrder.getOriginalWorkOrderId() != null) {
+                statement.setInt(7, workOrder.getOriginalWorkOrderId());
+            } else {
+                statement.setNull(7, Types.INTEGER);
+            }
 
             statement.executeUpdate();
 

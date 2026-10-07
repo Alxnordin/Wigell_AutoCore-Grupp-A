@@ -79,13 +79,14 @@ public class DatabaseConnection {
                 "payment_date DATETIME NOT NULL, " +
                 "successful BOOLEAN NOT NULL DEFAULT FALSE" +
                 ")";
-
-
+        //Tagit bort "NOT NULL" på booking_id för att kunna skapa drop-in utan bokning
         String workOrderSql = "CREATE TABLE IF NOT EXISTS work_order (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
-                "booking_id INT NOT NULL, " +
+                "booking_id INT NULL, " +
                 "mechanic_id INT NOT NULL, " +
-                "status VARCHAR(50) NOT NULL" +
+                "status VARCHAR(50) NOT NULL, " +
+                "is_complaint BOOLEAN NOT NULL DEFAULT FALSE, " +
+                "original_work_order_id INT NULL" +
                 ")";
 
         String workOrderServiceItemSql = "CREATE TABLE IF NOT EXISTS work_order_service_item (" +
@@ -130,6 +131,30 @@ public class DatabaseConnection {
                         "ADD COLUMN price DOUBLE NOT NULL DEFAULT 0");
 
             } catch (SQLException e) {
+
+            }
+
+            try{
+                statement.execute("ALTER TABLE work_order " +
+                        "ADD COLUMN is_complaint BOOLEAN NOT NULL DEFAULT FALSE");
+            }catch(SQLException e) {
+
+            }
+            try{
+                statement.execute("ALTER TABLE work_order " +
+                        "ADD COLUMN original_work_order_id INT NULL");
+            }catch(SQLException e) {
+
+            }try{
+                statement.execute("ALTER TABLE work_order " +
+                        "ADD COLUMN customer_id INT NOT NULL DEFAULT 0");
+            }catch(SQLException e){
+
+            }
+            try{
+                statement.execute("ALTER TABLE work_order " +
+                        "ADD COLUMN vehicle_id INT NOT NULL DEFAULT 0");
+            }catch(SQLException e){
 
             }
 
