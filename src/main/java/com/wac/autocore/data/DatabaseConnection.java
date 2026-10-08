@@ -83,6 +83,9 @@ public class DatabaseConnection {
         String workOrderSql = "CREATE TABLE IF NOT EXISTS work_order (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "booking_id INT NULL, " +
+                "customer_id INT NULL, " +
+                "vehicle_id INT NULL, " +
+                "description VARCHAR(500) NULL, " +
                 "mechanic_id INT NOT NULL, " +
                 "status VARCHAR(50) NOT NULL, " +
                 "is_complaint BOOLEAN NOT NULL DEFAULT FALSE, " +
@@ -154,6 +157,12 @@ public class DatabaseConnection {
             try{
                 statement.execute("ALTER TABLE work_order " +
                         "ADD COLUMN vehicle_id INT NOT NULL DEFAULT 0");
+            }catch(SQLException e){
+
+            }
+            try{
+                statement.execute("ALTER TABLE work_order " +
+                        "ADD COLUMN descrption VARCHAR(500) NULL");
             }catch(SQLException e){
 
             }
