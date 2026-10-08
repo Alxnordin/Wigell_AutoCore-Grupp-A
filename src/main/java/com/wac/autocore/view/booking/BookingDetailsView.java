@@ -1,9 +1,6 @@
 package com.wac.autocore.view.booking;
 
-import com.wac.autocore.model.Booking;
-import com.wac.autocore.model.Customer;
-import com.wac.autocore.model.ServiceItem;
-import com.wac.autocore.model.Vehicle;
+import com.wac.autocore.model.*;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
@@ -14,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -57,7 +55,7 @@ public class BookingDetailsView {
     private TableColumn<ServiceItem, String> priceColumn;
 
     private VBox editServicesBox;
-    private ComboBox<ServiceItem> serviceComboBox;
+    private ComboBox<ServiceComponent> serviceComboBox;
     private Button addServiceButton;
     private Button removeServiceButton;
 
@@ -105,13 +103,16 @@ public class BookingDetailsView {
 
     public Parent getView() {return root;}
 
-    public ComboBox<ServiceItem> getServiceComboBox() {return serviceComboBox;}
+    public ComboBox<ServiceComponent> getServiceComboBox() {return serviceComboBox;}
     public Button getAddServiceButton() {return addServiceButton;}
     public Button getRemoveServiceButton() {return removeServiceButton;}
     public TableView<ServiceItem> getServicesTable() {return servicesTable;}
 
+    public Button getSaveEditingButton() {return saveEditingButton;}
+
     public void setOnBack(Runnable action) {
         backButton.setOnAction(e -> action.run());
+        cancelEditingButton.setOnAction(e -> action.run());
     }
 
     public void setOnBookingAction(Consumer<String> action) {
@@ -290,7 +291,7 @@ public class BookingDetailsView {
     }
 
     private VBox buildServicesSection(List<ServiceItem> services) {
-     servicesTitle = UIComponents.createSectionTitle("2. " + languageManager.getString("servicesTitle"));
+        servicesTitle = UIComponents.createSectionTitle("2. " + languageManager.getString("servicesTitle"));
 
         servicesTable = UIComponents.createTable();
 
@@ -320,6 +321,28 @@ public class BookingDetailsView {
 
         serviceComboBox = UIComponents.createComboBox();
         serviceComboBox.setPromptText(languageManager.getString("selectService"));
+        serviceComboBox.setConverter(new StringConverter<ServiceComponent>() {
+            @Override
+            public String toString(ServiceComponent component) {
+                if (component == null) {
+                    return "";
+                }
+
+                if (component instanceof ServicePackage) {
+                    ServicePackage servicePackage = (ServicePackage) component;
+
+                    return "Paket: " + servicePackage.getName()
+                            + " (" + servicePackage.getServiceCount() + " tjänster)";
+                }
+
+                return component.getName();
+            }
+
+            @Override
+            public ServiceComponent fromString(String string) {
+                return null;
+            }
+        });
 
         addServiceButton = UIComponents.createAddRemoveServiceButton(languageManager.getString("addService"));
         removeServiceButton = UIComponents.createAddRemoveServiceButton(languageManager.getString("removeService"));

@@ -15,8 +15,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
@@ -37,6 +39,7 @@ public class BookingView {
     //tabellen är ett fält så att controllern kan läsa de valda tjänsterna
     private TableView<ServiceItem> servicesTable;
 
+    //ÄNDRA. Ska inte gå direkt till DAO
     private final CustomerDAO customerDAO = new CustomerDAO();
     private final VehicleDAO vehicleDAO = new VehicleDAO();
 
@@ -50,6 +53,7 @@ public class BookingView {
     private ListView<String> bookingListView;
 
     private Label title;
+    private Button isCreatingOrderFromExistingOrderButton;
     private Label bookingInformationTitle;
     private Label customerLabel;
     private Label vehicleRegistrationNumber;
@@ -67,6 +71,11 @@ public class BookingView {
     private Label totalPriceTitle;
     private Label bookingSubtitle;
 
+    private Button newCustomerButton;
+    private Button newVehicleButton;
+
+    private FontIcon customerLockIcon;
+
     private VBox dateBox;
 
     LanguageManager languageManager = LanguageManager.getInstance();
@@ -78,6 +87,12 @@ public class BookingView {
 
         title = new Label(languageManager.getString("bookingTitle"));
         HBox titleBox = UIComponents.createPageTitle(title, "fa-calendar-plus-o");
+
+        //FIXA vad som ska stå på knappen
+        isCreatingOrderFromExistingOrderButton = UIComponents.createIsEditingButton("Skapar ny bokning utifrån gammal bokning");
+        isCreatingOrderFromExistingOrderButton.setVisible(false);
+        isCreatingOrderFromExistingOrderButton.setManaged(false);
+        titleBox.getChildren().add(isCreatingOrderFromExistingOrderButton);
 
         bookingSubtitle = UIComponents.createSubtitle(languageManager.getString("bookingSubtitle"));
 
@@ -126,6 +141,8 @@ public class BookingView {
         customerComboBox = UIComponents.createComboBox();
         vehicleComboBox = UIComponents.createComboBox();
 
+
+        //ÄNDRA. Ska inte gå direkt till DAO
         List<Customer> customers = customerDAO.findAll();
         List<Vehicle> vehicles = vehicleDAO.findAll();
 
@@ -166,17 +183,32 @@ public class BookingView {
         VBox customerBox = new VBox(5);
         customerLabel = UIComponents.createFormLabel(languageManager.getString("customerLabel"));
 
+        //Obs! Kolla hur lösa detta i UIComponent ist.
+        StackPane customerComboBoxContainer = new StackPane(customerComboBox);
+        customerLockIcon = new FontIcon("fa-lock");
+        customerLockIcon.setIconSize(14);
+        customerLockIcon.getStyleClass().add("locked-field-icon");
+        customerLockIcon.setMouseTransparent(true);
+        customerLockIcon.setVisible(false);
+        customerComboBoxContainer.getChildren().add(customerLockIcon);
+        StackPane.setAlignment(customerLockIcon, Pos.CENTER_RIGHT);
+        StackPane.setMargin(customerLockIcon, new Insets(0, 14, 0, 0));
+
         //************** OBS EJ KLAR med knappen för ny kund, testar bara ***********
-        Button newCustomerButton = new Button("+ Ny kund");
+        newCustomerButton = new Button("+ Ny kund");
         newCustomerButton.getStyleClass().add("create-new-if-missing-button");
-        customerBox.getChildren().addAll(customerLabel, customerComboBox, newCustomerButton);
+        newCustomerButton.setVisible(true);
+        newCustomerButton.setManaged(true);
+        customerBox.getChildren().addAll(customerLabel, customerComboBoxContainer, newCustomerButton);
 
         VBox vehicleBox = new VBox(5);
         vehicleRegistrationNumber = UIComponents.createFormLabel(languageManager.getString("vehicleRegistrationNumber"));
 
         //************** OBS EJ KLAR med knappen för nytt fordon, testar bara ***********
-        Button newVehicleButton = new Button("+ Nytt fordon");
+        newVehicleButton = new Button("+ Nytt fordon");
         newVehicleButton.getStyleClass().add("create-new-if-missing-button");
+        newVehicleButton.setVisible(true);
+        newVehicleButton.setManaged(true);
         vehicleBox.getChildren().addAll(vehicleRegistrationNumber, vehicleComboBox, newVehicleButton);
 
         dateBox = UIComponents.createVBoxWithSpacing5();
@@ -340,6 +372,22 @@ public class BookingView {
     public void showSummary(String totalTime, String totalPrice) {
         totalTimeLabel.setText(totalTime);
         totalPriceLabel.setText(totalPrice);
+    }
+
+    //BYT NAMN PÅ METODEN
+    public void showCreatingOrderFromExistingOrderButton() {
+        isCreatingOrderFromExistingOrderButton.setVisible(true);
+        isCreatingOrderFromExistingOrderButton.setManaged(true);
+
+        newCustomerButton.setVisible(false);
+        newCustomerButton.setManaged(false);
+        newVehicleButton.setVisible(false);
+        newVehicleButton.setManaged(false);
+
+        customerComboBox.setMouseTransparent(true);
+        customerComboBox.setFocusTraversable(false);
+        customerComboBox.getStyleClass().add("locked-combo-box");
+        customerLockIcon.setVisible(true);
     }
 
     public void changeTextAllComponents() {

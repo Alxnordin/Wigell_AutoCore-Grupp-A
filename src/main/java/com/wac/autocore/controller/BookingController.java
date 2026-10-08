@@ -208,6 +208,44 @@ public class BookingController {
         app.showCreateWorkOrderView(booking);
     }
 
+    private void openCreateBookingView(Booking booking) {
+        fillFromBooking(bookingView, booking);
+        bookingView.showCreatingOrderFromExistingOrderButton();
+        app.showView(bookingView.getView());
+    }
+
+    private void fillFromBooking(BookingView view, Booking booking) {
+        Vehicle vehicle = vehicleService.findVehicle(booking.getVehicleId());
+        if (vehicle != null) {
+            view.getVehicleComboBox().setValue(vehicle);
+        }
+
+        Customer customer = customerService.findCustomer(vehicle.getCustomerId());
+        if (customer != null) {
+            view.getCustomerComboBox().setValue(customer);
+        }
+
+        view.getDescriptionField().setText(booking.getDescription());
+
+        view.getServicesTable().getItems().clear();
+
+        //view.setBookingServiceItemIds(booking.getServiceItemIds());
+
+        for (int serviceItemId : booking.getServiceItemIds()) {
+
+            ServiceItem serviceItem = serviceItemService.findServiceItem(serviceItemId);
+
+            if (serviceItem != null) {
+                view.getServicesTable()
+                        .getItems()
+                        .add(serviceItem);
+            }
+        }
+
+        view.showSummary(formatTotalTime(view.getServicesTable().getItems()),
+                formatTotalPrice(view.getServicesTable().getItems()));
+    }
+
     private void openBookingDetails(Booking booking) {
         Vehicle vehicle = vehicleService.findVehicle(booking.getVehicleId());
         if (vehicle == null) {
@@ -223,9 +261,8 @@ public class BookingController {
 
         BookingDetailsView detailsView = new BookingDetailsView(booking, vehicle, customer, services);
 
-        detailsView.setOnBack(() -> {
-            app.showView(bookingListView.getView());
-        });
+        detailsView.setOnBack(() -> {app.showView(bookingListView.getView());});
+        detailsView.setOnBack(() -> {app.showView(bookingListView.getView());});
 
         detailsView.setOnBookingAction(action -> {
             if ("edit".equals(action)) {
@@ -236,16 +273,38 @@ public class BookingController {
 
                 detailsView.showEditServices();
                 detailsView.getServiceComboBox().getItems().setAll(serviceItemService.getServiceItems());
+
+                for (ServicePackage servicePackage : servicePackageService.servicePackages()) {
+                    if (servicePackage.getServiceCount() > 0) {
+                        detailsView.getServiceComboBox().getItems().add(servicePackage);
+                    }
+                }
+
+                } else if ("createFromExisting".equals(action)) {
+                    openCreateBookingView(booking);
             }
         });
 
         detailsView.getAddServiceButton().setOnAction(event -> {
-            ServiceItem service = detailsView.getServiceComboBox().getValue();
+            ServiceComponent selected = detailsView.getServiceComboBox().getValue();
 
-            if (addServiceToBooking(booking, service)) {
+            if (selected == null) {
+                return;
+            }
+
+            boolean serviceAdded = false;
+
+            for (ServiceItem serviceItem : selected.getServiceItems()) {
+                if (addServiceToBooking(booking, serviceItem)) {
+                    serviceAdded = true;
+                }
+            }
+
+            if (serviceAdded) {
                 List<ServiceItem> updatedServices = bookingService.getServicesForBooking(booking.getId());
 
                 detailsView.getServicesTable().getItems().setAll(updatedServices);
+
                 detailsView.showSummary(
                         formatTotalTime(updatedServices),
                         formatTotalPrice(updatedServices)
