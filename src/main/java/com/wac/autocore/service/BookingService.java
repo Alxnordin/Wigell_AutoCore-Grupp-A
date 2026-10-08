@@ -186,40 +186,40 @@ public class BookingService {
 
     //EJ KLAR!! Använda Prototype, kolla hur Fredrik gjort createComplaint() i WorkOrderService.
     // Det som ska följa med från gamla bokningen är:
-    //- Kunden (alla fält)
-    //- Fordon? Eller ska man kunna kunna välja om man vill använda samma fordon eller ett annat?
-    //- ServicItem och fälten name, description, EJ PRICE och estimatedMinutes
+    //- Kunden (alla fält och de ska vara "låsta")
+    //- Fordon (vet inte om det fältet ska vara "låst" eller ej)
+    //- ServicItem och fälten name, description och
+    // estimatedMinutes (INTE price, det ska istället hämtas på nytt då det kan ha ändrats)
     public Booking createBookingFromPreviousBooking(int vehicleId,
-                                 LocalDate date,
                                  String description,
                                  int... serviceItemIds) {
 
-        Vehicle vehicle = vehicleService.findVehicle(vehicleId);
-        if (vehicle == null) {
-            System.out.println("Vehicle with ID " + vehicleId + " does not exist.");
-            return null;
-        }
-
-        for (int serviceItemId : serviceItemIds) {
-            if (serviceItemService.findServiceItem(serviceItemId) == null) {
-                System.out.println("Service item with ID " + serviceItemId + " does not exist.");
-                return null;
-            }
-        }
-
-        Booking booking = new Booking(0, vehicleId, date, description);
-        for (int serviceItemId : serviceItemIds) {
-            if (!booking.containsServiceItem(serviceItemId)) {
-                booking.addServiceItem(serviceItemId);
-            }
-        }
-        bookingDAO.save(booking);
-
-        System.out.println("Booking created successfully.");
-        System.out.println(booking);
-
-        return booking;
-
+//        Vehicle vehicle = vehicleService.findVehicle(vehicleId);
+//        if (vehicle == null) {
+//            System.out.println("Vehicle with ID " + vehicleId + " does not exist.");
+//            return null;
+//        }
+//
+//        for (int serviceItemId : serviceItemIds) {
+//            if (serviceItemService.findServiceItem(serviceItemId) == null) {
+//                System.out.println("Service item with ID " + serviceItemId + " does not exist.");
+//                return null;
+//            }
+//        }
+//
+//        Booking booking = new Booking(0, vehicleId, date, description);
+//        for (int serviceItemId : serviceItemIds) {
+//            if (!booking.containsServiceItem(serviceItemId)) {
+//                booking.addServiceItem(serviceItemId);
+//            }
+//        }
+//        bookingDAO.save(booking);
+//
+//        System.out.println("Booking created successfully.");
+//        System.out.println(booking);
+//
+//        return booking;
+        return null;
     }
 
 
