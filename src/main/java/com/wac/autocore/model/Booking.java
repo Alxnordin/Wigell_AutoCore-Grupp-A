@@ -13,6 +13,11 @@ public class Booking {
     private String status;
     private List<Integer> serviceItemIds;
 
+    //EJ KLAR.
+    //Testa Prototype-mönster - samma som Fredrik gjort med workorder
+
+    private Integer originalBookingId;
+
     public Booking(int id, int vehicleId, LocalDate date, String description) {
         this.id = id;
         this.vehicleId = vehicleId;
@@ -20,6 +25,13 @@ public class Booking {
         this.description = description;
         this.status = "BOOKED";
         this.serviceItemIds = new ArrayList<Integer>();
+    }
+
+    //EJ KLAR!! Kolla hur Fredrik gjort i WorkOrder
+    public Booking cloneBooking(){
+        Booking bookingClone = new Booking(this.id, this.vehicleId, this.date, this.description);
+        return bookingClone;
+
     }
 
     public int getId() {
