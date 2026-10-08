@@ -195,14 +195,14 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showBookingView() {
-        BookingController controller = new BookingController(serviceItemService,
+        BookingController controller = new BookingController(serviceItemService, servicePackageService,
                 bookingService, workOrderService, vehicleService, customerService,
                 this, new BookingView(), new BookingListView());
         borderPane.setCenter(controller.getBookingFormView());
     }
 
     public void showBookingListView() {
-        BookingController controller = new BookingController(serviceItemService,
+        BookingController controller = new BookingController(serviceItemService, servicePackageService,
                 bookingService, workOrderService, vehicleService, customerService,
                 this, new BookingView(), new BookingListView());
         borderPane.setCenter(controller.getBookingListPane());

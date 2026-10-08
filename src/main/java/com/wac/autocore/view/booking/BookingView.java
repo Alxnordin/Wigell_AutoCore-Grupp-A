@@ -3,10 +3,11 @@ package com.wac.autocore.view.booking;
 import com.wac.autocore.dao.CustomerDAO;
 import com.wac.autocore.dao.VehicleDAO;
 import com.wac.autocore.model.Customer;
+import com.wac.autocore.model.ServiceComponent;
 import com.wac.autocore.model.ServiceItem;
+import com.wac.autocore.model.ServicePackage;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.util.LanguageManager;
-import com.wac.autocore.dao.ServiceItemDAO;
 
 import com.wac.autocore.view.UIComponents;
 import javafx.geometry.Insets;
@@ -27,14 +28,15 @@ public class BookingView {
 
     private ComboBox<Customer> customerComboBox;
     private ComboBox<Vehicle> vehicleComboBox;
-    private ComboBox<ServiceItem> serviceComboBox;
+    //Alexander
+    //rullistan innehåller både enskilda tjänster och servicepaket (Composite)
+    private ComboBox<ServiceComponent> serviceComboBox;
     private DatePicker date;
     private TextField descriptionField;
 
     //tabellen är ett fält så att controllern kan läsa de valda tjänsterna
     private TableView<ServiceItem> servicesTable;
 
-    private final ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
     private final CustomerDAO customerDAO = new CustomerDAO();
     private final VehicleDAO vehicleDAO = new VehicleDAO();
 
@@ -168,20 +170,27 @@ public class BookingView {
         addServiceButton = new Button(languageManager.getString("addService"));
         addServiceButton.getStyleClass().add("add-service-button");
 
-        // Hämta tjänster från MySQL
-        List<ServiceItem> serviceItems = serviceItemDAO.findAll();
+        //Alexander
+        //rullistan fylls av BookingController med tjänster och servicepaket
         serviceComboBox = UIComponents.createComboBox();
-        serviceComboBox.getItems().addAll(serviceItems);
 
-        // Visar endast tjänstens namn i ComboBoxen
-        serviceComboBox.setConverter(new StringConverter<ServiceItem>() {
-
-            @Override
-            public String toString(ServiceItem serviceItem) {
-                return serviceItem == null ? "" : serviceItem.getName();}
+        //en tjänst visas med sitt namn, ett paket visas som "Paket: namn (antal tjänster)"
+        serviceComboBox.setConverter(new StringConverter<ServiceComponent>() {
 
             @Override
-            public ServiceItem fromString(String string) {
+            public String toString(ServiceComponent serviceComponent) {
+                if (serviceComponent == null) {
+                    return "";
+                }
+                if (serviceComponent instanceof ServicePackage) {
+                    return languageManager.getString("packageInListLabel") + ": " + serviceComponent.getName()
+                            + " (" + serviceComponent.getServiceItems().size() + " "
+                            + languageManager.getString("packageInListServices") + ")";
+                }
+                return serviceComponent.getName();}
+
+            @Override
+            public ServiceComponent fromString(String string) {
                 return null;}
         });
 
@@ -332,7 +341,7 @@ public class BookingView {
 
     //Alexander
     //används av BookingController för att koppla tjänsterna till GarageSystem
-    public ComboBox<ServiceItem> getServiceComboBox() {return serviceComboBox;}
+    public ComboBox<ServiceComponent> getServiceComboBox() {return serviceComboBox;}
     public Button getAddServiceButton() {return addServiceButton;}
     public TableView<ServiceItem> getServicesTable() {return servicesTable;}
 
