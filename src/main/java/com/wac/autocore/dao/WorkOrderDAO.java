@@ -166,6 +166,7 @@ public class WorkOrderDAO {
             }
         }
     }
+
     public WorkOrder save(WorkOrder workOrder){
         String sql = "INSERT INTO work_order " +
                 "(booking_id, customer_id,vehicle_id, description, mechanic_id, status, is_complaint, original_work_order_id) " +
@@ -184,7 +185,6 @@ public class WorkOrderDAO {
             statement.setInt(5, workOrder.getMechanicId());
             statement.setString(6, workOrder.getStatus());
             statement.setBoolean(7, workOrder.isComplaint());
-
 
 
             if (workOrder.getOriginalWorkOrderId() != null) {
@@ -206,7 +206,8 @@ public class WorkOrderDAO {
             throw new RuntimeException("Could not save workOrder.", e);
         }
         return workOrder;
-        }
+    }
+
     private void saveServiceItems(Connection connection, WorkOrder workOrder) throws Exception{
         String sql = "INSERT INTO work_order_service_item " +
                   "(work_order_id, service_item_id, price) " +
@@ -220,6 +221,7 @@ public class WorkOrderDAO {
             }
         }
     }
+
     public void removeServiceItem(int workOrderId, int serviceItemId){
         String sql = "DELETE FROM work_order_service_item " +
                 "WHERE work_order_id = ? AND service_item_id = ?";

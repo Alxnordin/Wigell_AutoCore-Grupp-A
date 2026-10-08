@@ -162,7 +162,7 @@ public class DatabaseConnection {
             }
             try{
                 statement.execute("ALTER TABLE work_order " +
-                        "ADD COLUMN descrption VARCHAR(500) NULL");
+                        "ADD COLUMN description VARCHAR(500) NULL");
             }catch(SQLException e){
 
             }

@@ -47,8 +47,6 @@ public class BookingController {
         wireEvents();
         refreshBookingList();
 
-//        bookingListView.getServiceComboBox().getItems().addAll(serviceItemService.getServiceItems());
-
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
             refreshBookingList();
             updateNewBookingSummary();
@@ -106,11 +104,6 @@ public class BookingController {
             }
         });
 
-//        bookingListView.getBookingTable().getSelectionModel().selectedItemProperty().addListener(
-//                (observable, oldBooking, newBooking) -> showServicesForSelectedBooking());
-//        bookingListView.getAddServiceButton().setOnAction(actionEvent -> addServiceToSelectedBooking());
-//        bookingListView.getRemoveServiceButton().setOnAction(actionEvent -> removeServiceFromSelectedBooking());
-
         bookingListView.setOnCreateWorkOrder(booking -> openCreateWorkOrder(booking));
         bookingListView.setOnViewBooking(booking -> openBookingDetails(booking));
 
@@ -134,26 +127,6 @@ public class BookingController {
         bookingView.showSummary(formatTotalTime(selectedServices), formatTotalPrice(selectedServices));
     }
 
-//    private void showServicesForSelectedBooking() {
-//        Booking booking = bookingListView.getBookingTable().getSelectionModel().getSelectedItem();
-//
-//        if (booking == null) {
-//            bookingListView.getBookingServicesTable().getItems().clear();
-//            bookingListView.showSummary("--", "--");
-//            bookingListView.setServiceEditingDisabled(true);
-//            bookingListView.setLockedMessageVisible(false);
-//            return;
-//        }
-//
-//        List<ServiceItem> services = bookingService.getServicesForBooking(booking.getId());
-//        bookingListView.getBookingServicesTable().getItems().setAll(services);
-//        bookingListView.showSummary(formatTotalTime(services), formatTotalPrice(services));
-//
-//        boolean workStarted = bookingService.isWorkStarted(booking);
-//        bookingListView.setServiceEditingDisabled(workStarted);
-//        bookingListView.setLockedMessageVisible(workStarted);
-//    }
-
     private boolean addServiceToBooking(Booking booking, ServiceItem service) {
         if (service == null) {
             showWarning(languageManager.getString("selectServiceToAddWarning"));
@@ -172,21 +145,6 @@ public class BookingController {
 
         return true;
     }
-
-//    private void addServiceToSelectedBooking() {
-//        Booking booking = bookingListView.getBookingTable().getSelectionModel().getSelectedItem();
-//        ServiceItem service = bookingListView.getServiceComboBox().getValue();
-//
-//        if (booking == null) {
-//            showWarning(languageManager.getString("selectServiceToAddWarning"));
-//            return;
-//        }
-//
-//        if (addServiceToBooking(booking, service)) {
-//            bookingListView.getServiceComboBox().setValue(null);
-//            refreshBookingList();
-//        }
-//    }
 
     private boolean removeServiceFromBooking(Booking booking, ServiceItem service) {
         if (service == null) {
@@ -209,27 +167,13 @@ public class BookingController {
         return true;
     }
 
-//    private void removeServiceFromSelectedBooking() {
-//        Booking booking = bookingListView.getBookingTable().getSelectionModel().getSelectedItem();
-//        ServiceItem service = bookingListView.getBookingServicesTable().getSelectionModel().getSelectedItem();
-//
-//        if (booking == null) {
-//            showWarning(languageManager.getString("selectServiceToRemoveWarning"));
-//            return;
-//        }
-//
-//        if (removeServiceFromBooking(booking, service)) {
-//            refreshBookingList();
-//        }
-//    }
-
     private void openCreateWorkOrder(Booking booking) {
         if (workOrderService.hasWorkOrder(booking.getId())) {
             showWarning(languageManager.getString("existingWorkOrder"));
             return;
         }
 
-        app.showOrderFormView(booking);
+        app.showCreateWorkOrderView(booking);
     }
 
     private void openBookingDetails(Booking booking) {

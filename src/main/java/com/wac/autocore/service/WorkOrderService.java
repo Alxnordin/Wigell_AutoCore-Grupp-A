@@ -49,6 +49,8 @@ public class WorkOrderService {
         return false;
     }
 
+    //DENNA METOD ANVÄNDS INTE ALLS NU
+    //Ska kopplas på frontenden som finns i nya klassen CreateWorkOrderView
      public WorkOrder createWorkOrder(int bookingId,
                                      int mechanicId,
                                      int... serviceItemIds) {
@@ -247,6 +249,7 @@ public class WorkOrderService {
 
         System.out.println("Work order " + workOrderId + " has been completed.");
     }
+
     //skapa reklamation - prototype-mönster
     public WorkOrder createComplaint(int originalWorkOrderId){
         WorkOrder original = findWorkOrder(originalWorkOrderId);
@@ -412,101 +415,6 @@ public class WorkOrderService {
         System.out.println(workOrder);
 
         return workOrder;
-    }
-
-    //DROP-IN workOrder
-    public WorkOrder createDropInWorkOrder(int customerId,
-                                           int vehicleId,
-                                            int mechanicId,
-                                             int... serviceItemIds) {
-
-        Customer customer = customerService.findCustomer(customerId);
-
-        if (customer == null) {
-            System.out.println("Customer with ID " + customerId + " does not exist.");
-            return null;
-        }
-
-        Vehicle vehicle = vehicleService.findVehicle(vehicleId);
-
-        if(vehicle == null) {
-            System.out.println("Vehicle with ID " + vehicleId + " does not exist.");
-            return null;
-        }
-        if (vehicle.getCustomerId() != customerId){
-            System.out.println("Vehicle does not belong to customer " + customerId + ".");
-            return null;
-        }
-
-        Mechanic mechanic = mechanicService.findMechanic(mechanicId);
-
-        if (mechanic == null) {
-            System.out.println("Mechanic with ID " + mechanicId + " does not exist.");
-            return null;
-        }
-
-        if (!mechanic.isAvailable()) {
-            System.out.println("Mechanic " + mechanic.getName() + " is not available.");
-            return null;
-        }
-
-        for (int serviceItemId : serviceItemIds) {
-            if (serviceItemService.findServiceItem(serviceItemId) == null) {
-                System.out.println(
-                        "Service item with ID " + serviceItemId + " does not exist."
-                );
-                return null;
-            }
-        }
-
-        WorkOrder workOrder = new WorkOrder(
-                0,
-                null,
-                mechanicId
-        );
-
-        workOrder.setCustomerId(customerId);
-        workOrder.setVehicleId(vehicleId);
-
-        for (int serviceItemId : serviceItemIds) {
-            ServiceItem serviceItem = serviceItemService.findServiceItem(serviceItemId);
-            workOrder.addServiceItem(serviceItemId, serviceItem.getPrice());
-        }
-
-        workOrderDAO.save(workOrder);
-
-        System.out.println("Drop-in work order created successfully.");
-        System.out.println(workOrder);
-
-        return workOrder;
-    }
-
-    //skapa reklamation - prototype-mönster
-    public WorkOrder createComplaint(int originalWorkOrderId){
-        WorkOrder original = findWorkOrder(originalWorkOrderId);
-
-        if(original == null){
-            System.out.println("WorkOrder with ID " + originalWorkOrderId + " does not exist.");
-            return null;
-        }
-
-        if(!original.getStatus().equals("COMPLETED")){
-            System.out.println("A complaint can only be created for a completed work order");
-            return null;
-        }
-        WorkOrder complaint = original.clone();
-
-        complaint.setId(0);
-        complaint.setStatus("CREATED");
-        complaint.setComplaint(true);
-
-        complaint.setOriginalWorkOrderId(original.getId());
-
-        workOrderDAO.save(complaint);
-
-        System.out.println("Complaint created");
-        System.out.println(complaint);
-        return complaint;
     }
 
 

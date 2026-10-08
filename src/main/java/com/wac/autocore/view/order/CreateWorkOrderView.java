@@ -1,7 +1,7 @@
 package com.wac.autocore.view.order;
 
 import com.wac.autocore.dao.ServiceItemDAO;
-import com.wac.autocore.model.ServiceItem;
+import com.wac.autocore.model.*;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
 import javafx.geometry.Insets;
@@ -9,15 +9,20 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CreateWorkOrderView {
 
     private final Parent root;
     private final String orderType;
+    private final Booking booking;
     private final Label title;
     private final Label subtitle;
     private final Button backButton;
@@ -31,23 +36,33 @@ public class CreateWorkOrderView {
 
     private final Label bookingTitle;
     private final Label bookingLabel;
-    private final ComboBox<String> bookingComboBox;
+    private final ComboBox<Booking> bookingComboBox;
 
-    private final Label dateTitle;
     private final Label dateLabel;
     private final DatePicker datePicker;
 
     private final Label servicesTitle;
+
     private final TableColumn<ServiceItem, String> serviceColumn;
     private final TableColumn<ServiceItem, String> timeColumn;
     private final TableColumn<ServiceItem, String> priceColumn;
     private final TableColumn<ServiceItem, Void> actionColumn;
     private final TableView<ServiceItem> servicesTable;
 
+    private final Label summaryTitle;
+    private final Label totalTimeTitle;
+    private final Label totalPriceTitle;
+    private final Label totalTimeLabel;
+    private final Label totalPriceLabel;
+
     private final Label customerVehicleTitle;
-    private final Label mechanicTitle;
+
+    private final Label orderInformationTitle;
+    private final Label descriptionLabel;
+    private final TextField descriptionField;
 
     private final ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
+    private final List<Integer> bookingServiceItemIds = new ArrayList<>();
 
     private final ComboBox<ServiceItem> serviceComboBox;
     private final Button addServiceButton;
@@ -57,15 +72,16 @@ public class CreateWorkOrderView {
     private final Label noServicesLabel;
 
     //för test utan koppling till backend ännu:
-    private final ComboBox<String> customerComboBox;
-    private final ComboBox<String> vehicleComboBox;
-    private final ComboBox<String> mechanicComboBox;
+    private final ComboBox<Customer> customerComboBox;
+    private final ComboBox<Vehicle> vehicleComboBox;
+    private final ComboBox<Mechanic> mechanicComboBox;
 
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
-    public CreateWorkOrderView(String orderType) {
+    public CreateWorkOrderView(String orderType, Booking booking) {
         this.orderType = orderType;
+        this.booking = booking;
         VBox box = new VBox(18);
         box.setPadding(new Insets(25));
         box.setFillWidth(true);
@@ -80,6 +96,22 @@ public class CreateWorkOrderView {
         bookingDescription = UIComponents.createSubtitle(languageManager.getString("bookingDescription"));
         bookingLabel = UIComponents.createFormLabel(languageManager.getString("bookingLabel"));
         bookingComboBox = UIComponents.createComboBox();
+
+        bookingComboBox.setConverter(new StringConverter<Booking>() {
+            @Override
+            public String toString(Booking booking) {
+                if (booking == null) {
+                    return "";
+                }
+
+                return "Booking #" + booking.getId()
+                        + " - " + booking.getDate();
+            }
+            @Override
+            public Booking fromString(String string) {
+                return null;
+            }
+        });
 
         bookingSection.getChildren().addAll(
                 bookingTitle,
@@ -102,40 +134,157 @@ public class CreateWorkOrderView {
         vehicleLabel = UIComponents.createFormLabel(languageManager.getString("vehicleLabel"));
         vehicleComboBox = UIComponents.createComboBox();
 
-        customerVehicleSection.getChildren().addAll(
-                customerVehicleTitle,
-                customerLabel,
-                customerComboBox,
-                vehicleLabel,
-                vehicleComboBox
+        // Customer
+        VBox customerBox = new VBox(5);
+        if ("planned".equals(orderType)) {
+            StackPane lockedCustomer = UIComponents.createLockedComboBox(customerComboBox);
+
+            customerBox.getChildren().addAll(
+                    customerLabel,
+                    lockedCustomer
+            );
+        } else {
+            customerBox.getChildren().addAll(
+                    customerLabel,
+                    customerComboBox
+            );
+        }
+
+
+        // Vehicle
+        VBox vehicleBox = new VBox(5);
+        if ("planned".equals(orderType)) {
+            StackPane lockedVehicle = UIComponents.createLockedComboBox(vehicleComboBox);
+
+            vehicleBox.getChildren().addAll(
+                    vehicleLabel,
+                    lockedVehicle
+            );
+        } else {
+            vehicleBox.getChildren().addAll(
+                    vehicleLabel,
+                    vehicleComboBox
+            );
+        }
+
+
+        // Lägg Customer och Vehicle bredvid varandra
+        HBox customerVehicleRow = new HBox(20);
+        customerVehicleRow.setAlignment(Pos.CENTER_LEFT);
+
+        HBox.setHgrow(customerBox, Priority.ALWAYS);
+        HBox.setHgrow(vehicleBox, Priority.ALWAYS);
+
+        customerComboBox.setMaxWidth(Double.MAX_VALUE);
+        vehicleComboBox.setMaxWidth(Double.MAX_VALUE);
+
+        customerVehicleRow.getChildren().addAll(
+                customerBox,
+                vehicleBox
         );
 
-        // Mechanic
-        VBox mechanicSection = UIComponents.createFormSection();
-        mechanicTitle = UIComponents.createSectionTitle(languageManager.getString("mechanicSection"));
+        // Lägg ihop sektionen
+        customerVehicleSection.getChildren().addAll(
+                customerVehicleTitle,
+                customerVehicleRow
+        );
 
-        mechanicLabel = UIComponents.createFormLabel(languageManager.getString("mechanicLabel"));
+
+        // Order Information
+        VBox orderInformationSection = UIComponents.createFormSection();
+        orderInformationTitle = UIComponents.createSectionTitle(languageManager.getString("orderInformationSection"));
+
+        //mechanic
+        mechanicLabel = UIComponents.createFormLabel(languageManager.getString("mechanicLabel") + " *");
         mechanicComboBox = UIComponents.createComboBox();
 
-        mechanicSection.getChildren().addAll(
-                mechanicTitle,
+        mechanicComboBox.setConverter(new StringConverter<Mechanic>() {
+
+            @Override
+            public String toString(Mechanic mechanic) {
+                if (mechanic == null) {
+                    return "";
+                }
+
+                return mechanic.getName();
+            }
+
+            @Override
+            public Mechanic fromString(String string) {
+                return null;
+            }
+        });
+
+        Label requiredLabel = new Label("* " + languageManager.getString("requiredField"));
+        requiredLabel.getStyleClass().add("required-label");
+
+        VBox mechanicBox = new VBox(5);
+        mechanicBox.getChildren().addAll(
                 mechanicLabel,
                 mechanicComboBox
         );
 
-
-        // Date
-        VBox dateSection = UIComponents.createFormSection();
-
-        dateTitle = UIComponents.createSectionTitle(languageManager.getString("dateSection"));
+        //date
         dateLabel = UIComponents.createFormLabel(languageManager.getString("dateLabel"));
         datePicker = UIComponents.createDatePicker();
 
-        dateSection.getChildren().addAll(
-                dateTitle,
-                dateLabel,
-                datePicker
+        VBox dateBox = new VBox(5);
+        if ("planned".equals(orderType)) {
+            StackPane lockedDate = UIComponents.createLockedDatePicker(datePicker);
+            dateBox.getChildren().addAll(
+                    dateLabel,
+                    lockedDate
+            );
+        } else {
+            dateBox.getChildren().addAll(
+                    dateLabel,
+                    datePicker
+            );
+        }
+
+
+        //lägger date och mechanik brevid varandra
+        HBox mechanicDateRow = new HBox(20);
+        mechanicDateRow.setAlignment(Pos.CENTER_LEFT);
+
+        HBox.setHgrow(mechanicBox, Priority.ALWAYS);
+        HBox.setHgrow(dateBox, Priority.ALWAYS);
+
+        mechanicComboBox.setMaxWidth(Double.MAX_VALUE);
+        datePicker.setMaxWidth(Double.MAX_VALUE);
+
+        mechanicDateRow.getChildren().addAll(
+                mechanicBox,
+                dateBox
         );
+
+        //description
+        descriptionLabel = UIComponents.createFormLabel(languageManager.getString("descriptionLabel"));
+        descriptionField = UIComponents.createTextField();
+        descriptionField.setMaxWidth(Double.MAX_VALUE);
+
+        VBox descriptionBox = new VBox(5);
+        if ("planned".equals(orderType)) {
+            StackPane lockedDescription = UIComponents.createLockedTextField(descriptionField);
+            descriptionBox.getChildren().addAll(
+                    descriptionLabel,
+                    lockedDescription
+            );
+        } else {
+            descriptionBox.getChildren().addAll(
+                    descriptionLabel,
+                    descriptionField
+            );
+        }
+
+
+        //lägger ihop hela order information
+        orderInformationSection.getChildren().addAll(
+                orderInformationTitle,
+                mechanicDateRow,
+                descriptionBox
+        );
+
 
         // Services
         VBox servicesSection = UIComponents.createFormSection();
@@ -206,26 +355,69 @@ public class CreateWorkOrderView {
         );
 
         actionColumn.setCellFactory(column -> new TableCell<ServiceItem, Void>() {
-            private final Button deleteButton = UIComponents.createDeleteButton();
+
+            private final FontIcon lockIcon =
+                    new FontIcon("fa-lock");
+
+            private final Button deleteButton =
+                    UIComponents.createDeleteButton();
 
             {
-                setAlignment(javafx.geometry.Pos.CENTER);
-                setStyle("-fx-padding: 2 4 2 4;");
+                lockIcon.setIconSize(14);
+                lockIcon.getStyleClass().add("locked-field-icon");
+
+                setAlignment(Pos.CENTER);
 
                 deleteButton.setOnAction(event -> {
-                    getTableView().getItems().remove(getIndex());
+
+                    ServiceItem serviceItem =
+                            getTableView().getItems().get(getIndex());
+
+                    getTableView().getItems().remove(serviceItem);
+
+                    updateSummary();
                 });
             }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
+
                 super.updateItem(item, empty);
 
                 if (empty) {
                     setGraphic(null);
+                    return;
+                }
+
+                ServiceItem serviceItem =
+                        getTableView()
+                                .getItems()
+                                .get(getIndex());
+
+                if (bookingServiceItemIds.contains(serviceItem.getId())) {
+
+                    // Kommer från bokningen
+                    setGraphic(lockIcon);
+
                 } else {
+
+                    // Tillagd manuellt
                     setGraphic(deleteButton);
                 }
+            }
+        });
+
+        addServiceButton.setOnAction(event -> {
+            ServiceItem selectedService = serviceComboBox.getValue();
+
+            if (selectedService != null &&
+                    !servicesTable.getItems().contains(selectedService)) {
+
+                servicesTable.getItems().add(selectedService);
+
+                serviceComboBox.getSelectionModel().clearSelection();
+
+                updateSummary();
             }
         });
 
@@ -235,14 +427,40 @@ public class CreateWorkOrderView {
                 priceColumn,
                 actionColumn);
 
+        // Summary
+        summaryTitle = UIComponents.createSectionTitle(languageManager.getString("summaryTitle"));
+        totalTimeTitle = UIComponents.createFormLabel(languageManager.getString("estimatedTotalTime"));
+        totalPriceTitle = UIComponents.createFormLabel(languageManager.getString("estimatedTotalPrice"));
+
+        totalTimeLabel = new Label("--");
+        totalPriceLabel = new Label("--");
+
+        VBox timeCard = UIComponents.createSummaryCard(
+                "fa-clock-o",
+                totalTimeTitle,
+                totalTimeLabel
+        );
+
+        VBox priceCard = UIComponents.createSummaryCard(
+                "fa-money",
+                totalPriceTitle,
+                totalPriceLabel
+        );
+
+        HBox summaryCards = UIComponents.createSummaryCards(
+                timeCard,
+                priceCard
+        );
+
         servicesSection.getChildren().addAll(
                 servicesTitle,
                 selectServiceLabel,
                 serviceSelectionBox,
                 selectedServicesLabel,
-                servicesTable
+                servicesTable,
+                summaryTitle,
+                summaryCards
         );
-
 
 
         // Knappar
@@ -269,8 +487,7 @@ public class CreateWorkOrderView {
 
         box.getChildren().addAll(
                 customerVehicleSection,
-                mechanicSection,
-                dateSection,
+                orderInformationSection,
                 servicesSection,
                 buttonBox
         );
@@ -326,6 +543,40 @@ public class CreateWorkOrderView {
         }
     }
 
+    public void setBookingServiceItemIds(List<Integer> serviceItemIds) {
+        bookingServiceItemIds.clear();
+
+        if (serviceItemIds != null) {
+            bookingServiceItemIds.addAll(serviceItemIds);
+        }
+        servicesTable.refresh();
+    }
+
+    public void showSummary(String totalTime, String totalPrice) {
+        totalTimeLabel.setText(totalTime);
+        totalPriceLabel.setText(totalPrice);
+    }
+
+    private void updateSummary() {
+
+        int totalMinutes = servicesTable.getItems().stream()
+                .mapToInt(ServiceItem::getEstimatedMinutes)
+                .sum();
+
+        double totalPrice = servicesTable.getItems().stream()
+                .mapToDouble(ServiceItem::getPrice)
+                .sum();
+
+        if (servicesTable.getItems().isEmpty()) {
+            totalTimeLabel.setText("--");
+            totalPriceLabel.setText("--");
+            return;
+        }
+
+        totalTimeLabel.setText(totalMinutes + " min");
+        totalPriceLabel.setText(String.format("%,.0f kr", totalPrice));
+    }
+
 
     public Parent getView() {
         return root;
@@ -339,6 +590,42 @@ public class CreateWorkOrderView {
         return nextButton;
     }
 
+    public ComboBox<ServiceItem> getServiceComboBox() {
+        return serviceComboBox;
+    }
+
+    public ComboBox<Booking> getBookingComboBox() {
+        return bookingComboBox;
+    }
+
+    public ComboBox<Vehicle> getVehicleComboBox() {
+        return vehicleComboBox;
+    }
+
+    public ComboBox<Customer> getCustomerComboBox() {
+        return customerComboBox;
+    }
+
+    public ComboBox<Mechanic> getMechanicComboBox() {
+        return mechanicComboBox;
+    }
+
+    public DatePicker getDatePicker() {
+        return datePicker;
+    }
+
+    public TextField getDescriptionField() {
+        return descriptionField;
+    }
+
+    public Button getAddServiceButton() {
+        return addServiceButton;
+    }
+
+    public TableView<ServiceItem> getServicesTable() {
+        return servicesTable;
+    }
+
     private void changeTextAllComponents() {
         title.setText(getTitleForOrderType(orderType));
         subtitle.setText(getSubtitleForOrderType(orderType));
@@ -348,15 +635,19 @@ public class CreateWorkOrderView {
         customerVehicleTitle.setText(languageManager.getString("customerVehicleSection"));
         customerLabel.setText(languageManager.getString("customerLabel"));
         vehicleLabel.setText(languageManager.getString("vehicleLabel"));
-        mechanicTitle.setText(languageManager.getString("mechanicSection"));
+        orderInformationTitle.setText(languageManager.getString("orderInformationSection"));
         mechanicLabel.setText(languageManager.getString("mechanicLabel"));
-        dateTitle.setText(languageManager.getString("dateSection"));
         dateLabel.setText(languageManager.getString("dateLabel"));
+        descriptionLabel.setText(languageManager.getString("descriptionLabel"));
         servicesTitle.setText(languageManager.getString("servicesSection"));
         serviceColumn.setText(languageManager.getString("serviceColumn"));
         timeColumn.setText(languageManager.getString("timeColumn"));
         priceColumn.setText(languageManager.getString("priceColumn"));
         actionColumn.setText(languageManager.getString("actionColumn"));
+
+        summaryTitle.setText(languageManager.getString("summaryTitle"));
+        totalTimeTitle.setText(languageManager.getString("estimatedTotalTime"));
+        totalPriceTitle.setText(languageManager.getString("estimatedTotalPrice"));
 
         dateLabel.setText(languageManager.getString("dateLabel"));
         backButton.setText(languageManager.getString("backButton"));
