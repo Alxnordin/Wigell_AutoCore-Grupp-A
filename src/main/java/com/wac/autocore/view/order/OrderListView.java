@@ -47,6 +47,8 @@ public class OrderListView {
     private final Label warrantyOrderTitle;
     private final Label warrantyOrderDescription;
 
+
+
     LanguageManager languageManager = LanguageManager.getInstance();
 
     public OrderListView() {
@@ -72,6 +74,7 @@ public class OrderListView {
         dropInOrderDescription = new Label(languageManager.getString("dropInOrderDescription"));
         warrantyOrderTitle = new Label(languageManager.getString("warrantyOrder"));
         warrantyOrderDescription = new Label(languageManager.getString("warrantyOrderDescription"));
+
 
         MenuItem plannedOrderItem = UIComponents.createOrderMenuItem(
                 plannedOrderTitle,

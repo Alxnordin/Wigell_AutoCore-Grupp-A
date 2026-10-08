@@ -118,6 +118,10 @@ public class WorkOrderService {
 
         for (WorkOrder workOrder : findAllWorkOrders()) {
 
+            if(workOrder.getBookingId() == null){
+                continue;
+            }
+
             if (workOrder.getMechanicId() == mechanicId
                     && workOrder.getBookingId() != excludingBookingId) {
 
@@ -145,6 +149,11 @@ public class WorkOrderService {
 
             // Hoppa över den arbetsorder vi just tittar på
             if (otherWorkOrder.getId() == currentWorkOrder.getId()) {
+                continue;
+            }
+
+            //Hoppa över workOrders som inte har någon booking
+            if(otherWorkOrder.getBookingId() == null) {
                 continue;
             }
 
@@ -388,6 +397,23 @@ public class WorkOrderService {
             System.out.println("work order with ID " + workOrderId + " is not a draft");
             return null;
         }
+
+        if(workOrder.getCustomerId() <=0){
+            System.out.println("Work order has no customer");
+            return null;
+        }
+
+        if(workOrder.getVehicleId() <=0){
+            System.out.println("Work order has no vehicle");
+            return null;
+        }
+
+        if (serviceItemsIds == null || serviceItemsIds.length == 0){
+            System.out.println("Work order must have at least one service item");
+            return null;
+        }
+
+
         Mechanic mechanic = mechanicService.findMechanic(mechanicId);
 
         if (mechanic == null){

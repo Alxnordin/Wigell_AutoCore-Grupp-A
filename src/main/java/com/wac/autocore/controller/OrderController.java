@@ -129,7 +129,7 @@ public class OrderController {
     private void openCreateWorkOrderView(String orderType) {
         CreateWorkOrderView createWorkOrderView = new CreateWorkOrderView(orderType, null);
 
-        if ("dropIn".equals(orderType)) {
+        if ("dropIn".equals(orderType) || "planned".equals(orderType)) {
 
             createWorkOrderView.getCustomerComboBox()
                     .getItems()
@@ -166,6 +166,46 @@ public class OrderController {
 
         createWorkOrderView.getAddServiceButton().setOnAction(event -> {
             addServiceToWorkOrder(createWorkOrderView);
+        });
+
+        createWorkOrderView.getSaveDraftButton().setOnAction(event ->{
+            Customer customer = createWorkOrderView.getCustomerComboBox().getValue();
+            Vehicle vehicle = createWorkOrderView.getVehicleComboBox().getValue();
+            String description = createWorkOrderView.getDescriptionField().getText();
+
+            if(customer == null || vehicle == null){
+                showWarning("Välj kund och fordon");
+                return;
+            }
+            WorkOrder draft = workOrderService.createDraftWorkOrder(
+                    customer.getId(),
+                    vehicle.getId(),
+                    description
+            );
+            if (draft != null){
+                System.out.println("DRAFT CREATED");
+                System.out.println("WorkOrder ID: " + draft.getId());
+            }
+        });
+
+        createWorkOrderView.getNextButton().setOnAction(event -> {
+            if("dropIn".equals(orderType)) {
+
+                Customer customer = createWorkOrderView.getCustomerComboBox().getValue();
+                Vehicle vehicle = createWorkOrderView.getVehicleComboBox().getValue();
+                Mechanic mechanic = createWorkOrderView.getMechanicComboBox().getValue();
+                List<ServiceItem> services = createWorkOrderView.getServicesTable().getItems();
+                int[] serviceIds = services.stream().mapToInt(ServiceItem::getId).toArray();
+
+                WorkOrder workOrder = workOrderService.createDropInWorkOrder(
+                        customer.getId(),
+                        vehicle.getId(),
+                        mechanic.getId(),
+                        serviceIds
+                );
+                System.out.println("DROP-IN CREATED");
+                System.out.println("workOrder ID: " + workOrder.getId());
+            }
         });
 
         app.showView(createWorkOrderView.getView());
