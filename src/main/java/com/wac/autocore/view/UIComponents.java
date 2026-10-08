@@ -453,4 +453,31 @@ public class UIComponents {
         return container;
     }
 
+    // Hänglåsikon på textarea
+    public static StackPane createLockedTextArea(TextArea textArea) {
+
+        // Användaren kan inte ändra texten
+        textArea.setEditable(false);
+        textArea.setFocusTraversable(false);
+
+        FontIcon lockIcon = new FontIcon("fa-lock");
+        lockIcon.setIconSize(13);
+        lockIcon.getStyleClass().add("locked-field-icon");
+
+        StackPane container = new StackPane();
+        container.setMaxWidth(Double.MAX_VALUE);
+
+        container.getChildren().addAll(
+                textArea,
+                lockIcon
+        );
+
+        StackPane.setAlignment(lockIcon, Pos.CENTER_RIGHT);
+        StackPane.setMargin(lockIcon, new Insets(0, 12, 0, 0));
+
+        return container;
+
+    }
+
+
 }

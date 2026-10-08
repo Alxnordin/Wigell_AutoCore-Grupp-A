@@ -668,4 +668,35 @@ ListView .list-cell:filled:selected {
     -fx-icon-color: #f5ab22;
 }
 
+/* Ram runt vald ursprunglig arbetsorder */
+.original-work-order-overview {
+    -fx-border-color: #D99A3D;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+/* Rubrik för vald ursprunglig arbetsorder */
+.original-work-order-title {
+    -fx-text-fill: #D99A3D;
+}
+
+/* Standardstyling för textarea */
+.standard-text-area {
+    -fx-background-color: white;
+    -fx-border-color: #CFE0D5;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px;
+    -fx-font-size: 14px;
+}
+
+.standard-text-area .content {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
 
