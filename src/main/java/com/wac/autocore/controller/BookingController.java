@@ -1,10 +1,7 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
-import com.wac.autocore.model.Booking;
-import com.wac.autocore.model.Customer;
-import com.wac.autocore.model.ServiceItem;
-import com.wac.autocore.model.Vehicle;
+import com.wac.autocore.model.*;
 import com.wac.autocore.service.*;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.booking.BookingDetailsView;
@@ -20,6 +17,7 @@ import java.util.List;
 public class BookingController {
 
     private final ServiceItemService serviceItemService;
+    private final ServicePackageService servicePackageService;
     private final BookingService bookingService;
     private final WorkOrderService workOrderService;
     private final VehicleService vehicleService;
@@ -32,11 +30,13 @@ public class BookingController {
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
     public BookingController(ServiceItemService serviceItemService,
+                             ServicePackageService servicePackageService,
                              BookingService bookingService, WorkOrderService workOrderService,
                              VehicleService vehicleService, CustomerService customerService,
                              AutoCoreApplication app, BookingView bookingView,
                              BookingListView bookingListView) {
         this.serviceItemService = serviceItemService;
+        this.servicePackageService = servicePackageService;
         this.bookingService = bookingService;
         this.workOrderService = workOrderService;
         this.vehicleService = vehicleService;
@@ -46,6 +46,16 @@ public class BookingController {
         this.bookingListView = bookingListView;
         wireEvents();
         refreshBookingList();
+
+        //Alexander
+        //rullistan "Välj tjänst" i Skapa bokning: först de enskilda tjänsterna, sedan servicepaketen.
+        //Ett paket utan tjänster visas inte, eftersom det inte finns något att lägga till.
+        bookingView.getServiceComboBox().getItems().addAll(serviceItemService.getServiceItems());
+        for (ServicePackage servicePackage : servicePackageService.servicePackages()) {
+            if (servicePackage.getServiceCount() > 0) {
+                bookingView.getServiceComboBox().getItems().add(servicePackage);
+            }
+        }
 
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
             refreshBookingList();
@@ -111,15 +121,37 @@ public class BookingController {
         bookingListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
     }
 
+    //Alexander
+    //lägger det som är valt i rullistan i listan för den nya bokningen.
+    //Composite: en tjänst lämnar ut sig själv och ett paket lämnar ut alla sina tjänster,
+    //så tjänst och paket hanteras på samma sätt. Samma tjänst kan bara väljas en gång.
     private void addServiceToNewBooking() {
-        ServiceItem selectedService = bookingView.getServiceComboBox().getValue();
+        ServiceComponent selected = bookingView.getServiceComboBox().getValue();
         List<ServiceItem> selectedServices = bookingView.getServicesTable().getItems();
 
-        if (selectedService != null && !selectedServices.contains(selectedService)) {
-            selectedServices.add(selectedService);
-            bookingView.getServiceComboBox().setValue(null);
+        if (selected == null) {
+            return;
         }
+
+        for (ServiceItem serviceItem : selected.getServiceItems()) {
+            if (!containsService(selectedServices, serviceItem.getId())) {
+                selectedServices.add(serviceItem);
+            }
+        }
+        bookingView.getServiceComboBox().setValue(null);
     }
+
+    //Alexander
+    //true om tjänsten redan finns bland de valda tjänsterna (jämförs på ID)
+    private boolean containsService(List<ServiceItem> services, int serviceItemId) {
+        for (ServiceItem serviceItem : services) {
+            if (serviceItem.getId() == serviceItemId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private void updateNewBookingSummary() {
         List<ServiceItem> selectedServices = bookingView.getServicesTable().getItems();

@@ -55,7 +55,7 @@ public class ServicePackageService {
         ServicePackage servicePackage = findServicePackage(servicePackageId);
 
         if (servicePackage == null) {
-            System.out.println("Servivce package with ID " + servicePackageId +
+            System.out.println("Service package with ID " + servicePackageId +
                 " does not exist.");
             return false;
         }
