@@ -30,6 +30,10 @@ public class Booking {
     //EJ KLAR!! Kolla hur Fredrik gjort i WorkOrder
     public Booking cloneBooking(){
         Booking bookingClone = new Booking(this.id, this.vehicleId, this.date, this.description);
+
+        bookingClone.setServiceItemIds(new ArrayList<>(this.serviceItemIds));
+        bookingClone.setOriginalBookingId(this.originalBookingId);
+
         return bookingClone;
 
     }
@@ -89,6 +93,13 @@ public class Booking {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getOriginalBookingId() {
+        return originalBookingId;
+    }
+    public void setOriginalBookingId(Integer originalBookingId){
+        this.originalBookingId = originalBookingId;
     }
 
     @Override

@@ -26,6 +26,7 @@ public class BookingController {
     private final AutoCoreApplication app;
     private final BookingView bookingView;
     private final BookingListView bookingListView;
+    private Booking originalBookingForCopy;
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -98,8 +99,15 @@ public class BookingController {
                 for (int i = 0; i < selectedServices.size(); i++) {
                     serviceItemIds[i] = selectedServices.get(i).getId();
                 }
+                //Vanlig booking använder createBooking, bokning skapad av tidigare bokning använder
+                //createBookingFromPreviousBooking. tjänsterna hämtas då från originalbokningen.
 
-                Booking booking = bookingService.createBooking(vehicleId, date, description, serviceItemIds);
+                Booking booking;
+                if(originalBookingForCopy != null){
+                    booking = bookingService.createBookingFromPreviousBooking(originalBookingForCopy.getId(), date);
+                }else {
+                    booking = bookingService.createBooking(vehicleId, date, description, serviceItemIds);
+                }
 
                 if (booking != null) {
                     refreshBookingList();
@@ -209,6 +217,7 @@ public class BookingController {
     }
 
     private void openCreateBookingView(Booking booking) {
+        originalBookingForCopy = booking;
         fillFromBooking(bookingView, booking);
         bookingView.showCreatingOrderFromExistingOrderButton();
         app.showView(bookingView.getView());

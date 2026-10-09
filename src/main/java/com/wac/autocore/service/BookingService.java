@@ -190,36 +190,43 @@ public class BookingService {
     //- Fordon (vet inte om det fältet ska vara "låst" eller ej)
     //- ServicItem och fälten name, description och
     // estimatedMinutes (INTE price, det ska istället hämtas på nytt då det kan ha ändrats)
-    public Booking createBookingFromPreviousBooking(int vehicleId,
-                                 String description,
-                                 int... serviceItemIds) {
+    public Booking createBookingFromPreviousBooking(int originalBookingId, LocalDate newDate) {
 
-//        Vehicle vehicle = vehicleService.findVehicle(vehicleId);
-//        if (vehicle == null) {
-//            System.out.println("Vehicle with ID " + vehicleId + " does not exist.");
-//            return null;
-//        }
-//
-//        for (int serviceItemId : serviceItemIds) {
-//            if (serviceItemService.findServiceItem(serviceItemId) == null) {
-//                System.out.println("Service item with ID " + serviceItemId + " does not exist.");
-//                return null;
-//            }
-//        }
-//
-//        Booking booking = new Booking(0, vehicleId, date, description);
-//        for (int serviceItemId : serviceItemIds) {
-//            if (!booking.containsServiceItem(serviceItemId)) {
-//                booking.addServiceItem(serviceItemId);
-//            }
-//        }
-//        bookingDAO.save(booking);
-//
-//        System.out.println("Booking created successfully.");
-//        System.out.println(booking);
-//
-//        return booking;
-        return null;
+        Booking original = findBooking(originalBookingId);
+
+        if(original == null){
+            System.out.println("Original booking does not exist.");
+            return null;
+        }
+        Vehicle vehicle = vehicleService.findVehicle(original.getVehicleId());
+
+        if (vehicle == null){
+            System.out.println("Vehicle does not exist.");
+            return null;
+        }
+
+        if (newDate == null || newDate.isBefore(LocalDate.now())){
+            System.out.println("New booking date is invalid.");
+            return null;
+        }
+        for (int serviceItemId : original.getServiceItemIds()){
+            if (serviceItemService.findServiceItem(serviceItemId) == null){
+                System.out.println("Service item " + serviceItemId + " does not exist.");
+                return null;
+            }
+        }
+        Booking newBooking = original.cloneBooking();
+        newBooking.setId(0);
+        newBooking.setDate(newDate);
+        newBooking.setStatus("BOOKED");
+        newBooking.setOriginalBookingId(original.getId());
+
+        bookingDAO.save(newBooking);
+
+        System.out.println("New booking created from previous booking");
+        System.out.println(newBooking);
+
+        return newBooking;
     }
 
 
