@@ -27,6 +27,7 @@ public class CreateWorkOrderView {
     private final Label subtitle;
     private final Button backButton;
     private final Button nextButton;
+    private final Button saveDraftButton = new Button("Spara som utkast");
 
     private final Label bookingDescription;
     private final Label customerLabel;
@@ -75,6 +76,7 @@ public class CreateWorkOrderView {
     private final ComboBox<Customer> customerComboBox;
     private final ComboBox<Vehicle> vehicleComboBox;
     private final ComboBox<Mechanic> mechanicComboBox;
+
 
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
@@ -136,7 +138,7 @@ public class CreateWorkOrderView {
 
         // Customer
         VBox customerBox = new VBox(5);
-        if ("planned".equals(orderType)) {
+        if ("planned".equals(orderType) && booking != null) {
             StackPane lockedCustomer = UIComponents.createLockedComboBox(customerComboBox);
 
             customerBox.getChildren().addAll(
@@ -153,7 +155,7 @@ public class CreateWorkOrderView {
 
         // Vehicle
         VBox vehicleBox = new VBox(5);
-        if ("planned".equals(orderType)) {
+        if ("planned".equals(orderType) && booking != null) {
             StackPane lockedVehicle = UIComponents.createLockedComboBox(vehicleComboBox);
 
             vehicleBox.getChildren().addAll(
@@ -264,7 +266,7 @@ public class CreateWorkOrderView {
         descriptionField.setMaxWidth(Double.MAX_VALUE);
 
         VBox descriptionBox = new VBox(5);
-        if ("planned".equals(orderType)) {
+        if ("planned".equals(orderType) && booking != null) {
             StackPane lockedDescription = UIComponents.createLockedTextField(descriptionField);
             descriptionBox.getChildren().addAll(
                     descriptionLabel,
@@ -472,7 +474,8 @@ public class CreateWorkOrderView {
         HBox buttonBox = UIComponents.createButtonBox();
         buttonBox.getChildren().addAll(
                 backButton,
-                nextButton
+                nextButton,
+                saveDraftButton
         );
 
         // Lägg allt på sidan
@@ -589,6 +592,8 @@ public class CreateWorkOrderView {
     public Button getNextButton() {
         return nextButton;
     }
+
+    public Button getSaveDraftButton(){return saveDraftButton;}
 
     public ComboBox<ServiceItem> getServiceComboBox() {
         return serviceComboBox;
