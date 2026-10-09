@@ -341,7 +341,7 @@ public class CreateWorkOrderView {
         warrantyDescriptionField.setWrapText(true);
         warrantyDescriptionField.getStyleClass().add("standard-text-area");
 
-       // Samlar båda beskrivningarna i Order Information
+        // Samlar båda beskrivningarna i Order Information
         VBox descriptionBox = new VBox(10);
 
         if ("planned".equals(orderType)) {
@@ -651,7 +651,7 @@ public class CreateWorkOrderView {
         // Språkbyte
         languageManager.localeProperty().addListener(
                 (observable, oldValue, newValue) -> {
-                   changeTextAllComponents();
+                    changeTextAllComponents();
                 }
         );
     }
@@ -847,6 +847,9 @@ public class CreateWorkOrderView {
     }
 
     public TextArea getDescriptionField() {return descriptionField;}
+    //Alexander
+    //beskrivningen av vad reklamationen gäller (visas bara för warranty order)
+    public TextArea getWarrantyDescriptionField() {return warrantyDescriptionField;}
 
     public Button getAddServiceButton() {
         return addServiceButton;
