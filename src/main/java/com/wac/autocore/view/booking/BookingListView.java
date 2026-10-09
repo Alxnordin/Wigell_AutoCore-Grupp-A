@@ -92,9 +92,28 @@ public class BookingListView {
                 new SimpleStringProperty(cellData.getValue().getDescription()));
 
         statusColumn = new TableColumn<>(languageManager.getString("statusInTable"));
-        statusColumn.setCellValueFactory(cellData -> {
-            String status = cellData.getValue().getStatus();
-            return new SimpleStringProperty(languageManager.getString(status));
+
+        statusColumn.setCellValueFactory(cellData ->
+            new SimpleStringProperty(cellData.getValue().getStatus())
+        );
+
+        statusColumn.setCellFactory(column -> new TableCell<Booking, String>() {
+
+            @Override
+            protected void updateItem(String status, boolean empty) {
+                super.updateItem(status, empty);
+
+                if (empty || status == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                   Label statusLabel = UIComponents.createStatusBadge(status);
+                    statusLabel.setText(languageManager.getString(status));
+
+                    setGraphic(statusLabel);
+                    setText(null);
+                }
+            }
         });
 
         //sätter kolumnernas bredd så dom fyller hela tabellen
@@ -196,23 +215,10 @@ public class BookingListView {
         descriptionColumn.setText(languageManager.getString("descriptionInTable"));
         statusColumn.setText(languageManager.getString("statusInTable"));
 
-
         createOrderColumn.setText(languageManager.getString("createOrderColumn"));
         viewAndEditColumn.setText(languageManager.getString("viewAndEditColumn"));
         backButton.setText(languageManager.getString("backButton"));
         title.setText(languageManager.getString("bookingListTitle"));
         subtitle.setText(languageManager.getString("bookingListSubtitle"));
-
-//        bookingServicesTitle.setText(languageManager.getString("bookingServicesTitle"));
-//        selectBookingLabel.setText(languageManager.getString("selectBookingHint"));
-//        lockedLabel.setText(languageManager.getString("bookingLockedInfo"));
-//        serviceColumn.setText(languageManager.getString("serviceColumn"));
-//        timeColumn.setText(languageManager.getString("timeColumn"));
-//        priceColumn.setText(languageManager.getString("priceColumn"));
-//
-//        addServiceButton.setText(languageManager.getString("addService"));
-//        removeServiceButton.setText(languageManager.getString("removeService"));
-//        totalTimeTitle.setText(languageManager.getString("estimatedTotalTime") + ":");
-//        totalPriceTitle.setText(languageManager.getString("estimatedTotalPrice") + ":");
     }
 }

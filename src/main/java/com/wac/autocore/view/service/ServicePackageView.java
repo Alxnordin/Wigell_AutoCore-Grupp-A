@@ -27,6 +27,7 @@ public class ServicePackageView {
     private final VBox root;
 
     private Label servicePackagesTitle;
+
     private TableView<ServicePackage> packageTable;
     private TableColumn<ServicePackage, String> packageNameColumn;
     private TableColumn<ServicePackage, String> serviceCountColumn;

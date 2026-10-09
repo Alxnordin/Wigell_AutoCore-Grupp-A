@@ -73,7 +73,6 @@ public class AutoCoreApplication extends Application {
         borderPane = new BorderPane();
 
         Label headerLabel = new Label("WAC AutoCore");
-//        Button languageButton = new Button(LanguageManager.getInstance().getString("language"));
         LanguageManager languageManager = LanguageManager.getInstance();
 
         FontIcon globeIcon = new FontIcon("fa-globe");

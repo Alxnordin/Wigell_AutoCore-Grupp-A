@@ -502,9 +502,28 @@ public class UIComponents {
             case "Slutförd":
                 statusLabel.getStyleClass().add("status-completed");
                 break;
+
+            case "BOOKED":
+                statusLabel.getStyleClass().add("status-booked");
+                break;
+
+            case "WORK_ORDER_CREATED":
+                statusLabel.getStyleClass().add("status-created");
+                break;
+
+            case "IN_PROGRESS":
+                statusLabel.getStyleClass().add("status-in-progress");
+                break;
+
+            case "COMPLETED":
+                statusLabel.getStyleClass().add("status-completed");
+                break;
         }
         return statusLabel;
     }
+
+
+
 
     public static HBox createSearchBox(TextField textField) {
         HBox searchBox = new HBox(10);

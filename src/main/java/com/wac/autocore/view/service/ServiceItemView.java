@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableView;
@@ -26,7 +27,8 @@ public class ServiceItemView {
     //sidans grundbox, sparas så att en sektion till kan läggas in (se addSection)
     private final VBox box;
 
-    private Label serviceLabel;
+    private Label title;
+    private Label subtitle;
 
     private TableView<ServiceItem> serviceItemTableView;
     private Button backButton;
@@ -41,8 +43,10 @@ public class ServiceItemView {
 
         box = UIComponents.createVBoxForViews();
 
-
-        serviceLabel = UIComponents.createSubtitle(languageManager.getString("serviceLabel"));
+        title = new Label(languageManager.getString("serviceLabel"));
+        HBox titleBox = UIComponents.createPageTitle(title, "fa-wrench");
+        subtitle = UIComponents.createSubtitle(
+                languageManager.getString("serviceItemSubtitle"));
 
         serviceItemTableView = UIComponents.createTable();
         nameColumn = new TableColumn<>(languageManager.getString("serviceItemName"));
@@ -55,7 +59,7 @@ public class ServiceItemView {
 
         backButton= UIComponents.createBackButton(languageManager.getString("backButton"));
 
-        box.getChildren().addAll(serviceLabel, serviceItemTableView, backButton);
+        box.getChildren().addAll(titleBox, subtitle, serviceItemTableView, backButton);
 
         //Alexander
         //sidan kan rullas, eftersom den nu även visar servicepaketen
@@ -84,7 +88,7 @@ public class ServiceItemView {
     }
 
 
-        public void setOnChangePrice(Consumer<ServiceItem> action) {
+    public void setOnChangePrice(Consumer<ServiceItem> action) {
 
         actionColumn.setCellFactory(column ->
                 new TableCell<ServiceItem, Void>() {
@@ -126,7 +130,8 @@ public class ServiceItemView {
 
 
     public void changeTextAllComponents() {
-        serviceLabel.setText(languageManager.getString("serviceLabel"));
+        title.setText(languageManager.getString("serviceLabel"));
+        subtitle.setText(languageManager.getString("serviceItemSubtitle"));
         nameColumn.setText(languageManager.getString("serviceItemName"));
         priceColumn.setText(languageManager.getString("serviceItemPrice"));
         actionColumn.setText(languageManager.getString("changePrice"));

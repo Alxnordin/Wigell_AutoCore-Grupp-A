@@ -44,6 +44,7 @@ public class BookingDetailsView {
     private Label vehicleRegistrationNumberTitle;
     private Label dateTitle;
     private Label statusTitle;
+    private Label statusValue;
     private Label descriptionTitle;
 
     private Label servicesTitle;
@@ -87,9 +88,8 @@ public class BookingDetailsView {
         HBox buttonBottomBox = buildBottomBox();
 
         //Label confirmationLabel = new Label("Bekräftelse på sparad eller ny bokning");
-        Label confirmationLabel = UIComponents.createWrongInputLabel("");
 
-        box.getChildren().addAll(header, subtitle, confirmationLabel, bookingInformation, servicesSection, summarySection, buttonBottomBox);
+        box.getChildren().addAll(header, subtitle, bookingInformation, servicesSection, summarySection, buttonBottomBox);
 
         ScrollPane scrollPane = new ScrollPane(box);
         scrollPane.setFitToWidth(true);
@@ -187,6 +187,7 @@ public class BookingDetailsView {
         vehicleRegistrationNumberTitle.setText(languageManager.getString("vehicleRegistrationNumber"));
         dateTitle.setText(languageManager.getString("dateLabel"));
         statusTitle.setText(languageManager.getString("statusInTable"));
+        statusValue.setText(languageManager.getString(booking.getStatus()));
         descriptionTitle.setText(languageManager.getString("descriptionLabel"));
 
         servicesTitle.setText("2. " + languageManager.getString("servicesTitle"));
@@ -287,7 +288,7 @@ public class BookingDetailsView {
         dateBox.getChildren().addAll(dateTitle, dateValue);
 
         statusTitle = UIComponents.createInfoLabel(languageManager.getString("statusInTable"));
-        Label statusValue = UIComponents.createValueLabel(booking.getStatus());
+        statusValue = UIComponents.createValueLabel(languageManager.getString(booking.getStatus()));
         VBox statusBox = UIComponents.createVBoxWithSpacing6();
         statusBox.getChildren().addAll(statusTitle, statusValue);
 

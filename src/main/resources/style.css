@@ -725,4 +725,9 @@ ListView .list-cell:filled:selected {
     -fx-text-fill: #28512A;
 }
 
+.status-booked {
+    -fx-background-color: #E8DDF5;
+    -fx-text-fill: #563C78;
+}
+
 

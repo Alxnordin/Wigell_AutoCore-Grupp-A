@@ -20,8 +20,6 @@ public class MainMenuController {
     }
 
     public void wireEvents() {
-//        view.getShowCustomersButton().setOnAction(e -> app.showCustomerListView());
-//        view.getAddCustomerButton().setOnAction(e -> app.showCustomerView());
         view.getCustomersButton().setOnAction(event -> app.showCustomerListView());
 
         view.getShowVehiclesButton().setOnAction(e -> app.showVehicleListView());
@@ -33,8 +31,7 @@ public class MainMenuController {
         view.getShowServicesButton().setOnAction(e -> app.showServiceItemView());
         view.getShowMechanicsButton().setOnAction(e -> app.showMechanicView());
 
-        view.getShowOrdersButton().setOnAction(e -> app.showOrderListView());
-        //view.getAddOrderButton().setOnAction(e -> app.showOrderFormView());
+        view.getOrdersButton().setOnAction(e -> app.showOrderListView());
 
         view.getShowInvoicesButton().setOnAction(e -> app.showInvoiceListView());
         view.getAddInvoiceButton().setOnAction(e -> app.showInvoiceView());

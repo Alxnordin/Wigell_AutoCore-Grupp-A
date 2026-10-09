@@ -18,15 +18,11 @@ public class MainMenuView {
     private final Parent root;
     private final List<VBox> allSubMenus = new ArrayList<>();
 
-    private Button showCustomersButton, addCustomerButton;
     private Button showVehiclesButton, addVehicleButton;
     private Button showBookingsButton, addBookingButton;
     private Button showServicesButton, showMechanicsButton;
-    private Button showOrdersButton, addOrderButton;
 
     private Button showInvoicesButton, addInvoiceButton, showPaymentsButton, addPaymentButton;
-
-    private Button exitButton;
 
     private Button customersButton;
     private Button vehiclesButton;
@@ -35,6 +31,8 @@ public class MainMenuView {
     private Button ordersButton;
     private Button paymentsButton;
 
+    private Button exitButton;
+
     LanguageManager languageManager = LanguageManager.getInstance();
 
     public MainMenuView() {
@@ -42,8 +40,6 @@ public class MainMenuView {
         VBox menu = new VBox();
         menu.getStyleClass().add("main-menu");
 
-//        showCustomersButton = new Button(languageManager.getString("showCustomers"));
-//        addCustomerButton = new Button(languageManager.getString("addCustomer"));
         customersButton = UIComponents.createMenuButton(languageManager.getString("customersButton"), "fa-user");
         menu.getChildren().add(buildSection(customersButton));
 
@@ -62,13 +58,10 @@ public class MainMenuView {
         servicesButton = UIComponents.createMenuButton(languageManager.getString("servicesButton"), "fa-wrench");
         menu.getChildren().add(buildSection(servicesButton, showServicesButton, showMechanicsButton));
 
-        showOrdersButton = new Button(languageManager.getString("showOrders"));
-        addOrderButton = new Button(languageManager.getString("addOrder"));
-
         ordersButton = new Button(languageManager.getString("ordersButton"));
         ordersButton = UIComponents.createMenuButton(languageManager.getString("ordersButton"), "fa-clipboard");
 
-        menu.getChildren().add(buildSection(ordersButton, showOrdersButton, addOrderButton));
+        menu.getChildren().add(buildSection(ordersButton));
 
         showInvoicesButton = new Button(languageManager.getString("showInvoices"));
         addInvoiceButton = new Button(languageManager.getString("addInvoice"));
@@ -96,8 +89,6 @@ public class MainMenuView {
 
     public void changeTextAllComponents() {
         customersButton.setText(languageManager.getString("customersButton"));
-//        showCustomersButton.setText(languageManager.getString("showCustomers"));
-//        addCustomerButton.setText(languageManager.getString("addCustomer"));
 
         vehiclesButton.setText(languageManager.getString("vehiclesButton"));
         showVehiclesButton.setText(languageManager.getString("showVehicles"));
@@ -112,8 +103,6 @@ public class MainMenuView {
         showMechanicsButton.setText(languageManager.getString("showMechanicsButton"));
 
         ordersButton.setText(languageManager.getString("ordersButton"));
-        showOrdersButton.setText(languageManager.getString("showOrders"));
-        addOrderButton.setText(languageManager.getString("addOrder"));
 
         paymentsButton.setText(languageManager.getString("paymentsButton"));
         showInvoicesButton.setText(languageManager.getString("showInvoices"));
@@ -159,8 +148,6 @@ public class MainMenuView {
 
     public Parent getView() { return root; }
 
-//    public Button getShowCustomersButton() { return showCustomersButton; }
-//    public Button getAddCustomerButton() { return addCustomerButton; }
     public Button getCustomersButton() { return customersButton; }
     public Button getShowVehiclesButton() { return showVehiclesButton; }
     public Button getAddVehicleButton() { return addVehicleButton; }
@@ -168,9 +155,7 @@ public class MainMenuView {
     public Button getAddBookingButton() { return addBookingButton; }
     public Button getShowServicesButton() { return showServicesButton; }
     public Button getShowMechanicsButton() { return showMechanicsButton; }
-    public Button getShowOrdersButton() { return showOrdersButton; }
-    public Button getAddOrderButton() { return addOrderButton; }
-    //public Button getStartCompleteOrderButton() { return startCompleteOrderButton; }
+    public Button getOrdersButton() { return ordersButton; }
     public Button getShowInvoicesButton() { return showInvoicesButton; }
     public Button getAddInvoiceButton() { return addInvoiceButton; }
     public Button getShowPaymentsButton() { return showPaymentsButton; }
