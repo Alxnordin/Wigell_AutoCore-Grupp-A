@@ -477,7 +477,33 @@ public class UIComponents {
         StackPane.setMargin(lockIcon, new Insets(0, 12, 0, 0));
 
         return container;
+    }
 
+
+    // Skapar en färgad status-badge
+    public static Label createStatusBadge(String status) {
+        Label statusLabel = new Label(status);
+
+        statusLabel.getStyleClass().add("status-badge");
+
+        switch (status) {
+
+            case "Created":
+            case "Skapad":
+                statusLabel.getStyleClass().add("status-created");
+                break;
+
+            case "In progress":
+            case "Pågående":
+                statusLabel.getStyleClass().add("status-in-progress");
+                break;
+
+            case "Completed":
+            case "Slutförd":
+                statusLabel.getStyleClass().add("status-completed");
+                break;
+        }
+        return statusLabel;
     }
 
     public static HBox createSearchBox(TextField textField) {

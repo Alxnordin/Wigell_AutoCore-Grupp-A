@@ -1,6 +1,10 @@
 package com.wac.autocore.view.order;
 
+import com.wac.autocore.dao.ServiceItemDAO;
+import com.wac.autocore.model.Mechanic;
+import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.WorkOrder;
+import com.wac.autocore.service.MechanicService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
@@ -13,6 +17,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
+import java.util.List;
 import java.util.function.Consumer;
 
 //UI-vy som visar arbetsorder listan samt kontroller för att starta och slutföra en arbetsorder
@@ -21,9 +27,9 @@ public class OrderListView {
     private final Parent root;
     private final TableView<WorkOrder> orderTable;
 
-    private final TableColumn<WorkOrder, Integer> orderIdColumn;
-    private final TableColumn<WorkOrder, Integer> bookingIdColumn;
-    private final TableColumn<WorkOrder, Integer> mechanicIdColumn;
+    private final TableColumn<WorkOrder, String> orderIdColumn;
+    private final TableColumn<WorkOrder, String> bookingIdColumn;
+    private final TableColumn<WorkOrder, String> mechanicIdColumn;
     private final TableColumn<WorkOrder, String> serviceColumn;
     private final TableColumn<WorkOrder, String> statusColumn;
     private final TableColumn<WorkOrder, Void> actionColumn;
@@ -47,11 +53,16 @@ public class OrderListView {
     private final Label warrantyOrderTitle;
     private final Label warrantyOrderDescription;
 
-
+    private final ServiceItemDAO serviceItemDAO;
+    private final MechanicService mechanicService;
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
+
     public OrderListView() {
+        serviceItemDAO = new ServiceItemDAO();
+        mechanicService = new MechanicService();
+
         //Huvudlayout
         VBox box = new VBox(12);
         box.setPadding(new Insets(20));
@@ -155,15 +166,129 @@ public class OrderListView {
         statusColumn = new TableColumn<>(languageManager.getString("statusInTable"));
         actionColumn = new TableColumn<>(languageManager.getString("actionInTable"));
 
-        //koppla kolumner till workorder
-        orderIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        bookingIdColumn.setCellValueFactory(new PropertyValueFactory<>("bookingId"));
-        mechanicIdColumn.setCellValueFactory(new PropertyValueFactory<>("mechanicId"));
+        // Visar arbetsorder-ID som WO-1, WO-2 osv.
+        orderIdColumn.setCellValueFactory(
+                cellData -> new SimpleStringProperty(
+                        "WO-" + cellData.getValue().getId()
+                )
+        );
+
+        // Visar boknings-ID som Bokning #1, Bokning #2 osv.
+        bookingIdColumn.setCellValueFactory(
+                cellData -> new SimpleStringProperty(
+                        languageManager.getString("bookingNumber")
+                                + " #"
+                                + cellData.getValue().getBookingId()
+                )
+        );
+
+        // Visar mekanikerns namn istället för mekaniker-ID
+        mechanicIdColumn.setCellValueFactory(
+                cellData -> {
+
+                    int mechanicId =
+                            cellData.getValue().getMechanicId();
+
+                    Mechanic mechanic =
+                            mechanicService.findMechanic(mechanicId);
+
+                    if (mechanic == null) {
+                        return new SimpleStringProperty("-");
+                    }
+
+                    return new SimpleStringProperty(
+                            mechanic.getName()
+                    );
+                }
+        );
 
         serviceColumn.setCellValueFactory(
-                cellData -> new SimpleStringProperty(cellData.getValue().getServiceItemIds().toString()));
+                cellData -> {
+
+                    WorkOrder workOrder = cellData.getValue();
+                    List<ServiceItem> allServices = serviceItemDAO.findAll();
+
+                    String serviceNames = workOrder.getServiceItemIds()
+                                    .stream()
+                                    .map(serviceId ->
+                                            allServices.stream()
+                                                    .filter(service ->
+                                                            service.getId() == serviceId)
+                                                    .findFirst()
+                                                    .orElse(null)
+                                    )
+                            .filter(service -> service != null)
+                            .map(service -> getTranslatedServiceName(service.getName()))
+                            .collect(
+                                    java.util.stream.Collectors.joining(", ")
+                            );
+
+                    return new SimpleStringProperty(
+                            serviceNames
+                    );
+                }
+        );
+
+
         statusColumn.setCellValueFactory(
-                cellData -> new SimpleStringProperty(cellData.getValue().getStatus().toString()));
+                cellData -> {
+
+                    String status =
+                            cellData.getValue().getStatus();
+
+                    String translatedStatus;
+
+                    switch (status) {
+
+                        case "CREATED":
+                            translatedStatus =
+                                    languageManager.getString(
+                                            "statusCreated"
+                                    );
+                            break;
+
+                        case "IN_PROGRESS":
+                            translatedStatus =
+                                    languageManager.getString(
+                                            "statusInProgress"
+                                    );
+                            break;
+
+                        case "COMPLETED":
+                            translatedStatus =
+                                    languageManager.getString(
+                                            "statusCompleted"
+                                    );
+                            break;
+
+                        default:
+                            translatedStatus = status;
+                    }
+
+                    return new SimpleStringProperty(
+                            translatedStatus
+                    );
+                }
+        );
+
+        statusColumn.setCellFactory(column ->
+                new TableCell<WorkOrder, String>() {
+
+                    @Override
+                    protected void updateItem(String status, boolean empty) {
+                        super.updateItem(status, empty);
+
+                        if (empty || status == null) {
+                            setGraphic(null);
+                            return;
+                        }
+
+                        setGraphic(
+                                UIComponents.createStatusBadge(status)
+                        );
+                    }
+                }
+        );
 
 
         actionColumn.setCellFactory(column -> new TableCell<WorkOrder, Void>() {
@@ -234,6 +359,27 @@ public class OrderListView {
         this.onCreateOrderType = onCreateOrderType;
     }
 
+    // Översätter service-namn beroende på valt språk
+    private String getTranslatedServiceName(String serviceName) {
+
+        switch (serviceName) {
+
+            case "Diagnostics":
+                return languageManager.getString("serviceDiagnostics");
+
+            case "Annual service":
+                return languageManager.getString("serviceAnnual");
+
+            case "Brake service":
+                return languageManager.getString("serviceBrake");
+
+            case "Oil change":
+                return languageManager.getString("serviceOil");
+
+            default:
+                return serviceName;
+        }
+    }
 
     public void changeTextAllComponents() {
         title.setText(languageManager.getString("ordersTitle"));
@@ -253,5 +399,7 @@ public class OrderListView {
         dropInOrderDescription.setText(languageManager.getString("dropInOrderDescription"));
         warrantyOrderTitle.setText(languageManager.getString("warrantyOrder"));
         warrantyOrderDescription.setText(languageManager.getString("warrantyOrderDescription"));
+
+        orderTable.refresh();
     }
 }
