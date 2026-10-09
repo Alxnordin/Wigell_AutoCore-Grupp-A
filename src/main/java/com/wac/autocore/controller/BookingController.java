@@ -292,26 +292,34 @@ public class BookingController {
                 return;
             }
 
+            //Alexander
+            //bokningen läses om från databasen, så att en tjänst som nyss tagits bort inte räknas som kvar
+            Booking currentBooking = bookingService.findBooking(booking.getId());
             boolean serviceAdded = false;
 
+            //Composite: en tjänst ger sig själv, ett paket ger alla sina tjänster.
+            //Tjänster som redan finns i bokningen hoppas över i stället för att ge en varning var.
             for (ServiceItem serviceItem : selected.getServiceItems()) {
-                if (addServiceToBooking(booking, serviceItem)) {
+                if (!currentBooking.containsServiceItem(serviceItem.getId())
+                        && bookingService.addServiceToBooking(booking.getId(), serviceItem.getId())) {
                     serviceAdded = true;
                 }
             }
 
-            if (serviceAdded) {
-                List<ServiceItem> updatedServices = bookingService.getServicesForBooking(booking.getId());
-
-                detailsView.getServicesTable().getItems().setAll(updatedServices);
-
-                detailsView.showSummary(
-                        formatTotalTime(updatedServices),
-                        formatTotalPrice(updatedServices)
-                );
-
-                detailsView.getServiceComboBox().setValue(null);
+            if (!serviceAdded) {
+                showWarning(languageManager.getString("serviceAlreadyInBookingWarning"));
+                return;
             }
+
+            List<ServiceItem> updatedServices = bookingService.getServicesForBooking(booking.getId());
+
+            detailsView.getServicesTable().getItems().setAll(updatedServices);
+            detailsView.showSummary(
+                    formatTotalTime(updatedServices),
+                    formatTotalPrice(updatedServices)
+            );
+
+            detailsView.getServiceComboBox().setValue(null);
         });
 
         detailsView.getRemoveServiceButton().setOnAction(event -> {

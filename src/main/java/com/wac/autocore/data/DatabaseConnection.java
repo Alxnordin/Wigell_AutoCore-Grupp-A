@@ -166,6 +166,15 @@ public class DatabaseConnection {
             }catch(SQLException e){
 
             }
+            //Alexander
+            //drop-in och utkast saknar bokning. I databaser som skapades innan dess är booking_id
+            //fortfarande NOT NULL, så kolumnen görs valfri. Befintlig data påverkas inte.
+            try{
+                statement.execute("ALTER TABLE work_order " +
+                        "MODIFY booking_id INT NULL");
+            }catch(SQLException e){
+
+            }
 
         }catch(SQLException e){
             throw new RuntimeException("Could not initialize database.", e);

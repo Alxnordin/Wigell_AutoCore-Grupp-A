@@ -42,16 +42,20 @@ public class WorkOrderService {
     //true om bokningen redan har en arbetsorder (en bokning kan bara ha en)
     public boolean hasWorkOrder(int bookingId) {
         for (WorkOrder workOrder : workOrderDAO.findAll()) {
-            if (workOrder.getBookingId() == bookingId && !workOrder.isComplaint()) {
+            //Alexander
+            //drop-in saknar bokning (null), och då ska den inte jämföras med bokningens id
+            Integer orderBookingId = workOrder.getBookingId();
+            if (orderBookingId != null && orderBookingId == bookingId && !workOrder.isComplaint()) {
                 return true;
             }
         }
         return false;
     }
 
-    //DENNA METOD ANVÄNDS INTE ALLS NU
-    //Ska kopplas på frontenden som finns i nya klassen CreateWorkOrderView
-     public WorkOrder createWorkOrder(int bookingId,
+    //Alexander
+    //Planned order: arbetsorder från en befintlig bokning.
+    //Tjänsternas priser låses i ordern när den skapas, så senare prisändringar påverkar inte ordern.
+    public WorkOrder createWorkOrder(int bookingId,
                                      int mechanicId,
                                      int... serviceItemIds) {
 
@@ -62,6 +66,12 @@ public class WorkOrderService {
             return null;
         }
 
+        //en bokning kan bara ha en arbetsorder
+        if (hasWorkOrder(bookingId)) {
+            System.out.println("Booking " + bookingId + " already has a work order.");
+            return null;
+        }
+
         Mechanic mechanic = mechanicService.findMechanic(mechanicId);
 
         if (mechanic == null) {
@@ -69,8 +79,14 @@ public class WorkOrderService {
             return null;
         }
 
-        if (!mechanic.isAvailable()) {
-            System.out.println("Mechanic " + mechanic.getName() + " is not available.");
+        //mekanikern får inte redan ha en arbetsorder samma dag som bokningen
+        if (isMechanicBookedOnDate(mechanicId, booking.getDate(), bookingId)) {
+            System.out.println("Mechanic " + mechanic.getName() + " is already booked on " + booking.getDate() + ".");
+            return null;
+        }
+
+        if (serviceItemIds == null || serviceItemIds.length == 0) {
+            System.out.println("A work order must contain at least one service.");
             return null;
         }
 
@@ -80,20 +96,30 @@ public class WorkOrderService {
                 return null;
             }
         }
-        WorkOrder workOrder = new WorkOrder(
-                0,
-                bookingId,
-                mechanicId
-        );
+
+        //byggs med WorkOrderBuilder, på samma sätt som drop-in och utkast
+        WorkOrderBuilder builder = new WorkOrderBuilder()
+                .bookingId(bookingId)
+                .mechanicId(mechanicId)
+                .description(booking.getDescription());
+
+        Vehicle vehicle = vehicleService.findVehicle(booking.getVehicleId());
+        if (vehicle != null) {
+            builder.vehicleId(vehicle.getId())
+                    .customerId(vehicle.getCustomerId());
+        }
 
         for (int serviceItemId : serviceItemIds) {
             ServiceItem serviceItem = serviceItemService.findServiceItem(serviceItemId);
-            workOrder.addServiceItem(serviceItemId, serviceItem.getPrice());
+            builder.addServiceItem(serviceItemId, serviceItem.getPrice());
         }
 
+        WorkOrder workOrder = builder.build();
         workOrderDAO.save(workOrder);
 
+        //bokningens nya status sparas i databasen
         booking.setStatus("WORK_ORDER_CREATED");
+        bookingService.updateStatus(booking);
 
         System.out.println("Work order created successfully.");
         System.out.println(workOrder);
@@ -209,7 +235,11 @@ public class WorkOrderService {
         }
 
         Mechanic mechanic = mechanicService.findMechanic(workOrder.getMechanicId());
-        Booking booking = bookingService.findBooking(workOrder.getBookingId());
+        //Alexander
+        //drop-in saknar bokning, då finns ingen bokningsstatus att uppdatera
+        Booking booking = workOrder.getBookingId() != null
+                ? bookingService.findBooking(workOrder.getBookingId())
+                : null;
 
         if (mechanic != null) {
             mechanic.setAvailable(false);
@@ -241,7 +271,11 @@ public class WorkOrderService {
         }
 
         Mechanic mechanic = mechanicService.findMechanic(workOrder.getMechanicId());
-        Booking booking = bookingService.findBooking(workOrder.getBookingId());
+        //Alexander
+        //drop-in saknar bokning, då finns ingen bokningsstatus att uppdatera
+        Booking booking = workOrder.getBookingId() != null
+                ? bookingService.findBooking(workOrder.getBookingId())
+                : null;
 
         workOrder.setStatus("COMPLETED");
         workOrderDAO.updateStatus(workOrder);
@@ -261,6 +295,12 @@ public class WorkOrderService {
 
     //skapa reklamation - prototype-mönster
     public WorkOrder createComplaint(int originalWorkOrderId){
+        return createComplaint(originalWorkOrderId, null);
+    }
+
+    //Alexander
+    //samma som ovan, men reklamationens egen beskrivning (vad som är fel) sparas på den nya ordern
+    public WorkOrder createComplaint(int originalWorkOrderId, String complaintDescription){
         WorkOrder original = findWorkOrder(originalWorkOrderId);
 
         if(original == null){
@@ -279,6 +319,10 @@ public class WorkOrderService {
         complaint.setComplaint(true);
 
         complaint.setOriginalWorkOrderId(original.getId());
+
+        if (complaintDescription != null && !complaintDescription.trim().isEmpty()) {
+            complaint.setDescription(complaintDescription.trim());
+        }
 
         workOrderDAO.save(complaint);
 
@@ -332,9 +376,9 @@ public class WorkOrderService {
         }
 
         WorkOrderBuilder builder = new WorkOrderBuilder()
-                                .customerId(customerId)
-                                .vehicleId(vehicleId)
-                                .mechanicId(mechanicId);
+                .customerId(customerId)
+                .vehicleId(vehicleId)
+                .mechanicId(mechanicId);
 
         for (int serviceItemId : serviceItemIds) {
             ServiceItem serviceItem = serviceItemService.findServiceItem(serviceItemId);

@@ -61,7 +61,7 @@ public class OrderDetailsView {
             Customer customer,
             List<Mechanic> mechanics,
             List<ServiceItem> orderServices
-            ) {
+    ) {
 
         this.workOrder = workOrder;
 
@@ -70,7 +70,7 @@ public class OrderDetailsView {
 
         // Rubrik
         title = new Label(languageManager.getString("workOrderTitle")
-                        + " #" + workOrder.getId());
+                + " #" + workOrder.getId());
         HBox titleBox = UIComponents.createPageTitle(title, "fa-wrench");
 
         // Underrubrik
@@ -101,7 +101,9 @@ public class OrderDetailsView {
 
         // Booking date
         dateLabel = UIComponents.createInfoLabel(languageManager.getString("dateLabel"));
-        Label dateValue = UIComponents.createValueLabel(booking.getDate().toString());
+        //Alexander
+        //drop-in saknar bokning och därmed bokningsdatum
+        Label dateValue = UIComponents.createValueLabel(booking != null ? booking.getDate().toString() : "--");
 
         VBox dateBox = UIComponents.createVBoxWithSpacing6();
         dateBox.getChildren().addAll(
@@ -211,7 +213,14 @@ public class OrderDetailsView {
         descriptionLabel = new Label(languageManager.getString("descriptionLabel"));
         descriptionLabel.getStyleClass().add("info-label");
 
-        Label descriptionValue = new Label(booking.getDescription());
+        //Alexander
+        //arbetsorderns egen beskrivning visas i första hand (drop-in och reklamation har en egen),
+        //annars bokningens beskrivning
+        String description = workOrder.getDescription();
+        if ((description == null || description.trim().isEmpty()) && booking != null) {
+            description = booking.getDescription();
+        }
+        Label descriptionValue = new Label(description == null ? "" : description);
         descriptionValue.getStyleClass().add("info-value");
 
         VBox descriptionBox = new VBox(6);
@@ -274,26 +283,26 @@ public class OrderDetailsView {
         //ta bort tjänst från en workorder
 
         deleteServiceColumn.setCellFactory(column -> new TableCell<ServiceItem, Button>(){
-            private final Button deleteButton = new Button(languageManager.getString("deleteServiceInTable"));{
-                deleteButton.setOnAction(event -> {
-                    ServiceItem serviceItem = getTableView().getItems().get(getIndex());
+                    private final Button deleteButton = new Button(languageManager.getString("deleteServiceInTable"));{
+                        deleteButton.setOnAction(event -> {
+                            ServiceItem serviceItem = getTableView().getItems().get(getIndex());
 
-                    if (onDeleteService != null){
-                        onDeleteService.accept(serviceItem);
+                            if (onDeleteService != null){
+                                onDeleteService.accept(serviceItem);
+                            }
+
+                        });
                     }
+                    @Override
+                    protected void updateItem(Button item, boolean empty){
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(deleteButton);
+                        }
 
-                });
-            }
-            @Override
-            protected void updateItem(Button item, boolean empty){
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(deleteButton);
-                }
-
-                }
+                    }
 
                 }
         );

@@ -11,6 +11,8 @@ import com.wac.autocore.view.order.OrderListView;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 
+import java.text.MessageFormat;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,19 +74,18 @@ public class OrderController {
         // Visa detaljer för vald arbetsorder
         orderListView.setOnViewOrder(workOrder -> {
 
-            Booking booking =
-                    bookingService.findBooking(
-                            workOrder.getBookingId()
-                    );
-
-            if (booking == null) {
-                return;
+            //Alexander
+            //drop-in saknar bokning. Då hämtas fordonet direkt från arbetsordern i stället för från bokningen.
+            Booking booking = null;
+            if (workOrder.getBookingId() != null) {
+                booking = bookingService.findBooking(workOrder.getBookingId());
             }
 
+            int vehicleId = booking != null ? booking.getVehicleId() : workOrder.getVehicleId();
 
             Vehicle vehicle =
                     vehicleService.findVehicle(
-                            booking.getVehicleId()
+                            vehicleId
                     );
 
             if (vehicle == null) {
@@ -102,11 +103,10 @@ public class OrderController {
             }
 
 
-            List<Mechanic> mechanics =
-                    workOrderService.getAvailableMechanics(
-                            booking,
-                            workOrder
-                    );
+            //lediga mekaniker räknas fram utifrån bokningens datum. Utan bokning visas alla mekaniker.
+            List<Mechanic> mechanics = booking != null
+                    ? workOrderService.getAvailableMechanics(booking, workOrder)
+                    : mechanicService.getMechanics();
 
             List<ServiceItem> orderServices =
                     workOrderService.getServicesForWorkOrder(
@@ -206,26 +206,26 @@ public class OrderController {
                         null
                 );
 
-            if ("dropIn".equals(orderType) || "planned".equals(orderType)) {
+        if ("dropIn".equals(orderType) || "planned".equals(orderType)) {
 
-                createWorkOrderView.getCustomerComboBox()
-                        .getItems()
-                        .addAll(
-                                customerService.getAllCustomers()
-                        );
+            createWorkOrderView.getCustomerComboBox()
+                    .getItems()
+                    .addAll(
+                            customerService.getAllCustomers()
+                    );
 
-                createWorkOrderView.getVehicleComboBox()
-                        .getItems()
-                        .addAll(
-                                vehicleService.getVehicles()
-                        );
+            createWorkOrderView.getVehicleComboBox()
+                    .getItems()
+                    .addAll(
+                            vehicleService.getVehicles()
+                    );
 
-                createWorkOrderView.getMechanicComboBox()
-                        .getItems()
-                        .addAll(
-                                mechanicService.getMechanics()
-                        );
-            }
+            createWorkOrderView.getMechanicComboBox()
+                    .getItems()
+                    .addAll(
+                            mechanicService.getMechanics()
+                    );
+        }
 
 
 
@@ -443,51 +443,15 @@ public class OrderController {
                 .getBackButton()
                 .setOnAction(event -> {
 
-        app.showView(orderListView.getView());});
+                    app.showView(orderListView.getView());});
 
-        // Spara som utkast
-        createWorkOrderView.getSaveDraftButton().setOnAction(event -> {
-            Customer customer = createWorkOrderView.getCustomerComboBox().getValue();
-            Vehicle vehicle = createWorkOrderView.getVehicleComboBox().getValue();
-            String description = createWorkOrderView.getDescriptionField().getText();
+        //Alexander
+        //utkast används inte just nu, så knappen Spara som utkast döljs
+        hideSaveDraftButton(createWorkOrderView);
 
-            if (customer == null || vehicle == null) {
-                showWarning("Välj kund och fordon");
-                return;
-            }
-
-            WorkOrder draft = workOrderService.createDraftWorkOrder(
-                    customer.getId(),
-                    vehicle.getId(),
-                    description
-            );
-
-            if (draft != null) {
-                System.out.println("DRAFT CREATED");
-                System.out.println("WorkOrder ID: " + draft.getId());
-            }
-        });
-
-        // Nästa-knappen
-        createWorkOrderView.getNextButton().setOnAction(event -> {
-            if ("dropIn".equals(orderType)) {
-                Customer customer = createWorkOrderView.getCustomerComboBox().getValue();
-                Vehicle vehicle = createWorkOrderView.getVehicleComboBox().getValue();
-                Mechanic mechanic = createWorkOrderView.getMechanicComboBox().getValue();
-                List<ServiceItem> services = createWorkOrderView.getServicesTable().getItems();
-                int[] serviceIds = services.stream().mapToInt(ServiceItem::getId).toArray();
-
-                WorkOrder workOrder = workOrderService.createDropInWorkOrder(
-                        customer.getId(),
-                        vehicle.getId(),
-                        mechanic.getId(),
-                        serviceIds
-                );
-
-                System.out.println("DROP-IN CREATED");
-                System.out.println("workOrder ID: " + workOrder.getId());
-            }
-        });
+        //Alexander
+        //Create-knappen skapar ordern med rätt metod i WorkOrderService beroende på ordertyp
+        createWorkOrderView.getNextButton().setOnAction(event -> createOrder(createWorkOrderView, orderType));
 
         // Lägg till tjänst
         createWorkOrderView.getAddServiceButton().setOnAction(event -> {
@@ -580,10 +544,143 @@ public class OrderController {
                     );
                 });
 
+        //Alexander
+        //Create-knappen när man kommer från "Skapa arbetsorder" på en bokning
+        hideSaveDraftButton(createWorkOrderView);
+        createWorkOrderView.getNextButton().setOnAction(event -> createOrder(createWorkOrderView, "planned"));
+
 
         app.showView(
                 createWorkOrderView.getView()
         );
+    }
+
+
+    //Alexander
+    //skapar ordern med den metod i WorkOrderService som hör till ordertypen.
+    //Varje metod kontrollerar formuläret först och visar en varning om något saknas.
+    private void createOrder(CreateWorkOrderView view, String orderType) {
+        WorkOrder workOrder;
+
+        if ("planned".equals(orderType)) {
+            workOrder = createPlannedOrder(view);
+        } else if ("dropIn".equals(orderType)) {
+            workOrder = createDropInOrder(view);
+        } else if ("warranty".equals(orderType)) {
+            workOrder = createWarrantyOrder(view);
+        } else {
+            return;
+        }
+
+        if (workOrder == null) {
+            return;
+        }
+
+        if (workOrder.isComplaint()) {
+            showInformation(MessageFormat.format(languageManager.getString("warrantyOrderCreatedInfo"),
+                    String.valueOf(workOrder.getId()), String.valueOf(workOrder.getOriginalWorkOrderId())));
+        } else {
+            showInformation(MessageFormat.format(languageManager.getString("workOrderCreatedInfo"),
+                    String.valueOf(workOrder.getId())));
+        }
+        showOrderList();
+    }
+
+    //Planned: bokning, mekaniker och minst en tjänst -> createWorkOrder
+    private WorkOrder createPlannedOrder(CreateWorkOrderView view) {
+        Booking booking = view.getBookingComboBox().getValue();
+        Mechanic mechanic = view.getMechanicComboBox().getValue();
+        int[] serviceItemIds = getServiceItemIds(view);
+
+        if (booking == null) {
+            showWarning(languageManager.getString("selectBookingWarning"));
+            return null;
+        }
+        if (mechanic == null) {
+            showWarning(languageManager.getString("selectMechanicWarning"));
+            return null;
+        }
+        if (serviceItemIds.length == 0) {
+            showWarning(languageManager.getString("noServiceSelectedWarning"));
+            return null;
+        }
+
+        WorkOrder workOrder = workOrderService.createWorkOrder(booking.getId(), mechanic.getId(), serviceItemIds);
+
+        if (workOrder == null) {
+            showWarning(languageManager.getString("workOrderNotCreatedWarning"));
+        }
+        return workOrder;
+    }
+
+    //Drop-in: kund, fordon (som tillhör kunden), mekaniker och minst en tjänst -> createDropInWorkOrder
+    private WorkOrder createDropInOrder(CreateWorkOrderView view) {
+        Customer customer = view.getCustomerComboBox().getValue();
+        Vehicle vehicle = view.getVehicleComboBox().getValue();
+        Mechanic mechanic = view.getMechanicComboBox().getValue();
+        int[] serviceItemIds = getServiceItemIds(view);
+
+        if (customer == null || vehicle == null) {
+            showWarning(languageManager.getString("selectCustomerAndVehicleWarning"));
+            return null;
+        }
+        if (vehicle.getCustomerId() != customer.getId()) {
+            showWarning(languageManager.getString("vehicleNotOwnedByCustomerWarning"));
+            return null;
+        }
+        if (mechanic == null) {
+            showWarning(languageManager.getString("selectMechanicWarning"));
+            return null;
+        }
+        if (serviceItemIds.length == 0) {
+            showWarning(languageManager.getString("noServiceSelectedWarning"));
+            return null;
+        }
+
+        WorkOrder workOrder = workOrderService.createDropInWorkOrder(
+                customer.getId(), vehicle.getId(), mechanic.getId(), serviceItemIds);
+
+        if (workOrder == null) {
+            showWarning(languageManager.getString("workOrderNotCreatedWarning"));
+        }
+        return workOrder;
+    }
+
+    //Warranty: en slutförd ursprunglig order -> createComplaint (Prototype: originalet kopieras)
+    private WorkOrder createWarrantyOrder(CreateWorkOrderView view) {
+        WorkOrder original = view.getOriginalWorkOrderComboBox().getValue();
+
+        if (original == null) {
+            showWarning(languageManager.getString("selectOriginalWorkOrderWarning"));
+            return null;
+        }
+
+        WorkOrder complaint = workOrderService.createComplaint(
+                original.getId(), view.getWarrantyDescriptionField().getText());
+
+        if (complaint == null) {
+            showWarning(languageManager.getString("workOrderNotCreatedWarning"));
+        }
+        return complaint;
+    }
+
+    //ID:n för tjänsterna i formulärets tabell
+    private int[] getServiceItemIds(CreateWorkOrderView view) {
+        return view.getServicesTable().getItems().stream()
+                .mapToInt(ServiceItem::getId)
+                .toArray();
+    }
+
+    //Spara som utkast är dold tills gruppen bestämmer hur utkast ska göras klart
+    private void hideSaveDraftButton(CreateWorkOrderView view) {
+        view.getSaveDraftButton().setVisible(false);
+        view.getSaveDraftButton().setManaged(false);
+    }
+
+    //tillbaka till orderlistan, med den nya ordern i listan
+    private void showOrderList() {
+        refreshOrderList();
+        app.showView(orderListView.getView());
     }
 
 
@@ -856,6 +953,15 @@ public class OrderController {
                         message
                 );
 
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+
+
+    //Alexander
+    //bekräftelse, samma som i VehicleController
+    private void showInformation(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
         alert.setHeaderText(null);
         alert.showAndWait();
     }
