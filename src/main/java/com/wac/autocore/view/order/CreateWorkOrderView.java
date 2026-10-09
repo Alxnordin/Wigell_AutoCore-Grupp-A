@@ -24,7 +24,7 @@ public class CreateWorkOrderView {
     private final Label subtitle;
     private final Button backButton;
     private final Button nextButton;
-    private final Button saveDraftButton = new Button("Spara som utkast");
+    private final Button saveDraftButton;
 
     private final Label bookingDescription;
     private final Label customerLabel;
@@ -159,7 +159,8 @@ public class CreateWorkOrderView {
                     return "";
                 }
 
-                return "Booking #" + booking.getId()
+                return languageManager.getString("bookingNumber")
+                        + " #" + booking.getId()
                         + " - " + booking.getDate();
             }
             @Override
@@ -191,8 +192,10 @@ public class CreateWorkOrderView {
 
         // Customer
         VBox customerBox = new VBox(5);
-        if ("planned".equals(orderType)) {
-            StackPane lockedCustomer = UIComponents.createLockedComboBox(customerComboBox);
+
+        if ("planned".equals(orderType) || "warranty".equals(orderType)) {
+            StackPane lockedCustomer =
+                    UIComponents.createLockedComboBox(customerComboBox);
 
             customerBox.getChildren().addAll(
                     customerLabel,
@@ -208,8 +211,10 @@ public class CreateWorkOrderView {
 
         // Vehicle
         VBox vehicleBox = new VBox(5);
-        if ("planned".equals(orderType)) {
-            StackPane lockedVehicle = UIComponents.createLockedComboBox(vehicleComboBox);
+
+        if ("planned".equals(orderType) || "warranty".equals(orderType)) {
+            StackPane lockedVehicle =
+                    UIComponents.createLockedComboBox(vehicleComboBox);
 
             vehicleBox.getChildren().addAll(
                     vehicleLabel,
@@ -286,6 +291,7 @@ public class CreateWorkOrderView {
         VBox dateBox = new VBox(5);
         if ("planned".equals(orderType)) {
             StackPane lockedDate = UIComponents.createLockedDatePicker(datePicker);
+
             dateBox.getChildren().addAll(
                     dateLabel,
                     lockedDate
@@ -452,9 +458,9 @@ public class CreateWorkOrderView {
                     {
                         // Alternativ för vem som står för kostnaden
                         responsibilityComboBox.getItems().addAll(
-                                "Warranty",
-                                "Company",
-                                "Customer"
+                                languageManager.getString("costWarranty"),
+                                languageManager.getString("costCompany"),
+                                languageManager.getString("costCustomer")
                         );
 
                         responsibilityComboBox.setMaxWidth(Double.MAX_VALUE);
@@ -536,7 +542,6 @@ public class CreateWorkOrderView {
                     !servicesTable.getItems().contains(selectedService)) {
 
                 servicesTable.getItems().add(selectedService);
-
                 serviceComboBox.getSelectionModel().clearSelection();
 
                 updateSummary();
@@ -546,9 +551,19 @@ public class CreateWorkOrderView {
         servicesTable.getColumns().addAll(
                 serviceColumn,
                 timeColumn,
-                priceColumn,
-                costResponsibilityColumn,
-                actionColumn);
+                priceColumn
+        );
+
+        // Cost responsibility finns endast på Warranty
+        if ("warranty".equals(orderType)) {
+            servicesTable.getColumns().add(
+                    costResponsibilityColumn
+            );
+        }
+
+        servicesTable.getColumns().add(
+                actionColumn
+        );
 
         // Summary
         summaryTitle = UIComponents.createSectionTitle(languageManager.getString("summaryTitle"));
@@ -591,6 +606,8 @@ public class CreateWorkOrderView {
 
         nextButton = new Button(languageManager.getString("nextButton"));
         nextButton.getStyleClass().add("create-order-button");
+
+        saveDraftButton = new Button(languageManager.getString("saveDraft"));
 
         HBox buttonBox = UIComponents.createButtonBox();
         buttonBox.getChildren().addAll(
@@ -857,7 +874,12 @@ public class CreateWorkOrderView {
         serviceColumn.setText(languageManager.getString("serviceColumn"));
         timeColumn.setText(languageManager.getString("timeColumn"));
         priceColumn.setText(languageManager.getString("priceColumn"));
+        costResponsibilityColumn.setText(languageManager.getString("costResponsibility"));
         actionColumn.setText(languageManager.getString("actionColumn"));
+        selectServiceLabel.setText(languageManager.getString("selectService"));
+        selectedServicesLabel.setText(languageManager.getString("selectedServices"));
+        noServicesLabel.setText(languageManager.getString("noServices"));
+        addServiceButton.setText(languageManager.getString("addService"));
 
         originalWorkOrderTitle.setText(languageManager.getString("originalWorkOrderSection"));
         originalWorkOrderDescription.setText(languageManager.getString("originalWorkOrderDescription"));
@@ -870,5 +892,6 @@ public class CreateWorkOrderView {
         dateLabel.setText(languageManager.getString("dateLabel"));
         backButton.setText(languageManager.getString("backButton"));
         nextButton.setText(languageManager.getString("nextButton"));
+        saveDraftButton.setText(languageManager.getString("saveDraft"));
     }
 }

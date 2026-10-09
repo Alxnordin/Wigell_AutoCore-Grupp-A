@@ -699,4 +699,26 @@ ListView .list-cell:filled:selected {
     -fx-border-width: 0;
 }
 
+/*styling för status badge*/
+.status-badge {
+    -fx-padding: 6px 14px;
+    -fx-background-radius: 8px;
+    -fx-font-weight: bold;
+}
+
+.status-created {
+    -fx-background-color: #F9E7A8;
+    -fx-text-fill: #5F4B00;
+}
+
+.status-in-progress {
+    -fx-background-color: #B9DCF2;
+    -fx-text-fill: #174A67;
+}
+
+.status-completed {
+    -fx-background-color: #C8E1C4;
+    -fx-text-fill: #28512A;
+}
+
 
