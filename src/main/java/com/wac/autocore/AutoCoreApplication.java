@@ -156,12 +156,6 @@ public class AutoCoreApplication extends Application {
         borderPane.setCenter(customerController.getCustomerListView());
     }
 
-    public void showCustomerView() {
-         CustomerController customerController = new CustomerController(customerService,
-                this, new CustomerView(), new CustomerListView());
-        borderPane.setCenter(customerController.getCustomerView());
-    }
-
     public void showVehicleView() {
         VehicleController controller = new VehicleController(vehicleService, customerService,
                 this, new VehicleView(), new VehicleListView());

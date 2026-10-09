@@ -49,11 +49,13 @@ public class BookingView {
     private TableColumn<ServiceItem, Void> deleteColumn;
 
     private Button createBookingButton;
+    private Button cancelBookingButton;
     private Button backButton;
+
     private ListView<String> bookingListView;
 
     private Label title;
-    private Button isCreatingOrderFromExistingOrderButton;
+    private Button newBookingFromPrevoiusBookingButton;
     private Label bookingInformationTitle;
     private Label customerLabel;
     private Label vehicleRegistrationNumber;
@@ -81,31 +83,24 @@ public class BookingView {
     LanguageManager languageManager = LanguageManager.getInstance();
 
     public BookingView () {
-        VBox box = new VBox(18);
-        box.setPadding(new Insets(25));
+        VBox box = UIComponents.createVBoxForViews();
         box.setAlignment(Pos.TOP_LEFT);
 
         title = new Label(languageManager.getString("bookingTitle"));
         HBox titleBox = UIComponents.createPageTitle(title, "fa-calendar-plus-o");
 
-        //FIXA vad som ska stå på knappen
-        isCreatingOrderFromExistingOrderButton = UIComponents.createIsEditingButton("Skapar ny bokning utifrån gammal bokning");
-        isCreatingOrderFromExistingOrderButton.setVisible(false);
-        isCreatingOrderFromExistingOrderButton.setManaged(false);
-        titleBox.getChildren().add(isCreatingOrderFromExistingOrderButton);
+        newBookingFromPrevoiusBookingButton = UIComponents.createIsEditingButton(
+                languageManager.getString("newBookingFromPrevoiusBookingButton"));
+        newBookingFromPrevoiusBookingButton.setVisible(false);
+        newBookingFromPrevoiusBookingButton.setManaged(false);
+        titleBox.getChildren().add(newBookingFromPrevoiusBookingButton);
 
         bookingSubtitle = UIComponents.createSubtitle(languageManager.getString("bookingSubtitle"));
 
         VBox bookingInformation = buildSection1BookingInformationSection();
         VBox servicesSection = buildSection2ServiceInformation();
         VBox summarySection = buildSection3SummarySection();
-
-        createBookingButton = new Button(languageManager.getString("createBookingButton"));
-        backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
-
-        HBox buttonBox = new HBox(10);
-        buttonBox.setAlignment(Pos.CENTER_RIGHT);
-        buttonBox.getChildren().addAll(backButton, createBookingButton);
+        HBox buttonBottomBox = buildButtonBottomBox();
 
         bookingListView = new ListView<>();
 
@@ -113,7 +108,8 @@ public class BookingView {
         bookingListView.setVisible(false);
         bookingListView.setManaged(false);
 
-        box.getChildren().addAll(titleBox, bookingSubtitle, bookingInformation, servicesSection, summarySection, buttonBox, bookingListView);
+        box.getChildren().addAll(titleBox, bookingSubtitle, bookingInformation,
+                servicesSection, summarySection, buttonBottomBox, bookingListView);
 
         //sidan kan rullas när fönstret är för litet, så att summeringen och knapparna alltid går att nå
         ScrollPane scrollPane = new ScrollPane(box);
@@ -352,6 +348,25 @@ public class BookingView {
         return summarySection;
     }
 
+    private HBox buildButtonBottomBox() {
+        HBox buttonBottomBox = new HBox();
+        buttonBottomBox.setSpacing(10);
+
+        createBookingButton = UIComponents.createCreateButton(languageManager.getString("createBookingButton"));
+
+        cancelBookingButton = UIComponents.createCancelButton(languageManager.getString("cancelBookingButton"));
+        cancelBookingButton.setVisible(false);
+        cancelBookingButton.setManaged(false);
+
+        backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
+        backButton.setVisible(true);
+        backButton.setManaged(true);
+
+        buttonBottomBox.setAlignment(Pos.CENTER_RIGHT);
+        buttonBottomBox.getChildren().addAll(backButton, cancelBookingButton, createBookingButton);
+        return buttonBottomBox;
+    }
+
     public Parent getView() {return root;}
 
     public ComboBox<Customer> getCustomerComboBox() {return customerComboBox;}
@@ -360,6 +375,10 @@ public class BookingView {
     public TextField getDescriptionField() {return descriptionField;}
     public Button getCreateBookingButton() {return createBookingButton;}
     public Button getBackButton() {return backButton;}
+
+    public void setOnCancelButton(Runnable action) {
+        cancelBookingButton.setOnAction(e -> action.run());
+    }
 
     //Alexander
     //används av BookingController för att koppla tjänsterna till GarageSystem
@@ -374,10 +393,9 @@ public class BookingView {
         totalPriceLabel.setText(totalPrice);
     }
 
-    //BYT NAMN PÅ METODEN
-    public void showCreatingOrderFromExistingOrderButton() {
-        isCreatingOrderFromExistingOrderButton.setVisible(true);
-        isCreatingOrderFromExistingOrderButton.setManaged(true);
+    public void showWhenCreateBookingFromExistingBooking() {
+        newBookingFromPrevoiusBookingButton.setVisible(true);
+        newBookingFromPrevoiusBookingButton.setManaged(true);
 
         newCustomerButton.setVisible(false);
         newCustomerButton.setManaged(false);
@@ -388,11 +406,18 @@ public class BookingView {
         customerComboBox.setFocusTraversable(false);
         customerComboBox.getStyleClass().add("locked-combo-box");
         customerLockIcon.setVisible(true);
+
+        cancelBookingButton.setVisible(true);
+        cancelBookingButton.setManaged(true);
+
+        backButton.setVisible(false);
+        backButton.setManaged(false);
     }
 
     public void changeTextAllComponents() {
         title.setText(languageManager.getString("bookingTitle"));
         bookingSubtitle.setText(languageManager.getString("bookingSubtitle"));
+        newBookingFromPrevoiusBookingButton.setText(languageManager.getString("newBookingFromPrevoiusBookingButton"));
         bookingInformationTitle.setText("1. " + languageManager.getString("bookingInformationTitle"));
         vehicleRegistrationNumber.setText(languageManager.getString("vehicleRegistrationNumber"));
         dateLabel.setText(languageManager.getString("dateLabel"));
@@ -412,6 +437,7 @@ public class BookingView {
 
         descriptionField.setPromptText(languageManager.getString("descriptionField"));
         createBookingButton.setText(languageManager.getString("createBookingButton"));
+        cancelBookingButton.setText(languageManager.getString("cancelBookingButton"));
         backButton.setText(languageManager.getString("backButton"));
     }
 }

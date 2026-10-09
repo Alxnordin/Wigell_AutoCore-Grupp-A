@@ -472,7 +472,6 @@ ListView .list-cell:filled:selected {
     -fx-background-color: #C66C2B;
 }
 
-
 /* styling för create order dropdown */
 .order-menu-title {
     -fx-font-size: 14px;
@@ -584,15 +583,20 @@ ListView .list-cell:filled:selected {
     -fx-text-fill: #5f6368;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-border-color: #b8b8b8;
-    -fx-border-radius: 8px;
     -fx-background-radius: 8px;
-    -fx-padding: 7px 15px;
+    -fx-border-radius: 8px;
+    -fx-padding: 10px 18px;
     -fx-cursor: hand;
+
+    -fx-border-color: #b8b8b8;
+    -fx-border-width: 1px;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
 
 .cancel-editing-button:hover {
-    -fx-background-color: #f1f1f1;
+    -fx-background-color: #f2f2f2;
+    -fx-border-color: #999999;
 }
 
 .create-new-if-missing-button {

@@ -20,15 +20,17 @@ public class CustomerListView {
     private final Label title;
     private final Label subtitle;
 
+    private TextField searchField;
+
     private final Button createCustomerButton;
 
-    private final TableView<Customer> customerTable;
+    private TableView<Customer> customerTable;
 
-    private final TableColumn<Customer, Integer> customerIdColumn;
-    private final TableColumn<Customer, String> nameColumn;
-    private final TableColumn<Customer, String> phoneColumn;
-    private final TableColumn<Customer, String> emailColumn;
-    private final TableColumn<Customer, String> vipColumn;
+    private TableColumn<Customer, Integer> customerIdColumn;
+    private TableColumn<Customer, String> nameColumn;
+    private TableColumn<Customer, String> phoneColumn;
+    private TableColumn<Customer, String> emailColumn;
+    private TableColumn<Customer, String> vipColumn;
 
     private final Button backButton;
 
@@ -44,13 +46,37 @@ public class CustomerListView {
         createCustomerButton = UIComponents.createCreateButton(
                 languageManager.getString("addCustomerButton"));
 
-        //Kan göra en metod av allt detta i UI
+        //Kan göra en metod av detta
         HBox header = new HBox();
         header.setAlignment(Pos.CENTER_LEFT);
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         header.getChildren().addAll(titleHBox, spacer, createCustomerButton);
 
+        //EJ KLAR med search
+        HBox searchBox = buildSearchSection();
+
+        customerTable = buildTable();
+
+        backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
+
+        box.getChildren().addAll(header, subtitle, searchBox,
+                customerTable, backButton);
+        this.root = box;
+
+        languageManager.localeProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    changeTextAllComponents();
+                }
+        );
+    }
+
+    public Parent getView() {return root;}
+    public TableView<Customer> getCustomerListView() {return customerTable;}
+    public Button getBackButton() {return backButton;}
+    public Button getCreateCustomerButton() {return createCustomerButton;}
+
+    public TableView<Customer> buildTable() {
         customerTable = UIComponents.createTable();
 
         customerIdColumn = new TableColumn<>(languageManager.getString("customerIdInTable"));
@@ -78,23 +104,17 @@ public class CustomerListView {
 
         customerTable.getColumns().addAll(customerIdColumn, nameColumn, phoneColumn, emailColumn, vipColumn);
         customerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-        backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
-
-        box.getChildren().addAll(header, subtitle, customerTable, backButton);
-        this.root = box;
-
-        languageManager.localeProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    changeTextAllComponents();
-                }
-        );
+        return customerTable;
     }
 
-    public Parent getView() {return root;}
-    public TableView<Customer> getCustomerListView() {return customerTable;}
-    public Button getBackButton() {return backButton;}
-    public Button getCreateCustomerButton() {return createCustomerButton;}
+     //EJ KLAR
+    public HBox buildSearchSection() {
+        searchField = new TextField();
+        HBox searchBox = UIComponents.createSearchBox(searchField);
+        searchField.setPromptText("Search customer...");
+
+        return searchBox;
+    }
 
     public void changeTextAllComponents() {
 

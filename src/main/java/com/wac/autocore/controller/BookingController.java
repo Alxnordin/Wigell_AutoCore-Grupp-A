@@ -108,6 +108,8 @@ public class BookingController {
                     bookingView.getDescriptionField().clear();
                     bookingView.getServiceComboBox().setValue(null);
                     bookingView.getServicesTable().getItems().clear();
+                    showBookingConfirmationMessage("Bokning skapad. Det här är en tillfällig lösning " +
+                    "på bekräftelse :)");
                 }
             } catch (NumberFormatException e) {
                 showWarning(languageManager.getString("invalidVehicleIdWarning"));
@@ -210,7 +212,7 @@ public class BookingController {
 
     private void openCreateBookingView(Booking booking) {
         fillFromBooking(bookingView, booking);
-        bookingView.showCreatingOrderFromExistingOrderButton();
+        bookingView.showWhenCreateBookingFromExistingBooking();
         app.showView(bookingView.getView());
     }
 
@@ -262,7 +264,26 @@ public class BookingController {
         BookingDetailsView detailsView = new BookingDetailsView(booking, vehicle, customer, services);
 
         detailsView.setOnBack(() -> {app.showView(bookingListView.getView());});
-        detailsView.setOnBack(() -> {app.showView(bookingListView.getView());});
+
+        detailsView.setOnCancelButton(() -> {
+            List<ServiceItem> originalServices =
+                    bookingService.getServicesForBooking(booking.getId());
+
+            detailsView.getServicesTable().getItems().setAll(originalServices);
+
+            detailsView.showSummary(
+                    formatTotalTime(originalServices),
+                    formatTotalPrice(originalServices)
+            );
+
+            detailsView.getServiceComboBox().setValue(null);
+
+            detailsView.showBookingDetails();
+        });
+
+        bookingView.setOnCancelButton(() -> {
+            app.showView(detailsView.getView());
+        });
 
         detailsView.setOnBookingAction(action -> {
             if ("edit".equals(action)) {
@@ -292,40 +313,80 @@ public class BookingController {
                 return;
             }
 
-            boolean serviceAdded = false;
-
             for (ServiceItem serviceItem : selected.getServiceItems()) {
-                if (addServiceToBooking(booking, serviceItem)) {
-                    serviceAdded = true;
+
+                boolean alreadyExists = detailsView.getServicesTable().getItems().stream()
+                        .anyMatch(item -> item.getId() == serviceItem.getId());
+
+                if (!alreadyExists) {
+                    detailsView.getServicesTable().getItems().add(serviceItem);
                 }
             }
 
-            if (serviceAdded) {
-                List<ServiceItem> updatedServices = bookingService.getServicesForBooking(booking.getId());
+            List<ServiceItem> updatedServices =
+                    detailsView.getServicesTable().getItems();
 
-                detailsView.getServicesTable().getItems().setAll(updatedServices);
+            detailsView.showSummary(
+                    formatTotalTime(updatedServices),
+                    formatTotalPrice(updatedServices)
+            );
 
-                detailsView.showSummary(
-                        formatTotalTime(updatedServices),
-                        formatTotalPrice(updatedServices)
-                );
-
-                detailsView.getServiceComboBox().setValue(null);
-            }
+            detailsView.getServiceComboBox().setValue(null);
         });
 
         detailsView.getRemoveServiceButton().setOnAction(event -> {
-            ServiceItem service = detailsView.getServicesTable().getSelectionModel().getSelectedItem();
+            ServiceItem service = detailsView.getServicesTable()
+                    .getSelectionModel().getSelectedItem();
 
-            if (removeServiceFromBooking(booking, service)) {
-                List<ServiceItem> updatedServices = bookingService.getServicesForBooking(booking.getId());
-
-                detailsView.getServicesTable().getItems().setAll(updatedServices);
-                detailsView.showSummary(
-                        formatTotalTime(updatedServices),
-                        formatTotalPrice(updatedServices)
-                );
+            if (service == null) {
+                showWarning(languageManager.getString("selectServiceToRemoveWarning"));
+                return;
             }
+
+            if (detailsView.getServicesTable().getItems().size() <= 1) {
+                showWarning(languageManager.getString("lastServiceWarning"));
+                return;
+            }
+
+            detailsView.getServicesTable().getItems().remove(service);
+
+            List<ServiceItem> updatedServices = detailsView.getServicesTable().getItems();
+
+            detailsView.showSummary(
+                    formatTotalTime(updatedServices),
+                    formatTotalPrice(updatedServices)
+            );
+        });
+
+        detailsView.getSaveEditingButton().setOnAction(event -> {
+
+            List<ServiceItem> originalServices = bookingService.getServicesForBooking(booking.getId());
+
+            List<ServiceItem> editedServices = detailsView.getServicesTable().getItems();
+
+            //Lägg till nya tjänster
+            for (ServiceItem service : editedServices) {
+                boolean exists = originalServices.stream()
+                        .anyMatch(item -> item.getId() == service.getId());
+
+                if (!exists) {
+                    addServiceToBooking(booking, service);
+                }
+            }
+
+            //Ta bort borttagna tjänster
+            for (ServiceItem service : originalServices) {
+                boolean exists = editedServices.stream()
+                        .anyMatch(item -> item.getId() == service.getId());
+
+                if (!exists) {
+                    removeServiceFromBooking(booking, service);
+                }
+            }
+
+            showChangesConfirmationMessage("Ändringarna är sparade. Det här är en tillfällig lösning " +
+                    "på bekräftelse :)");
+            detailsView.showBookingDetails();
         });
 
         app.showView(detailsView.getView());
@@ -365,6 +426,18 @@ public class BookingController {
 
     private void showWarning(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING, message);
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+
+    private void showChangesConfirmationMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, message);
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+
+    private void showBookingConfirmationMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, message);
         alert.setHeaderText(null);
         alert.showAndWait();
     }

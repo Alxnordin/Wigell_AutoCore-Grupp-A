@@ -363,7 +363,8 @@ public class UIComponents {
         return button;
     }
 
-    public static Button createCancelEditingButton(String text) {
+    //Används till cancel-knappar
+    public static Button createCancelButton(String text) {
         Button button = new Button(text);
 
         FontIcon icon = new FontIcon("fa-times");
@@ -479,5 +480,17 @@ public class UIComponents {
 
     }
 
+    public static HBox createSearchBox(TextField textField) {
+        HBox searchBox = new HBox(10);
 
+        textField.getStyleClass().add("standard-text-field");
+        textField.setPrefWidth(280);
+
+        FontIcon searchIcon = new FontIcon("fa-search");
+        searchIcon.setIconSize(18);
+
+        searchBox.getChildren().addAll(textField, searchIcon);
+
+        return searchBox;
+    }
 }

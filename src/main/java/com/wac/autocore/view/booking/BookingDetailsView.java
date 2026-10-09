@@ -65,7 +65,9 @@ public class BookingDetailsView {
     private Label totalTimeValue;
     private Label totalPriceValue;
 
-    private final Button backButton;
+    private Label confirmationLabel;
+
+    private Button backButton;
 
     public BookingDetailsView(Booking booking, Vehicle vehicle, Customer customer, List<ServiceItem> services) {
 
@@ -76,17 +78,18 @@ public class BookingDetailsView {
         box.setAlignment(Pos.TOP_LEFT);
 
         HBox header = buildHeaderSection();
+
         subtitle = UIComponents.createSubtitle(languageManager.getString("bookingDetailsSubtitle"));
+
         VBox bookingInformation = buildBookingInformationSection(customer, vehicle);
         VBox servicesSection = buildServicesSection(services);
         VBox summarySection = buildSummarySection(services);
+        HBox buttonBottomBox = buildBottomBox();
 
-        backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
-        HBox buttonBox = new HBox();
-        buttonBox.setAlignment(Pos.CENTER_RIGHT);
-        buttonBox.getChildren().add(backButton);
+        //Label confirmationLabel = new Label("Bekräftelse på sparad eller ny bokning");
+        Label confirmationLabel = UIComponents.createWrongInputLabel("");
 
-        box.getChildren().addAll(header, subtitle, bookingInformation, servicesSection, summarySection, buttonBox);
+        box.getChildren().addAll(header, subtitle, confirmationLabel, bookingInformation, servicesSection, summarySection, buttonBottomBox);
 
         ScrollPane scrollPane = new ScrollPane(box);
         scrollPane.setFitToWidth(true);
@@ -107,11 +110,15 @@ public class BookingDetailsView {
     public Button getAddServiceButton() {return addServiceButton;}
     public Button getRemoveServiceButton() {return removeServiceButton;}
     public TableView<ServiceItem> getServicesTable() {return servicesTable;}
+    public Label getTitle() {return title;}
 
     public Button getSaveEditingButton() {return saveEditingButton;}
 
     public void setOnBack(Runnable action) {
         backButton.setOnAction(e -> action.run());
+    }
+
+    public void setOnCancelButton(Runnable action) {
         cancelEditingButton.setOnAction(e -> action.run());
     }
 
@@ -131,8 +138,32 @@ public class BookingDetailsView {
 
         cancelEditingButton.setVisible(true);
         cancelEditingButton.setManaged(true);
+
         saveEditingButton.setVisible(true);
         saveEditingButton.setManaged(true);
+
+        backButton.setVisible(false);
+        backButton.setManaged(false);
+    }
+
+    public void showBookingDetails() {
+        editServicesBox.setVisible(false);
+        editServicesBox.setManaged(false);
+
+        isEditingButton.setVisible(false);
+        isEditingButton.setManaged(false);
+
+        createNewChangeBookingButton.setVisible(true);
+        createNewChangeBookingButton.setManaged(true);
+
+        cancelEditingButton.setVisible(false);
+        cancelEditingButton.setManaged(false);
+
+        saveEditingButton.setVisible(false);
+        saveEditingButton.setManaged(false);
+
+        backButton.setVisible(true);
+        backButton.setManaged(true);
     }
 
     public void showSummary(String totalTime, String totalPrice) {
@@ -188,13 +219,6 @@ public class BookingDetailsView {
 
         createNewChangeBookingButton = UIComponents.createCreateButton(languageManager.getString("createNewBookingButton"));
 
-        saveEditingButton = UIComponents.createSaveEditingButton(languageManager.getString("saveEditingButton"));
-        cancelEditingButton = UIComponents.createCancelEditingButton(languageManager.getString("cancelEditingButton"));
-        saveEditingButton.setVisible(false);
-        saveEditingButton.setManaged(false);
-        cancelEditingButton.setVisible(false);
-        cancelEditingButton.setManaged(false);
-
         bookingActionsMenu = new ContextMenu();
 
         editBookingTitle = new Label(languageManager.getString("editBooking"));
@@ -234,8 +258,7 @@ public class BookingDetailsView {
         HBox header = new HBox(15);
         header.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(titleBox, Priority.ALWAYS);
-        header.getChildren().addAll(titleBox, saveEditingButton,
-                cancelEditingButton, createNewChangeBookingButton);
+        header.getChildren().addAll(titleBox, createNewChangeBookingButton);
 
         return header;
     }
@@ -387,6 +410,27 @@ public class BookingDetailsView {
         summarySection.setSpacing(10);
         summarySection.getChildren().addAll(summaryTitle, summaryCards);
         return summarySection;
+    }
+
+    private HBox buildBottomBox() {
+        HBox buttonBottomBox = new HBox();
+        buttonBottomBox.setSpacing(10);
+
+        saveEditingButton = UIComponents.createSaveEditingButton(languageManager.getString("saveEditingButton"));
+        cancelEditingButton = UIComponents.createCancelButton(languageManager.getString("cancelEditingButton"));
+        saveEditingButton.setVisible(false);
+        saveEditingButton.setManaged(false);
+        cancelEditingButton.setVisible(false);
+        cancelEditingButton.setManaged(false);
+
+        backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
+        backButton.setVisible(true);
+        backButton.setManaged(true);
+
+        buttonBottomBox.setAlignment(Pos.CENTER_RIGHT);
+        buttonBottomBox.getChildren().addAll(backButton, cancelEditingButton, saveEditingButton);
+
+        return buttonBottomBox;
     }
 
 }

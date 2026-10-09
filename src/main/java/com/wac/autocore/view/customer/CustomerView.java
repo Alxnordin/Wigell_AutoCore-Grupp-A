@@ -18,102 +18,54 @@ public class CustomerView {
     private final Label title;
     private final Label subtitle;
 
-    private final Button createCustomerButton;
+    private Button createCustomerButton;
 
-    private final Label firstNameLabel;
-    private final TextField firstNameField;
-    private final Label firstNameWrongInputLabel;
+    private Label firstNameLabel;
+    private TextField firstNameField;
+    private Label firstNameWrongInputLabel;
 
-    private final Label lastNameLabel;
-    private final TextField lastNameField;
-    private final Label lastNameWrongInputLabel;
+    private Label lastNameLabel;
+    private TextField lastNameField;
+    private Label lastNameWrongInputLabel;
 
-    private final Label phoneLabel;
-    private final TextField phoneField;
-    private final Label phoneWrongInputLabel;
+    private Label phoneLabel;
+    private TextField phoneField;
+    private Label phoneWrongInputLabel;
 
-    private final Label emailLabel;
-    private final TextField emailField;
-    private final Label emailWrongInputLabel;
+    private Label emailLabel;
+    private TextField emailField;
+    private Label emailWrongInputLabel;
 
-    private final Label vipLabel;
-    private final ComboBox<String> vipComboBox;
+    private Label vipLabel;
+    private ComboBox<String> vipComboBox;
 
     private Label confirmationLabel;
 
-    private final Button backButton;
+    private Button backButton;
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
     public CustomerView() {
 
         VBox vBox = UIComponents.createVBoxForViews();
+
         title = new Label(languageManager.getString("customerViewTitle"));
         HBox titleHBox = UIComponents.createPageTitle(title, "fa-user-plus");
         subtitle = UIComponents.createSubtitle(languageManager.getString("customerViewSubtitle"));
 
-        firstNameLabel = UIComponents.createFormLabel(languageManager.getString("firstNameLabel"));
-        firstNameField = UIComponents.createTextField();
-        firstNameField.setPromptText(languageManager.getString("firstNameField"));
-        firstNameWrongInputLabel = UIComponents.createWrongInputLabel("");
+        VBox firstNameVBox = buildFirstNameVBox();
+        VBox lastNameVBox = buildLastNameVBox();
+        HBox hBoxFirstLastName = buildFirstLastNameHBox(firstNameVBox, lastNameVBox);
 
-        VBox firstNameVBox = UIComponents.createVBoxWithSpacing5();
-        firstNameVBox.getChildren().addAll(firstNameLabel, firstNameField,  firstNameWrongInputLabel);
-        firstNameVBox.setMaxWidth(Double.MAX_VALUE);
-        firstNameField.setMaxWidth(Double.MAX_VALUE);
+        VBox phoneVBox = buildPhoneVBox();
+        VBox emailVBox = buildEmailVBox();
+        HBox hBoxemailPhone = buildPhoneEmailHBox(phoneVBox, emailVBox);
 
-        lastNameLabel = UIComponents.createFormLabel(languageManager.getString("lastNameLabel"));
-        lastNameField = UIComponents.createTextField();
-        lastNameField.setPromptText(languageManager.getString("lastNameField"));
-        lastNameWrongInputLabel = UIComponents.createWrongInputLabel("");
-        VBox lastNameVBox = UIComponents.createVBoxWithSpacing5();
-        lastNameVBox.getChildren().addAll(lastNameLabel, lastNameField, lastNameWrongInputLabel);
-        lastNameVBox.setMaxWidth(Double.MAX_VALUE);
-        lastNameField.setMaxWidth(Double.MAX_VALUE);
+        VBox vipVBox = buildVIPSection();
 
-        HBox hBoxFirstLastName = UIComponents.createHBoxWithSpacing15();
-        hBoxFirstLastName.getChildren().addAll(firstNameVBox, lastNameVBox);
-        HBox.setHgrow(firstNameVBox, Priority.ALWAYS);
-        HBox.setHgrow(lastNameVBox, Priority.ALWAYS);
+        HBox bottomButtonHBox = buildBottomButtonHBox();
 
-        phoneLabel = UIComponents.createFormLabel(languageManager.getString("phoneLabel"));
-        phoneField = UIComponents.createTextField();
-        phoneField.setPromptText(languageManager.getString("phoneField"));
-        phoneWrongInputLabel = UIComponents.createWrongInputLabel("");
-        VBox phoneVBox = UIComponents.createVBoxWithSpacing5();
-        phoneVBox.getChildren().addAll(phoneLabel, phoneField, phoneWrongInputLabel);
-
-        phoneVBox.setMaxWidth(Double.MAX_VALUE);
-        phoneField.setMaxWidth(Double.MAX_VALUE);
-
-        emailLabel = UIComponents.createFormLabel(languageManager.getString("emailLabel"));
-        emailField = UIComponents.createTextField();
-        emailField.setPromptText(languageManager.getString("emailField"));
-        emailWrongInputLabel = UIComponents.createWrongInputLabel("");
-        VBox emailVBox = UIComponents.createVBoxWithSpacing5();
-        emailVBox.getChildren().addAll(emailLabel, emailField, emailWrongInputLabel);
-        emailVBox.setMaxWidth(Double.MAX_VALUE);
-        emailField.setMaxWidth(Double.MAX_VALUE);
-
-        HBox hBoxemailPhone = UIComponents.createHBoxWithSpacing15();
-        hBoxemailPhone.getChildren().addAll(phoneVBox, emailVBox);
-        HBox.setHgrow(phoneVBox, Priority.ALWAYS);
-        HBox.setHgrow(emailVBox, Priority.ALWAYS);
-
-        vipLabel = UIComponents.createFormLabel(languageManager.getString("vipLabel"));
-        vipComboBox = UIComponents.createComboBoxWithNoWidth();
-        vipComboBox.setPromptText(languageManager.getString("vipComboBox"));
-        //FIXA ÖVERSÄTTNING AV vipYes och vipNo. Kan inte göra så här.
-        vipComboBox.getItems().addAll(languageManager.getString("vipYes"), languageManager.getString("vipNo"));
-        VBox vipVBox = UIComponents.createVBoxWithSpacing5();
-        vipVBox.getChildren().addAll(vipLabel, vipComboBox);
-
-        createCustomerButton = new Button(languageManager.getString("createCustomerButton"));
-        backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
-        HBox buttonBox = UIComponents.createButtonBox();
-        buttonBox.getChildren().addAll(backButton, createCustomerButton);
-
-        //Ej klar med denna
+        //Ej klar med denna!
         confirmationLabel = new Label("");
         VBox summarySection = UIComponents.createSectionBox();
         summarySection.getChildren().add(confirmationLabel);
@@ -122,7 +74,7 @@ public class CustomerView {
         sectionVBox.setSpacing(30);
         sectionVBox.getChildren().addAll(hBoxFirstLastName, hBoxemailPhone, vipVBox);
 
-        vBox.getChildren().addAll(titleHBox, subtitle, sectionVBox, summarySection, buttonBox);
+        vBox.getChildren().addAll(titleHBox, subtitle, sectionVBox, summarySection, bottomButtonHBox);
         this.root = vBox;
 
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
@@ -150,6 +102,99 @@ public class CustomerView {
 
     public Button getCreateCustomerButton() {return createCustomerButton;}
     public Button getBackButton() {return backButton;}
+
+    private VBox buildFirstNameVBox()   {
+        firstNameLabel = UIComponents.createFormLabel(languageManager.getString("firstNameLabel"));
+        firstNameField = UIComponents.createTextField();
+        firstNameField.setPromptText(languageManager.getString("firstNameField"));
+        firstNameWrongInputLabel = UIComponents.createWrongInputLabel("");
+
+        VBox firstNameVBox = UIComponents.createVBoxWithSpacing5();
+        firstNameVBox.getChildren().addAll(firstNameLabel, firstNameField,  firstNameWrongInputLabel);
+        firstNameVBox.setMaxWidth(Double.MAX_VALUE);
+        firstNameField.setMaxWidth(Double.MAX_VALUE);
+        return firstNameVBox;
+    }
+
+    private VBox buildLastNameVBox()   {
+        lastNameLabel = UIComponents.createFormLabel(languageManager.getString("lastNameLabel"));
+        lastNameField = UIComponents.createTextField();
+        lastNameField.setPromptText(languageManager.getString("lastNameField"));
+        lastNameWrongInputLabel = UIComponents.createWrongInputLabel("");
+
+        VBox lastNameVBox = UIComponents.createVBoxWithSpacing5();
+        lastNameVBox.getChildren().addAll(lastNameLabel, lastNameField, lastNameWrongInputLabel);
+        lastNameVBox.setMaxWidth(Double.MAX_VALUE);
+        lastNameField.setMaxWidth(Double.MAX_VALUE);
+        return lastNameVBox;
+    }
+
+    private HBox buildFirstLastNameHBox(VBox firstNameVBox, VBox lastNameVBox)   {
+        HBox hBoxFirstLastName = UIComponents.createHBoxWithSpacing15();
+        hBoxFirstLastName.getChildren().addAll(firstNameVBox, lastNameVBox);
+        HBox.setHgrow(firstNameVBox, Priority.ALWAYS);
+        HBox.setHgrow(lastNameVBox, Priority.ALWAYS);
+        return hBoxFirstLastName;
+    }
+
+    private HBox buildPhoneEmailHBox(VBox phoneVBox,  VBox emailVBox)   {
+        HBox hBoxemailPhone = UIComponents.createHBoxWithSpacing15();
+        hBoxemailPhone.getChildren().addAll(phoneVBox, emailVBox);
+        HBox.setHgrow(phoneVBox, Priority.ALWAYS);
+        HBox.setHgrow(emailVBox, Priority.ALWAYS);
+
+        return  hBoxemailPhone;
+    }
+
+    private VBox buildPhoneVBox()    {
+        phoneLabel = UIComponents.createFormLabel(languageManager.getString("phoneLabel"));
+        phoneField = UIComponents.createTextField();
+        phoneField.setPromptText(languageManager.getString("phoneField"));
+        phoneWrongInputLabel = UIComponents.createWrongInputLabel("");
+        VBox phoneVBox = UIComponents.createVBoxWithSpacing5();
+        phoneVBox.getChildren().addAll(phoneLabel, phoneField, phoneWrongInputLabel);
+
+        phoneVBox.setMaxWidth(Double.MAX_VALUE);
+        phoneField.setMaxWidth(Double.MAX_VALUE);
+        return phoneVBox;
+    }
+
+    private VBox buildEmailVBox()    {
+        emailLabel = UIComponents.createFormLabel(languageManager.getString("emailLabel"));
+        emailField = UIComponents.createTextField();
+        emailField.setPromptText(languageManager.getString("emailField"));
+        emailWrongInputLabel = UIComponents.createWrongInputLabel("");
+
+        VBox emailVBox = UIComponents.createVBoxWithSpacing5();
+        emailVBox.getChildren().addAll(emailLabel, emailField, emailWrongInputLabel);
+        emailVBox.setMaxWidth(Double.MAX_VALUE);
+        emailField.setMaxWidth(Double.MAX_VALUE);
+        return emailVBox;
+    }
+
+    //Saknar översättning på vip
+    private VBox buildVIPSection() {
+
+        vipLabel = UIComponents.createFormLabel(languageManager.getString("vipLabel"));
+        ComboBox vipComboBox = UIComponents.createComboBoxWithNoWidth();
+        vipComboBox.setPromptText(languageManager.getString("vipComboBox"));
+
+        //FIXA ÖVERSÄTTNING AV vipYes och vipNo. Kan inte göra så här.
+        vipComboBox.getItems().addAll(languageManager.getString("vipYes"), languageManager.getString("vipNo"));
+
+        VBox vipVBox = UIComponents.createVBoxWithSpacing5();
+        vipVBox.getChildren().addAll(vipLabel, vipComboBox);
+        return vipVBox;
+    }
+
+    private HBox buildBottomButtonHBox()    {
+        createCustomerButton = new Button(languageManager.getString("createCustomerButton"));
+        backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
+
+        HBox buttonBox = UIComponents.createButtonBox();
+        buttonBox.getChildren().addAll(backButton, createCustomerButton);
+        return buttonBox;
+    }
 
     public void changeTextAllComponents() {
         title.setText(languageManager.getString("customerViewTitle"));
