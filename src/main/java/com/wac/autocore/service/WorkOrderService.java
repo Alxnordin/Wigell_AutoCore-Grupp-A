@@ -39,6 +39,19 @@ public class WorkOrderService {
         return null;
     }
 
+    public void updateMechanic(WorkOrder workOrder, int mechanicId) {
+
+        Mechanic mechanic = mechanicService.findMechanic(mechanicId);
+
+        if (mechanic == null) {
+            System.out.println("Mechanic with ID " + mechanicId + " does not exist.");
+            return;
+        }
+
+        workOrder.setMechanicId(mechanicId);
+        workOrderDAO.update(workOrder);
+    }
+
     //true om bokningen redan har en arbetsorder (en bokning kan bara ha en)
     public boolean hasWorkOrder(int bookingId) {
         for (WorkOrder workOrder : workOrderDAO.findAll()) {
@@ -235,6 +248,9 @@ public class WorkOrderService {
         }
 
         Mechanic mechanic = mechanicService.findMechanic(workOrder.getMechanicId());
+
+        System.out.println("Mechanic: " + mechanic.getName());
+
         //Alexander
         //drop-in saknar bokning, då finns ingen bokningsstatus att uppdatera
         Booking booking = workOrder.getBookingId() != null

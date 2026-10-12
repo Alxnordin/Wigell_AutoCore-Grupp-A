@@ -1,5 +1,6 @@
 package com.wac.autocore.controller;
 
+import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.dao.*;
 import com.wac.autocore.model.*;
@@ -124,6 +125,13 @@ public class OrderController {
                             orderServices
                     );
 
+            detailsView.setOnMechanicChange(mechanic -> {
+                workOrderService.updateMechanic(
+                        workOrder,
+                        mechanic.getId()
+                );
+            });
+
 
             detailsView.setOnDeleteService(serviceItem -> {
 
@@ -180,10 +188,8 @@ public class OrderController {
 
 
             detailsView.setOnBack(() -> {
-
-                app.showView(
-                        orderListView.getView()
-                );
+                refreshOrderList();
+                app.showView(orderListView.getView());
             });
 
 
@@ -225,6 +231,7 @@ public class OrderController {
                     .addAll(
                             mechanicService.getMechanics()
                     );
+
         }
 
 
@@ -272,6 +279,9 @@ public class OrderController {
                                 createWorkOrderView
                                         .getOriginalWorkOrderComboBox()
                                         .getValue();
+
+                        System.out.println("Mechanic-id from original word-order: " +
+                                selectedWorkOrder.getMechanicId());
 
 
                         if (selectedWorkOrder == null) {
@@ -343,6 +353,8 @@ public class OrderController {
                                                 vehicle.getCustomerId()
                                         );
                             }
+
+
                         }
 
 
@@ -410,6 +422,9 @@ public class OrderController {
                                 vehicle,
                                 mechanic
                         );
+
+                        System.out.println("Work order-id: "
+                                + "\nMechanic name: " + mechanic.getName());
                     });
         }
 
@@ -445,13 +460,33 @@ public class OrderController {
 
                     app.showView(orderListView.getView());});
 
-        //Alexander
-        //utkast används inte just nu, så knappen Spara som utkast döljs
-       //hideSaveDraftButton(createWorkOrderView);
 
-        //Alexander
-        //Create-knappen skapar ordern med rätt metod i WorkOrderService beroende på ordertyp
-        //createWorkOrderView.getNextButton().setOnAction(event -> createOrder(createWorkOrderView, orderType));
+        //Spara arbetsorder som utkast
+        createWorkOrderView.getSaveDraftButton().setOnAction(event -> {
+
+            Customer customer = createWorkOrderView.getCustomerComboBox().getValue();
+            Vehicle vehicle = createWorkOrderView.getVehicleComboBox().getValue();
+            String description = createWorkOrderView.getDescriptionField().getText();
+
+            if (customer == null || vehicle == null) {
+                showWarning(languageManager.getString("selectCustomerAndVehicleWarning"));
+                return;
+            }
+
+            WorkOrder draft = workOrderService.createDraftWorkOrder(
+                    customer.getId(),
+                    vehicle.getId(),
+                    description
+            );
+
+            if (draft != null) {
+                showOrderList();
+            }
+        });
+
+        // Create-knappen
+        createWorkOrderView.getNextButton()
+                .setOnAction(event -> createOrder(createWorkOrderView, orderType));
 
         // Lägg till tjänst
         createWorkOrderView.getAddServiceButton().setOnAction(event -> {
@@ -546,7 +581,6 @@ public class OrderController {
 
         //Alexander
         //Create-knappen när man kommer från "Skapa arbetsorder" på en bokning
-        //hideSaveDraftButton(createWorkOrderView);
         createWorkOrderView.getNextButton().setOnAction(event -> createOrder(createWorkOrderView, "planned"));
 
 
@@ -590,6 +624,8 @@ public class OrderController {
     private WorkOrder createPlannedOrder(CreateWorkOrderView view) {
         Booking booking = view.getBookingComboBox().getValue();
         Mechanic mechanic = view.getMechanicComboBox().getValue();
+
+
         int[] serviceItemIds = getServiceItemIds(view);
 
         if (booking == null) {
@@ -670,12 +706,6 @@ public class OrderController {
                 .mapToInt(ServiceItem::getId)
                 .toArray();
     }
-
-    //Spara som utkast är dold tills gruppen bestämmer hur utkast ska göras klart
-//    private void hideSaveDraftButton(CreateWorkOrderView view) {
-//        view.getSaveDraftButton().setVisible(false);
-//        view.getSaveDraftButton().setManaged(false);
-//    }
 
     //tillbaka till orderlistan, med den nya ordern i listan
     private void showOrderList() {

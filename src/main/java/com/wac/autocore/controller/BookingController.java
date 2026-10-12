@@ -126,9 +126,9 @@ public class BookingController {
 
         bookingListView.setOnCreateWorkOrder(booking -> openCreateWorkOrder(booking));
         bookingListView.setOnViewBooking(booking -> openBookingDetails(booking));
-
-        bookingView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
         bookingListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+        bookingListView.setGetRegistrationNumber(vehicleId -> getRegistrationNumber(vehicleId));
+        bookingView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
     }
 
     //Alexander
@@ -207,6 +207,16 @@ public class BookingController {
         }
 
         return true;
+    }
+
+    private String getRegistrationNumber(int vehicleId) {
+        Vehicle vehicle = vehicleService.findVehicle(vehicleId);
+
+        if (vehicle != null) {
+            return vehicle.getRegistrationNumber();
+        }
+
+        return "";
     }
 
     private void openCreateWorkOrder(Booking booking) {

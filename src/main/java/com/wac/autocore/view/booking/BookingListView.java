@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 //UI-vyn som visar listan över befintliga bokningar.
 public class BookingListView {
@@ -33,6 +34,7 @@ public class BookingListView {
     private Consumer<Booking> onCreateWorkOrder;
     private TableColumn<Booking, Void> viewAndEditColumn;
     private Consumer<Booking> onViewBooking;
+    private Function<Integer, String> getRegistrationNumber;
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -70,6 +72,10 @@ public class BookingListView {
     }
 
     public TableView<Booking> getBookingTable() {return bookingTable;}
+
+    public void setGetRegistrationNumber(Function<Integer, String> function) {
+        this.getRegistrationNumber = function;
+    }
     public Button getBackButton() {return backButton;}
 
     public TableView<Booking> buildTable()  {
@@ -79,9 +85,10 @@ public class BookingListView {
         idColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(String.valueOf(cellData.getValue().getId())));
 
-        vehicleColumn = new TableColumn<>(languageManager.getString("vehicleIdBookingTable"));
-        vehicleColumn.setCellValueFactory(cellData -> new SimpleStringProperty(
-                String.valueOf(cellData.getValue().getVehicleId())));
+        vehicleColumn = new TableColumn<>(languageManager.getString("regNrBookingTable"));
+        vehicleColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(
+               getRegistrationNumber.apply(cellData.getValue().getVehicleId())));
 
         dateColumn = new TableColumn<>(languageManager.getString("dateInTable"));
         dateColumn.setCellValueFactory(cellData ->
@@ -210,7 +217,7 @@ public class BookingListView {
 
     public void changeTextAllComponents() {
         idColumn.setText(languageManager.getString("bookingIdBookingTable"));
-        vehicleColumn.setText(languageManager.getString("vehicleIdBookingTable"));
+        vehicleColumn.setText(languageManager.getString("regNrBookingTable"));
         dateColumn.setText(languageManager.getString("dateInTable"));
         descriptionColumn.setText(languageManager.getString("descriptionInTable"));
         statusColumn.setText(languageManager.getString("statusInTable"));

@@ -258,6 +258,8 @@ public class CreateWorkOrderView {
         mechanicLabel = UIComponents.createFormLabel(languageManager.getString("mechanicLabel") + " *");
         mechanicComboBox = UIComponents.createComboBox();
 
+
+
         mechanicComboBox.setConverter(new StringConverter<Mechanic>() {
 
             @Override

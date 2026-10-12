@@ -48,6 +48,7 @@ public class OrderDetailsView {
 
     private Consumer<String> onStatusChange;
     private Consumer<ServiceItem> onDeleteService;
+    private Consumer<Mechanic> onMechanicChange;
 
     private final Button backButton;
     private Runnable onBack;
@@ -125,6 +126,14 @@ public class OrderDetailsView {
 
         mechanicComboBox = UIComponents.createComboBox();
         mechanicComboBox.getItems().addAll(mechanics);
+
+        for (Mechanic mechanic : mechanics) {
+            if (mechanic.getId() == workOrder.getMechanicId()) {
+                mechanicComboBox.setValue(mechanic);
+                break;
+            }
+        }
+
         mechanicComboBox.setConverter(new StringConverter<Mechanic>() {
 
             @Override
@@ -139,6 +148,14 @@ public class OrderDetailsView {
             @Override
             public Mechanic fromString(String string) {
                 return null;
+            }
+        });
+
+        mechanicComboBox.setOnAction(event -> {
+            Mechanic selectedMechanic = mechanicComboBox.getValue();
+
+            if (selectedMechanic != null && onMechanicChange != null) {
+                onMechanicChange.accept(selectedMechanic);
             }
         });
 
@@ -416,6 +433,7 @@ public class OrderDetailsView {
     public void setOnDeleteService(Consumer<ServiceItem> onDeleteService){
         this.onDeleteService = onDeleteService;
     }
+    public void setOnMechanicChange(Consumer<Mechanic> onMechanicChange) {this.onMechanicChange = onMechanicChange;}
 
     public void showSummary(String totalTime, String totalPrice) {
         totalTimeValue.setText(totalTime);
