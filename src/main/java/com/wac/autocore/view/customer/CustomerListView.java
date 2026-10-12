@@ -4,6 +4,9 @@ import com.wac.autocore.model.Customer;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -21,6 +24,8 @@ public class CustomerListView {
     private final Label subtitle;
 
     private TextField searchField;
+    private ObservableList<Customer> observableCustomersList;
+    private FilteredList<Customer> filteredCustomerList;
 
     private Button createCustomerButton;
 
@@ -39,15 +44,12 @@ public class CustomerListView {
     public CustomerListView() {
 
         VBox box = UIComponents.createVBoxForViews();
-
         HBox headerHBox = buildHeaderSection();
-
         subtitle = UIComponents.createSubtitle(languageManager.getString("customerListViewSubtitle"));
 
-        //EJ KLAR med search
-        HBox searchBox = buildSearchSection();
-
         customerTable = buildTable();
+
+        HBox searchBox = buildSearchSection();
 
         backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
 
@@ -70,6 +72,7 @@ public class CustomerListView {
     public TableView<Customer> getCustomerListView() {return customerTable;}
     public Button getBackButton() {return backButton;}
     public Button getCreateCustomerButton() {return createCustomerButton;}
+    public ObservableList<Customer> getObservableCustomersList() {return observableCustomersList;}
 
     private HBox buildHeaderSection() {
         title = new Label(languageManager.getString("customerListViewTitle"));
@@ -118,20 +121,37 @@ public class CustomerListView {
         return customerTable;
     }
 
-     //EJ KLAR
     private HBox buildSearchSection() {
         searchField = new TextField();
         HBox searchBox = UIComponents.createSearchBox(searchField);
-        searchField.setPromptText("Search customer...");
+        searchField.setPromptText(languageManager.getString("searchTextField"));
+
+        searchField.textProperty().addListener((
+                observable, oldValue, newValue) -> {
+            filteredCustomerList.setPredicate(customer -> {
+
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
+                return customer.getName().toLowerCase().contains(newValue.toLowerCase())
+                        || customer.getPhone().toLowerCase().contains(newValue.toLowerCase())
+                        || customer.getEmail().toLowerCase().contains(newValue.toLowerCase());
+            });
+        });
+
+        observableCustomersList = FXCollections.observableArrayList();
+        filteredCustomerList = new FilteredList<>(observableCustomersList, customer -> true);
+        customerTable.setItems(filteredCustomerList);
 
         return searchBox;
     }
 
     public void changeTextAllComponents() {
-
         title.setText(languageManager.getString("customerListViewTitle"));
         subtitle.setText(languageManager.getString("customerListViewSubtitle"));
         createCustomerButton.setText(languageManager.getString("addCustomerButton"));
+        searchField.setText(languageManager.getString("searchTextField"));
 
         customerIdColumn.setText(languageManager.getString("customerIdInTable"));
         nameColumn.setText(languageManager.getString("nameInTable"));

@@ -439,8 +439,6 @@ public class BookingController {
                 }
             }
         }
-
-        //showServicesForSelectedBooking();
     }
 
     private void showWarning(String message) {

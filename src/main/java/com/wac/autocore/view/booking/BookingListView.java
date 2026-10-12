@@ -4,6 +4,9 @@ import com.wac.autocore.model.Booking;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -23,7 +26,10 @@ public class BookingListView {
     private final Label title;
     private final Label subtitle;
 
+    //Ej klar med sökfunktionen
     private TextField searchField;
+    private ObservableList<Booking> observableBookingList;
+    private FilteredList<Booking> filteredBookingList;
 
     private TableColumn<Booking, String> idColumn;
     private TableColumn<Booking, String> vehicleColumn;
@@ -73,6 +79,9 @@ public class BookingListView {
 
     public TableView<Booking> getBookingTable() {return bookingTable;}
 
+    //Används ännu inte
+    public ObservableList<Booking> getObservableBookingList() {return observableBookingList;}
+
     public void setGetRegistrationNumber(Function<Integer, String> function) {
         this.getRegistrationNumber = function;
     }
@@ -80,8 +89,9 @@ public class BookingListView {
 
     public TableView<Booking> buildTable()  {
         bookingTable = UIComponents.createTable();
+        bookingTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
-        idColumn = new TableColumn<>(languageManager.getString("bookingIdBookingTable"));
+        idColumn = new TableColumn<>("ID");
         idColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(String.valueOf(cellData.getValue().getId())));
 
@@ -123,18 +133,9 @@ public class BookingListView {
             }
         });
 
-        //sätter kolumnernas bredd så dom fyller hela tabellen
-        //bredderna justerade så att knappkolumnen får plats
-        idColumn.prefWidthProperty().bind(bookingTable.widthProperty().multiply(0.12));
-        vehicleColumn.prefWidthProperty().bind(bookingTable.widthProperty().multiply(0.12));
-        dateColumn.prefWidthProperty().bind(bookingTable.widthProperty().multiply(0.16));
-        descriptionColumn.prefWidthProperty().bind(bookingTable.widthProperty().multiply(0.17));
-        statusColumn.prefWidthProperty().bind(bookingTable.widthProperty().multiply(0.16));
-
         //en knapp per bokning som leder till sidan "Skapa arbetsorder"
         createOrderColumn = new TableColumn<>(languageManager.getString("createOrderColumn"));
         createOrderColumn.setSortable(false);
-        createOrderColumn.prefWidthProperty().bind(bookingTable.widthProperty().multiply(0.24));
         createOrderColumn.setCellFactory(column -> new TableCell<Booking, Void>() {
 
         private final Button createOrderButton = UIComponents.createAddRemoveServiceButton("");
@@ -159,15 +160,14 @@ public class BookingListView {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    createOrderButton.setText(languageManager.getString("createOrderButton"));
+                    createOrderButton.setText(languageManager.getString("createOrderButtonBookingTable"));
                     setGraphic(createOrderButton);
                 }
             }
         });
 
-        viewAndEditColumn = new TableColumn<>(languageManager.getString("viewAndEditColumn"));
+        viewAndEditColumn = new TableColumn<>(languageManager.getString("actionColumn"));
         viewAndEditColumn.setSortable(false);
-
         viewAndEditColumn.setCellFactory(column -> new TableCell<Booking, Void>() {
 
         Button viewButton = UIComponents.createViewButton(languageManager.getString("viewBookingInTableButton"));
@@ -194,6 +194,15 @@ public class BookingListView {
             }
         });
 
+        //Storlek på kolumnerna
+        idColumn.prefWidthProperty().bind(bookingTable.widthProperty().multiply(0.07));
+        vehicleColumn.prefWidthProperty().bind(bookingTable.widthProperty().multiply(0.11));
+        dateColumn.prefWidthProperty().bind(bookingTable.widthProperty().multiply(0.13));
+        descriptionColumn.prefWidthProperty().bind(bookingTable.widthProperty().multiply(0.16));
+        statusColumn.prefWidthProperty().bind(bookingTable.widthProperty().multiply(0.17));
+        createOrderColumn.prefWidthProperty().bind(bookingTable.widthProperty().multiply(0.16));
+        viewAndEditColumn.prefWidthProperty().bind(bookingTable.widthProperty().multiply(0.17));
+
         bookingTable.getColumns().addAll(
                 idColumn,
                 vehicleColumn,
@@ -210,7 +219,24 @@ public class BookingListView {
     public HBox buildSearchSection() {
         searchField = new TextField();
         HBox searchBox = UIComponents.createSearchBox(searchField);
-        searchField.setPromptText("Search booking...");
+        searchField.setPromptText(languageManager.getString("searchTextField"));
+
+//        searchField.textProperty().addListener((
+//                observable, oldValue, newValue) -> {
+//            filteredBookingList.setPredicate(booking -> {
+//
+//                if (newValue == null || newValue.isEmpty()) {
+//                    return true;
+//                }
+//
+//                return booking.getDescription().toLowerCase().contains(newValue.toLowerCase());
+//
+//            });
+//        });
+//
+//        observableBookingList = FXCollections.observableArrayList();
+//        filteredBookingList = new FilteredList<>(observableBookingList, customer -> true);
+//        bookingTable.setItems(filteredBookingList);
 
         return searchBox;
     }
@@ -223,9 +249,10 @@ public class BookingListView {
         statusColumn.setText(languageManager.getString("statusInTable"));
 
         createOrderColumn.setText(languageManager.getString("createOrderColumn"));
-        viewAndEditColumn.setText(languageManager.getString("viewAndEditColumn"));
+        viewAndEditColumn.setText(languageManager.getString("actionColumn"));
         backButton.setText(languageManager.getString("backButton"));
         title.setText(languageManager.getString("bookingListTitle"));
         subtitle.setText(languageManager.getString("bookingListSubtitle"));
+        searchField.setText(languageManager.getString("searchTextField"));
     }
 }

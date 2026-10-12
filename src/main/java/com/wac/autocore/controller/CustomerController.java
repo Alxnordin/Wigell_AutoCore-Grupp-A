@@ -86,7 +86,6 @@ public class CustomerController {
 
         });
 
-        //customerView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
         customerView.getBackButton().setOnAction(actionEvent -> {
             app.showCustomerListView();
         });
@@ -99,10 +98,10 @@ public class CustomerController {
     }
 
     private void refreshCustomerList() {
-        customerListView.getCustomerListView().getItems().clear();
+        customerListView.getObservableCustomersList().clear();
 
         for (Customer customer : customerService.getAllCustomers()) {
-            customerListView.getCustomerListView().getItems().add(customer);
+            customerListView.getObservableCustomersList().add(customer);
         }
     }
 
