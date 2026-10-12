@@ -447,11 +447,11 @@ public class OrderController {
 
         //Alexander
         //utkast används inte just nu, så knappen Spara som utkast döljs
-        hideSaveDraftButton(createWorkOrderView);
+       //hideSaveDraftButton(createWorkOrderView);
 
         //Alexander
         //Create-knappen skapar ordern med rätt metod i WorkOrderService beroende på ordertyp
-        createWorkOrderView.getNextButton().setOnAction(event -> createOrder(createWorkOrderView, orderType));
+        //createWorkOrderView.getNextButton().setOnAction(event -> createOrder(createWorkOrderView, orderType));
 
         // Lägg till tjänst
         createWorkOrderView.getAddServiceButton().setOnAction(event -> {
@@ -546,7 +546,7 @@ public class OrderController {
 
         //Alexander
         //Create-knappen när man kommer från "Skapa arbetsorder" på en bokning
-        hideSaveDraftButton(createWorkOrderView);
+        //hideSaveDraftButton(createWorkOrderView);
         createWorkOrderView.getNextButton().setOnAction(event -> createOrder(createWorkOrderView, "planned"));
 
 
@@ -672,10 +672,10 @@ public class OrderController {
     }
 
     //Spara som utkast är dold tills gruppen bestämmer hur utkast ska göras klart
-    private void hideSaveDraftButton(CreateWorkOrderView view) {
-        view.getSaveDraftButton().setVisible(false);
-        view.getSaveDraftButton().setManaged(false);
-    }
+//    private void hideSaveDraftButton(CreateWorkOrderView view) {
+//        view.getSaveDraftButton().setVisible(false);
+//        view.getSaveDraftButton().setManaged(false);
+//    }
 
     //tillbaka till orderlistan, med den nya ordern i listan
     private void showOrderList() {
