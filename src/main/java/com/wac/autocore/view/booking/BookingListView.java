@@ -115,7 +115,13 @@ public class BookingListView {
                     setText(null);
                 } else {
                    Label statusLabel = UIComponents.createStatusBadge(status);
-                    statusLabel.setText(languageManager.getString(status));
+                    //Alexander
+                    //okänd status, gammal data visas som den är i stället för att krascha listan
+                    try {
+                        statusLabel.setText(languageManager.getString(status));
+                    } catch (java.util.MissingResourceException e) {
+                        statusLabel.setText(status);
+                    }
 
                     setGraphic(statusLabel);
                     setText(null);
