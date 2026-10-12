@@ -523,8 +523,6 @@ public class UIComponents {
     }
 
 
-
-
     public static HBox createSearchBox(TextField textField) {
         HBox searchBox = new HBox(10);
 

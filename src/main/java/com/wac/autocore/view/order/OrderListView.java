@@ -341,6 +341,7 @@ public class OrderListView {
                 orderTable,
                 backButton
         );
+
         this.root = box;
 
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {

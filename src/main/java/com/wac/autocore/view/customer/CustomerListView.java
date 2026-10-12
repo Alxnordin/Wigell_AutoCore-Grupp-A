@@ -17,12 +17,12 @@ public class CustomerListView {
 
     private final Parent root;
 
-    private final Label title;
+    private Label title;
     private final Label subtitle;
 
     private TextField searchField;
 
-    private final Button createCustomerButton;
+    private Button createCustomerButton;
 
     private TableView<Customer> customerTable;
 
@@ -39,19 +39,10 @@ public class CustomerListView {
     public CustomerListView() {
 
         VBox box = UIComponents.createVBoxForViews();
-        title = new Label(languageManager.getString("customerListViewTitle"));
-        HBox titleHBox = UIComponents.createPageTitle(title, "fa-address-book");
+
+        HBox headerHBox = buildHeaderSection();
+
         subtitle = UIComponents.createSubtitle(languageManager.getString("customerListViewSubtitle"));
-
-        createCustomerButton = UIComponents.createCreateButton(
-                languageManager.getString("addCustomerButton"));
-
-        //Kan göra en metod av detta
-        HBox header = new HBox();
-        header.setAlignment(Pos.CENTER_LEFT);
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        header.getChildren().addAll(titleHBox, spacer, createCustomerButton);
 
         //EJ KLAR med search
         HBox searchBox = buildSearchSection();
@@ -60,8 +51,12 @@ public class CustomerListView {
 
         backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
 
-        box.getChildren().addAll(header, subtitle, searchBox,
+        box.getChildren().addAll(headerHBox, subtitle, searchBox,
                 customerTable, backButton);
+
+//        ScrollPane scrollPane = new ScrollPane(box);
+//        this.root = scrollPane;
+
         this.root = box;
 
         languageManager.localeProperty().addListener(
@@ -76,7 +71,23 @@ public class CustomerListView {
     public Button getBackButton() {return backButton;}
     public Button getCreateCustomerButton() {return createCustomerButton;}
 
-    public TableView<Customer> buildTable() {
+    private HBox buildHeaderSection() {
+        title = new Label(languageManager.getString("customerListViewTitle"));
+        HBox titleHBox = UIComponents.createPageTitle(title, "fa-address-book");
+
+        createCustomerButton = UIComponents.createCreateButton(
+                languageManager.getString("addCustomerButton"));
+
+        HBox header = new HBox();
+        header.setAlignment(Pos.CENTER_LEFT);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        header.getChildren().addAll(titleHBox, spacer, createCustomerButton);
+        return header;
+
+    }
+
+    private TableView<Customer> buildTable() {
         customerTable = UIComponents.createTable();
 
         customerIdColumn = new TableColumn<>(languageManager.getString("customerIdInTable"));
@@ -108,7 +119,7 @@ public class CustomerListView {
     }
 
      //EJ KLAR
-    public HBox buildSearchSection() {
+    private HBox buildSearchSection() {
         searchField = new TextField();
         HBox searchBox = UIComponents.createSearchBox(searchField);
         searchField.setPromptText("Search customer...");

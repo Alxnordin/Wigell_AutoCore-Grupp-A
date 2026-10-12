@@ -184,12 +184,6 @@ public class BookingService {
         bookingDAO.updateStatus(booking);
     }
 
-    //EJ KLAR!! Använda Prototype, kolla hur Fredrik gjort createComplaint() i WorkOrderService.
-    // Det som ska följa med från gamla bokningen är:
-    //- Kunden (alla fält och de ska vara "låsta")
-    //- Fordon (vet inte om det fältet ska vara "låst" eller ej)
-    //- ServicItem och fälten name, description och
-    // estimatedMinutes (INTE price, det ska istället hämtas på nytt då det kan ha ändrats)
     public Booking createBookingFromPreviousBooking(int originalBookingId, LocalDate newDate) {
 
         Booking original = findBooking(originalBookingId);

@@ -75,11 +75,11 @@ public class BookingListView {
     public TableView<Booking> buildTable()  {
         bookingTable = UIComponents.createTable();
 
-        idColumn = new TableColumn<>(languageManager.getString("bookingIdInTable"));
+        idColumn = new TableColumn<>(languageManager.getString("bookingIdBookingTable"));
         idColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(String.valueOf(cellData.getValue().getId())));
 
-        vehicleColumn = new TableColumn<>(languageManager.getString("vehicleIdInTable"));
+        vehicleColumn = new TableColumn<>(languageManager.getString("vehicleIdBookingTable"));
         vehicleColumn.setCellValueFactory(cellData -> new SimpleStringProperty(
                 String.valueOf(cellData.getValue().getVehicleId())));
 
@@ -209,8 +209,8 @@ public class BookingListView {
     }
 
     public void changeTextAllComponents() {
-        idColumn.setText(languageManager.getString("bookingIdInTable"));
-        vehicleColumn.setText(languageManager.getString("vehicleIdInTable"));
+        idColumn.setText(languageManager.getString("bookingIdBookingTable"));
+        vehicleColumn.setText(languageManager.getString("vehicleIdBookingTable"));
         dateColumn.setText(languageManager.getString("dateInTable"));
         descriptionColumn.setText(languageManager.getString("descriptionInTable"));
         statusColumn.setText(languageManager.getString("statusInTable"));

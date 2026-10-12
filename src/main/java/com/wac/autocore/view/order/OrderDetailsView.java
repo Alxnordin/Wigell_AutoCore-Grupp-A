@@ -381,6 +381,9 @@ public class OrderDetailsView {
                 backButton
         );
 
+        ScrollPane scrollPane = new ScrollPane(box);
+        scrollPane.setFitToWidth(true);
+
 
         //ändra språk
         languageManager.localeProperty().addListener(
@@ -389,7 +392,7 @@ public class OrderDetailsView {
                 }
         );
 
-        this.root = box;
+        this.root = scrollPane;
     }
 
     public void updateStartButtonState() {

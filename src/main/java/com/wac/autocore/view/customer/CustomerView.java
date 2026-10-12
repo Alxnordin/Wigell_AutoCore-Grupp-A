@@ -101,6 +101,7 @@ public class CustomerView {
     public Label getConfirmationLabel() {return confirmationLabel;}
 
     public Button getCreateCustomerButton() {return createCustomerButton;}
+
     public Button getBackButton() {return backButton;}
 
     private VBox buildFirstNameVBox()   {
@@ -188,7 +189,7 @@ public class CustomerView {
     }
 
     private HBox buildBottomButtonHBox()    {
-        createCustomerButton = new Button(languageManager.getString("createCustomerButton"));
+        createCustomerButton = UIComponents.createCreateButton(languageManager.getString("createCustomerButton"));
         backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
 
         HBox buttonBox = UIComponents.createButtonBox();
