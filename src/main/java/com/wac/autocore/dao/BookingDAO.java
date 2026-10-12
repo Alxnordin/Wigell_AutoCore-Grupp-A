@@ -38,6 +38,36 @@ public class BookingDAO {
         return bookings;
     }
 
+    public Booking findById(int bookingId){
+        String sql = "SELECCT id, vehicle_id, date, description, status " +
+                "FROM booking WHERE id = ?";
+
+        try(Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, bookingId);
+
+            try(ResultSet resultSet = statement.executeQuery()){
+                if(resultSet.next()){
+                    Booking booking = new Booking(
+                            resultSet.getInt("id"),
+                            resultSet.getInt("vehicle_id"),
+                            resultSet.getDate("date").toLocalDate(),
+                            resultSet.getString("description")
+                    );
+
+                    booking.setStatus(resultSet.getString("status"));
+                    loadServiceItems(connection, booking);
+
+                    return booking;
+                }
+            }
+        }catch(Exception e){
+            throw new RuntimeException("Could not fetch booking.", e);
+        }
+        return null;
+    }
+
     //Alexander
     //läser in tjänst från en befintlig bokning i databasen
     private void loadServiceItems(Connection connection, Booking booking) throws Exception {

@@ -3,10 +3,11 @@ package com.wac.autocore.view.booking;
 import com.wac.autocore.dao.CustomerDAO;
 import com.wac.autocore.dao.VehicleDAO;
 import com.wac.autocore.model.Customer;
+import com.wac.autocore.model.ServiceComponent;
 import com.wac.autocore.model.ServiceItem;
+import com.wac.autocore.model.ServicePackage;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.util.LanguageManager;
-import com.wac.autocore.dao.ServiceItemDAO;
 
 import com.wac.autocore.view.UIComponents;
 import javafx.geometry.Insets;
@@ -14,6 +15,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -28,14 +30,16 @@ public class BookingView {
 
     private ComboBox<Customer> customerComboBox;
     private ComboBox<Vehicle> vehicleComboBox;
-    private ComboBox<ServiceItem> serviceComboBox;
+    //Alexander
+    //rullistan innehåller både enskilda tjänster och servicepaket (Composite)
+    private ComboBox<ServiceComponent> serviceComboBox;
     private DatePicker date;
     private TextField descriptionField;
-    //Alexander
+
     //tabellen är ett fält så att controllern kan läsa de valda tjänsterna
     private TableView<ServiceItem> servicesTable;
 
-    private final ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
+    //ÄNDRA. Ska inte gå direkt till DAO
     private final CustomerDAO customerDAO = new CustomerDAO();
     private final VehicleDAO vehicleDAO = new VehicleDAO();
 
@@ -45,13 +49,16 @@ public class BookingView {
     private TableColumn<ServiceItem, Void> deleteColumn;
 
     private Button createBookingButton;
+    private Button cancelBookingButton;
     private Button backButton;
+
     private ListView<String> bookingListView;
 
     private Label title;
+    private Button newBookingFromPrevoiusBookingButton;
     private Label bookingInformationTitle;
     private Label customerLabel;
-    private Label vehicleLabel;
+    private Label vehicleRegistrationNumber;
     private Label dateLabel;
     private Label descriptionLabel;
     private Label servicesTitle;
@@ -66,30 +73,72 @@ public class BookingView {
     private Label totalPriceTitle;
     private Label bookingSubtitle;
 
+    private Button newCustomerButton;
+    private Button newVehicleButton;
+
+    private FontIcon customerLockIcon;
+
+    private VBox dateBox;
+
     LanguageManager languageManager = LanguageManager.getInstance();
 
     public BookingView () {
-        //huvudcontainer
-        VBox box = new VBox(18);
-        box.setPadding(new Insets(25));
+        VBox box = UIComponents.createVBoxForViews();
         box.setAlignment(Pos.TOP_LEFT);
 
-        //titel
         title = new Label(languageManager.getString("bookingTitle"));
         HBox titleBox = UIComponents.createPageTitle(title, "fa-calendar-plus-o");
 
-        //underrubrik
-        bookingSubtitle = new Label(languageManager.getString("bookingSubtitle"));
-        bookingSubtitle.getStyleClass().add("page-subtitle");
+        newBookingFromPrevoiusBookingButton = UIComponents.createIsEditingButton(
+                languageManager.getString("newBookingFromPrevoiusBookingButton"));
+        newBookingFromPrevoiusBookingButton.setVisible(false);
+        newBookingFromPrevoiusBookingButton.setManaged(false);
+        titleBox.getChildren().add(newBookingFromPrevoiusBookingButton);
 
+        bookingSubtitle = UIComponents.createSubtitle(languageManager.getString("bookingSubtitle"));
 
-        //sektion 1 -> bokningsinformation
+        VBox bookingInformation = buildSection1BookingInformationSection();
+        VBox servicesSection = buildSection2ServiceInformation();
+        VBox summarySection = buildSection3SummarySection();
+        HBox buttonBottomBox = buildButtonBottomBox();
+
+        bookingListView = new ListView<>();
+
+        // Listan används av controllern, men ska inte visas på "Create Booking"-sidan.
+        bookingListView.setVisible(false);
+        bookingListView.setManaged(false);
+
+        box.getChildren().addAll(titleBox, bookingSubtitle, bookingInformation,
+                servicesSection, summarySection, buttonBottomBox, bookingListView);
+
+        //sidan kan rullas när fönstret är för litet, så att summeringen och knapparna alltid går att nå
+        ScrollPane scrollPane = new ScrollPane(box);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.getStyleClass().add("edge-to-edge");
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+        this.root = scrollPane;
+
+        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
+            changeTextAllComponents();
+
+            java.time.LocalDate selectedDate = date.getValue();
+            DatePicker newDatePicker = UIComponents.createDatePicker();
+            newDatePicker.setValue(selectedDate);
+            dateBox.getChildren().set(1, newDatePicker);
+            date = newDatePicker;
+        });
+    }
+
+    private VBox buildSection1BookingInformationSection() {
         bookingInformationTitle = new Label("1. " + languageManager.getString("bookingInformationTitle"));
         bookingInformationTitle.getStyleClass().add("section-title");
 
         customerComboBox = UIComponents.createComboBox();
         vehicleComboBox = UIComponents.createComboBox();
 
+
+        //ÄNDRA. Ska inte gå direkt till DAO
         List<Customer> customers = customerDAO.findAll();
         List<Vehicle> vehicles = vehicleDAO.findAll();
 
@@ -102,6 +151,7 @@ public class BookingView {
             public String toString(Customer customer) {
                 return customer == null ? "" : customer.getName();
             }
+
             @Override
             public Customer fromString(String string) {
                 return null;
@@ -114,6 +164,7 @@ public class BookingView {
             public String toString(Vehicle vehicle) {
                 return vehicle == null ? "" : vehicle.getRegistrationNumber();
             }
+
             @Override
             public Vehicle fromString(String string) {
                 return null;
@@ -126,19 +177,43 @@ public class BookingView {
         descriptionField.setPromptText(languageManager.getString("descriptionField"));
 
         VBox customerBox = new VBox(5);
-        customerLabel = new Label(languageManager.getString("customerLabel"));
-        customerBox.getChildren().addAll(customerLabel, customerComboBox);
+        customerLabel = UIComponents.createFormLabel(languageManager.getString("customerLabel"));
+
+        //Obs! Kolla hur lösa detta i UIComponent ist.
+        StackPane customerComboBoxContainer = new StackPane(customerComboBox);
+        customerLockIcon = new FontIcon("fa-lock");
+        customerLockIcon.setIconSize(14);
+        customerLockIcon.getStyleClass().add("locked-field-icon");
+        customerLockIcon.setMouseTransparent(true);
+        customerLockIcon.setVisible(false);
+        customerComboBoxContainer.getChildren().add(customerLockIcon);
+        StackPane.setAlignment(customerLockIcon, Pos.CENTER_RIGHT);
+        StackPane.setMargin(customerLockIcon, new Insets(0, 14, 0, 0));
+
+        //************** OBS EJ KLAR med knappen för ny kund, testar bara ***********
+        newCustomerButton = new Button("+ Ny kund");
+        newCustomerButton.getStyleClass().add("create-new-if-missing-button");
+        newCustomerButton.setVisible(true);
+        newCustomerButton.setManaged(true);
+        customerBox.getChildren().addAll(customerLabel, customerComboBoxContainer, newCustomerButton);
 
         VBox vehicleBox = new VBox(5);
-        vehicleLabel = new Label(languageManager.getString("vehicleLabel"));
-        vehicleBox.getChildren().addAll(vehicleLabel, vehicleComboBox);
+        vehicleRegistrationNumber = UIComponents.createFormLabel(languageManager.getString("vehicleRegistrationNumber"));
 
-        VBox dateBox = new VBox(5);
-        dateLabel = new Label(languageManager.getString("dateLabel"));
+        //************** OBS EJ KLAR med knappen för nytt fordon, testar bara ***********
+        newVehicleButton = new Button("+ Nytt fordon");
+        newVehicleButton.getStyleClass().add("create-new-if-missing-button");
+        newVehicleButton.setVisible(true);
+        newVehicleButton.setManaged(true);
+        vehicleBox.getChildren().addAll(vehicleRegistrationNumber, vehicleComboBox, newVehicleButton);
+
+        dateBox = UIComponents.createVBoxWithSpacing5();
+        dateLabel = UIComponents.createFormLabel(languageManager.getString("dateLabel"));
         dateBox.getChildren().addAll(dateLabel, date);
 
         VBox descriptionBox = new VBox(5);
         descriptionLabel = new Label(languageManager.getString("descriptionLabel"));
+        descriptionLabel.getStyleClass().add("form-label");
         descriptionBox.getChildren().addAll(descriptionLabel, descriptionField);
 
         HBox bookingFields = new HBox(15);
@@ -148,40 +223,43 @@ public class BookingView {
         bookingInformation.setSpacing(15);
         bookingInformation.getChildren().addAll(bookingInformationTitle, bookingFields, descriptionBox);
 
-        //sektion 2 -> service
-        servicesTitle = new Label("2. " + languageManager.getString("servicesTitle"));
-        servicesTitle.getStyleClass().add("section-title");
-        selectServiceLabel = new Label(languageManager.getString("selectService"));
+        return bookingInformation;
+    }
 
-        selectedServicesLabel = new Label(languageManager.getString("selectedServices"));
-        noServicesLabel = new Label(languageManager.getString("noServices"));
-        noServicesLabel.getStyleClass().add("placeholder-text");
-        addServiceButton = new Button(languageManager.getString("addService"));
-        addServiceButton.getStyleClass().add("add-service-button");
+    private VBox buildSection2ServiceInformation() {
+        servicesTitle = UIComponents.createSectionTitle(languageManager.getString("servicesTitle"));
+        selectServiceLabel = UIComponents.createFormLabel(languageManager.getString("selectService"));
+        selectedServicesLabel = UIComponents.createFormLabel(languageManager.getString("selectedServices"));
+        noServicesLabel = UIComponents.createPlaceholderLabel(languageManager.getString("noServices"));
+        addServiceButton = UIComponents.createAddRemoveServiceButton(languageManager.getString("addService"));
 
-        // Hämta tjänster från MySQL
-        List<ServiceItem> serviceItems = serviceItemDAO.findAll();
+        //Alexander
+        //rullistan fylls av BookingController med tjänster och servicepaket
         serviceComboBox = UIComponents.createComboBox();
-        serviceComboBox.getItems().addAll(serviceItems);
 
-        // Visar endast tjänstens namn i ComboBoxen
-        serviceComboBox.setConverter(new StringConverter<ServiceItem>() {
-
-            @Override
-            public String toString(ServiceItem serviceItem) {
-                return serviceItem == null ? "" : serviceItem.getName();}
+        //en tjänst visas med sitt namn, ett paket visas som "Paket: namn (antal tjänster)"
+        serviceComboBox.setConverter(new StringConverter<ServiceComponent>() {
 
             @Override
-            public ServiceItem fromString(String string) {
+            public String toString(ServiceComponent serviceComponent) {
+                if (serviceComponent == null) {
+                    return "";
+                }
+                if (serviceComponent instanceof ServicePackage) {
+                    return languageManager.getString("packageInListLabel") + ": " + serviceComponent.getName()
+                            + " (" + serviceComponent.getServiceItems().size() + " "
+                            + languageManager.getString("packageInListServices") + ")";
+                }
+                return serviceComponent.getName();}
+
+            @Override
+            public ServiceComponent fromString(String string) {
                 return null;}
         });
 
-
-        // Välj tjänst + Lägg till
         HBox serviceSelectionBox = new HBox(10);
         serviceSelectionBox.setAlignment(Pos.CENTER_LEFT);
         serviceSelectionBox.getChildren().addAll(serviceComboBox, addServiceButton);
-
 
         // Servicetabell
         servicesTable = UIComponents.createTable();
@@ -199,16 +277,8 @@ public class BookingView {
 
         //radera raden
         deleteColumn.setCellFactory(column -> new TableCell<ServiceItem, Void>() {
-            private final Button deleteButton = new Button();
-
+            private final Button deleteButton = UIComponents.createDeleteButton();
             {
-                FontIcon deleteIcon = new FontIcon("fa-trash");
-                deleteIcon.setIconSize(18);
-                deleteIcon.getStyleClass().add("delete-icon");
-
-                deleteButton.setGraphic(deleteIcon);
-                deleteButton.getStyleClass().add("delete-button");
-                //Alexander
                 // soptunnan centreras och får mindre luft så att raden inte blir högre än övriga
                 setAlignment(Pos.CENTER);
                 setStyle("-fx-padding: 2 4 2 4;");
@@ -232,7 +302,6 @@ public class BookingView {
         servicesTable.setPlaceholder(noServicesLabel);
 
         // Kolumnbredder - flytta till UIComponents??
-        //Alexander
         //bredderna summerar till under 100 % så att soptunnan inte hamnar bakom en rullningslist
         serviceColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.44));
         timeColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.22));
@@ -241,29 +310,21 @@ public class BookingView {
         deleteColumn.setMinWidth(56);
         deleteColumn.setSortable(false);
 
-        //Alexander
         //tabellen får alltid plats med minst tre valda tjänster
         servicesTable.setMinHeight(165);
-
         servicesTable.getColumns().addAll(serviceColumn, timeColumn, priceColumn, deleteColumn);
 
         // Hela sektion 2
         VBox servicesSection = UIComponents.createSectionBox();
         servicesSection.setSpacing(15);
 
-        servicesSection.getChildren().addAll(
-                servicesTitle,
-                selectServiceLabel,
-                serviceSelectionBox,
-                selectedServicesLabel,
-                servicesTable);
+        servicesSection.getChildren().addAll(servicesTitle, selectServiceLabel,
+                serviceSelectionBox, selectedServicesLabel, servicesTable);
 
+        return servicesSection;
+    }
 
-        //Alexander
-        //knappen "Lägg till tjänst" kopplas i BookingController (wireEvents)
-
-
-        //sektion 3 -> summering
+    private VBox buildSection3SummarySection() {
         summaryTitle = new Label("3. " + languageManager.getString("summaryTitle"));
         summaryTitle.getStyleClass().add("section-title");
 
@@ -284,42 +345,26 @@ public class BookingView {
         summarySection.setSpacing(10);
         summarySection.getChildren().addAll(summaryTitle, summaryCards);
 
-        // knappar
-        createBookingButton = new Button(languageManager.getString("createBookingButton"));
+        return summarySection;
+    }
+
+    private HBox buildButtonBottomBox() {
+        HBox buttonBottomBox = new HBox();
+        buttonBottomBox.setSpacing(10);
+
+        createBookingButton = UIComponents.createCreateButton(languageManager.getString("createBookingButton"));
+
+        cancelBookingButton = UIComponents.createCancelButton(languageManager.getString("cancelBookingButton"));
+        cancelBookingButton.setVisible(false);
+        cancelBookingButton.setManaged(false);
+
         backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
+        backButton.setVisible(true);
+        backButton.setManaged(true);
 
-        HBox buttonBox = new HBox(10);
-        buttonBox.setAlignment(Pos.CENTER_RIGHT);
-
-        buttonBox.getChildren().addAll(backButton, createBookingButton);
-
-        //listview
-        bookingListView = new ListView<>();
-
-        // Listan används av controllern, men ska inte visas på "Create Booking"-sidan.
-        bookingListView.setVisible(false);
-        bookingListView.setManaged(false);
-
-        box.getChildren().addAll(titleBox, bookingSubtitle, bookingInformation, servicesSection, summarySection, buttonBox, bookingListView);
-
-        //sidan kan rullas när fönstret är för litet, så att summeringen och knapparna alltid går att nå
-        ScrollPane scrollPane = new ScrollPane(box);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setFitToHeight(true);
-        scrollPane.getStyleClass().add("edge-to-edge");
-        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
-        this.root = scrollPane;
-
-        //ändra språk
-        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
-            changeTextAllComponents();
-
-            java.time.LocalDate selectedDate = date.getValue();
-            DatePicker newDatePicker = UIComponents.createDatePicker();
-            newDatePicker.setValue(selectedDate);
-            dateBox.getChildren().set(1, newDatePicker);
-            date = newDatePicker;
-        });
+        buttonBottomBox.setAlignment(Pos.CENTER_RIGHT);
+        buttonBottomBox.getChildren().addAll(backButton, cancelBookingButton, createBookingButton);
+        return buttonBottomBox;
     }
 
     public Parent getView() {return root;}
@@ -331,9 +376,13 @@ public class BookingView {
     public Button getCreateBookingButton() {return createBookingButton;}
     public Button getBackButton() {return backButton;}
 
+    public void setOnCancelButton(Runnable action) {
+        cancelBookingButton.setOnAction(e -> action.run());
+    }
+
     //Alexander
     //används av BookingController för att koppla tjänsterna till GarageSystem
-    public ComboBox<ServiceItem> getServiceComboBox() {return serviceComboBox;}
+    public ComboBox<ServiceComponent> getServiceComboBox() {return serviceComboBox;}
     public Button getAddServiceButton() {return addServiceButton;}
     public TableView<ServiceItem> getServicesTable() {return servicesTable;}
 
@@ -344,11 +393,33 @@ public class BookingView {
         totalPriceLabel.setText(totalPrice);
     }
 
+    public void showWhenCreateBookingFromExistingBooking() {
+        newBookingFromPrevoiusBookingButton.setVisible(true);
+        newBookingFromPrevoiusBookingButton.setManaged(true);
+
+        newCustomerButton.setVisible(false);
+        newCustomerButton.setManaged(false);
+        newVehicleButton.setVisible(false);
+        newVehicleButton.setManaged(false);
+
+        customerComboBox.setMouseTransparent(true);
+        customerComboBox.setFocusTraversable(false);
+        customerComboBox.getStyleClass().add("locked-combo-box");
+        customerLockIcon.setVisible(true);
+
+        cancelBookingButton.setVisible(true);
+        cancelBookingButton.setManaged(true);
+
+        backButton.setVisible(false);
+        backButton.setManaged(false);
+    }
+
     public void changeTextAllComponents() {
         title.setText(languageManager.getString("bookingTitle"));
         bookingSubtitle.setText(languageManager.getString("bookingSubtitle"));
+        newBookingFromPrevoiusBookingButton.setText(languageManager.getString("newBookingFromPrevoiusBookingButton"));
         bookingInformationTitle.setText("1. " + languageManager.getString("bookingInformationTitle"));
-        vehicleLabel.setText(languageManager.getString("vehicleLabel"));
+        vehicleRegistrationNumber.setText(languageManager.getString("vehicleRegistrationNumber"));
         dateLabel.setText(languageManager.getString("dateLabel"));
         descriptionLabel.setText(languageManager.getString("descriptionLabel"));
         servicesTitle.setText("2. " + languageManager.getString("servicesTitle"));
@@ -366,6 +437,7 @@ public class BookingView {
 
         descriptionField.setPromptText(languageManager.getString("descriptionField"));
         createBookingButton.setText(languageManager.getString("createBookingButton"));
+        cancelBookingButton.setText(languageManager.getString("cancelBookingButton"));
         backButton.setText(languageManager.getString("backButton"));
     }
 }

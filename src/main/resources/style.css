@@ -55,20 +55,20 @@ Button:hover {
     -fx-border-color: #235e27;
 }
 
+/*quit knappen*/
 .exit-button {
-    -fx-background-color: #d47b3b;
-    -fx-text-fill: #111112;
-    -fx-font-size: 14px;
-    -fx-border-color: #d98f5f;
+    -fx-background-color: #F5F8F6;
+    -fx-border-color: #A8BDA2;
+    -fx-border-width: 1.5px;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
-    -fx-padding: 10px 24px;
-    -fx-cursor: hand;
-
+    -fx-padding: 8px 14px;
+    -fx-text-fill: #263238;
+    -fx-font-size: 14px;
 }
 
 .exit-button:hover {
-    -fx-background-color: #f5e2d8;
+    -fx-background-color: #EAF1EC;
 }
 
 .menu-title {
@@ -137,7 +137,7 @@ ListView .list-cell:filled:selected {
 }
 
 .section-title {
-    -fx-text-fill: #10182b;
+    -fx-text-fill: #2E7D32;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
@@ -358,6 +358,11 @@ ListView .list-cell:filled:selected {
     -fx-padding: 5 14;
     -fx-cursor: hand;
     -fx-font-size: 13px;
+
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
 
 .view-button:hover {
@@ -426,4 +431,303 @@ ListView .list-cell:filled:selected {
     -fx-background-color: #F6D98B;
     -fx-text-fill: #D86F2D;
 }
+
+
+/***** Styling för formulär *******/
+
+/*Label ovanför inputfälten*/
+.form-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/*Label för fel input i formulär*/
+.wrong-input-label {
+    -fx-text-fill: #c62828;
+    -fx-font-size: 12px;
+}
+
+/*styling för ikonerna på menyknapparna*/
+.category-button .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+/*styling för create order button inne i order*/
+.create-order-button {
+    -fx-background-color: #D97A32;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 18px;
+    -fx-cursor: hand;
+
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.create-order-button:hover {
+    -fx-background-color: #C66C2B;
+}
+
+/* styling för create order dropdown */
+.order-menu-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #10182b;
+}
+
+.order-menu-description {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6b756e;
+}
+
+.order-menu-icon {
+    -fx-icon-color: #10182b;
+}
+
+
+/* Create order dropdown */
+.context-menu {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 10px;
+    -fx-border-color: #cfe0d6;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+    -fx-padding: 6px;
+}
+
+/* Själva menyvalen */
+.context-menu .menu-item {
+    -fx-background-color: transparent;
+    -fx-background-radius: 7px;
+    -fx-padding: 10px 12px;
+}
+
+/* När muspekaren ligger över ett menyval */
+.context-menu .menu-item:hover {
+    -fx-background-color: #E8F0EB;
+}
+
+/* Text */
+.order-menu-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #10182b;
+}
+
+.order-menu-description {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6b756e;
+}
+
+/* Ikoner */
+.order-menu-icon {
+    -fx-icon-color: #2E7D32;
+}
+
+/*style formuläret i create sektionen*/
+  .form-section {
+      -fx-background-color: #FFFFFF;
+      -fx-background-radius: 10px;
+      -fx-border-color: #cfe0d6;
+      -fx-border-radius: 10px;
+      -fx-border-width: 1px;
+  }
+
+  /*skolla på sidan*/
+.page-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.page-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+
+.editing-button {
+    -fx-background-color: #b3261e;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+    -fx-background-radius: 8px;
+    -fx-padding: 6px 12px;
+    -fx-cursor: default;
+}
+
+.editing-button .ikonli-font-icon {
+    -fx-icon-color: white;
+    -fx-icon-size: 14px;
+}
+
+.save-editing-button {
+    -fx-background-color: #D97A32;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+
+.save-editing-button:hover {
+    -fx-background-color: #C66C2B;
+}
+
+.cancel-editing-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5f6368;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-padding: 10px 18px;
+    -fx-cursor: hand;
+
+    -fx-border-color: #b8b8b8;
+    -fx-border-width: 1px;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.cancel-editing-button:hover {
+    -fx-background-color: #f2f2f2;
+    -fx-border-color: #999999;
+}
+
+.create-new-if-missing-button {
+    -fx-background-color: #eef6f0;
+    -fx-text-fill: #2f6f44;
+    -fx-border-color: #b8d5c1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 7px;
+    -fx-background-radius: 7px;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 14px;
+    -fx-cursor: hand;
+}
+.create-new-if-missing-button:hover {
+    -fx-background-color: #dfeee4;
+    -fx-border-color: #7faf8d;
+}
+.create-new-if-missing-button:pressed {
+    -fx-background-color: #d2e6d8;
+}
+
+/*styling language button*/
+.language-button {
+    -fx-background-color: #F5F8F6;
+    -fx-border-color: #A8BDA2;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 14px;
+}
+
+.language-button:hover {
+    -fx-background-color: #EAF1EC;
+}
+
+.language-button .label {
+    -fx-text-fill: #263238;
+    -fx-font-size: 14px;
+}
+
+/* Låsta fält inne i create: planned order*/
+.combo-box:disabled .list-cell,
+.date-picker:disabled .text-field,
+.text-field:disabled {
+    -fx-text-fill: #4F5752;
+    -fx-opacity: 1.0;
+}
+
+
+/* Locked ComboBox */
+.locked-combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.locked-combo-box .arrow {
+    -fx-opacity: 0;
+}
+
+/* Locked DatePicker */
+.locked-date-picker .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.locked-date-picker .arrow {
+    -fx-opacity: 0;
+}
+
+/* Lock icon */
+.locked-field-icon {
+    -fx-icon-color: #f5ab22;
+}
+
+/* Ram runt vald ursprunglig arbetsorder */
+.original-work-order-overview {
+    -fx-border-color: #D99A3D;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+/* Rubrik för vald ursprunglig arbetsorder */
+.original-work-order-title {
+    -fx-text-fill: #D99A3D;
+}
+
+/* Standardstyling för textarea */
+.standard-text-area {
+    -fx-background-color: white;
+    -fx-border-color: #CFE0D5;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px;
+    -fx-font-size: 14px;
+}
+
+.standard-text-area .content {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+/*styling för status badge*/
+.status-badge {
+    -fx-padding: 6px 14px;
+    -fx-background-radius: 8px;
+    -fx-font-weight: bold;
+}
+
+.status-created {
+    -fx-background-color: #F9E7A8;
+    -fx-text-fill: #5F4B00;
+}
+
+.status-in-progress {
+    -fx-background-color: #B9DCF2;
+    -fx-text-fill: #174A67;
+}
+
+.status-completed {
+    -fx-background-color: #C8E1C4;
+    -fx-text-fill: #28512A;
+}
+
+.status-booked {
+    -fx-background-color: #E8DDF5;
+    -fx-text-fill: #563C78;
+}
+
 

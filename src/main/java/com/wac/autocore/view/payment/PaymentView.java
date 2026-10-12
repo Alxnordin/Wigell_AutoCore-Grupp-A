@@ -8,6 +8,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 
@@ -15,6 +16,9 @@ import javafx.scene.layout.VBox;
 public class PaymentView {
 
     private final Parent root;
+
+    private Label title;
+    private Label subtitle;
 
     //Registrera betalning
     private Label paymentLabel;
@@ -30,6 +34,11 @@ public class PaymentView {
 
     public PaymentView() {
       VBox box = UIComponents.createVBoxForViews();
+
+        title = new Label(languageManager.getString("paymentTitle"));
+        HBox titleBox = UIComponents.createPageTitle(title, "fa-credit-card");
+        subtitle = UIComponents.createSubtitle(
+                languageManager.getString("paymentSubtitle"));
 
         paymentLabel = new Label(languageManager.getString("paymentLabel"));
         invoiceIdField = new TextField();
@@ -49,10 +58,9 @@ public class PaymentView {
 
         backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
 
-             box.getChildren().addAll(
-                paymentLabel, invoiceIdField, paymentTypeComboBox, processPaymentButton,
-                paymentListLabel, paymentListView,
-                backButton
+        box.getChildren().addAll(titleBox, subtitle,
+                     paymentLabel, invoiceIdField, paymentTypeComboBox, processPaymentButton,
+                paymentListLabel, paymentListView, backButton
         );
 
         this.root = box;
@@ -70,6 +78,9 @@ public class PaymentView {
     public Button getBackButton() { return backButton; }
 
     public void changeTextAllComponents() {
+        title.setText(languageManager.getString("paymentTitle"));
+        subtitle.setText(languageManager.getString("paymentSubtitle"));
+
         paymentLabel.setText(languageManager.getString("paymentLabel"));
 
         invoiceIdField.setText(languageManager.getString("invoiceIdField"));

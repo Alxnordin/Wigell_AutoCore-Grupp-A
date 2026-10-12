@@ -5,17 +5,24 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class UIComponents {
 
     //dropdownemenyerna
-    public static <T> ComboBox<T> createComboBox(){
-        ComboBox <T> comboBox = new ComboBox<>();
+    public static <T> ComboBox<T> createComboBox() {
+        ComboBox<T> comboBox = new ComboBox<>();
         comboBox.setPrefWidth(250);
         comboBox.getStyleClass().add("standard-combo-box");
 
+        return comboBox;
+    }
+
+    public static <T> ComboBox<T> createComboBoxWithNoWidth() {
+        ComboBox<T> comboBox = new ComboBox<>();
+        comboBox.getStyleClass().add("standard-combo-box");
         return comboBox;
     }
 
@@ -28,7 +35,7 @@ public class UIComponents {
     }
 
     //datumruta
-    public static DatePicker createDatePicker(){
+    public static DatePicker createDatePicker() {
         DatePicker datePicker = new DatePicker();
         datePicker.setPrefWidth(250);
         datePicker.getStyleClass().add("standard-date-picker");
@@ -37,8 +44,10 @@ public class UIComponents {
     }
 
     //tabell
-    public static <T> TableView<T> createTable(){
+    public static <T> TableView<T> createTable() {
         TableView<T> table = new TableView<>();
+        table.setMaxWidth(Double.MAX_VALUE);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.getStyleClass().add("standard-table");
 
         return table;
@@ -102,10 +111,10 @@ public class UIComponents {
     //Visa knapp i tabeller
     public static Button createViewButton(String text) {
 
-            Button button = new Button(text);
-            button.getStyleClass().add("view-button");
+        Button button = new Button(text);
+        button.getStyleClass().add("view-button");
 
-            return button;
+        return button;
     }
 
     //Skapa vBox som är grunden i alla viewklasser.
@@ -115,8 +124,8 @@ public class UIComponents {
         return vBox;
     }
 
-    //Skapa underrubrik i viewklasserna
-    public static Label createSubtitle (String text)  {
+    //Skapa underrubrik i viewklasserna, css-klassen "page-subtitle"
+    public static Label createSubtitle(String text) {
         Label subtitle = new Label(text);
         subtitle.getStyleClass().add("page-subtitle");
         return subtitle;
@@ -147,6 +156,12 @@ public class UIComponents {
     //Skapar VBoxar som har spacing 6
     public static VBox createVBoxWithSpacing6() {
         VBox vBox = new VBox(6);
+        return vBox;
+    }
+
+    //Skapar VBoxar som har spacing 5
+    public static VBox createVBoxWithSpacing5() {
+        VBox vBox = new VBox(5);
         return vBox;
     }
 
@@ -183,12 +198,26 @@ public class UIComponents {
         return box;
     }
 
+    //HBox för skapa- och tillbakaknapp, placering CENTER_RIGHT
+    public static HBox createButtonBox() {
+        HBox buttonBox = new HBox(10);
+        buttonBox.setAlignment(Pos.CENTER_RIGHT);
+        return buttonBox;
+    }
+
+    //HBox med spacing 15
+    public static HBox createHBoxWithSpacing15() {
+        HBox hBox = new HBox(15);
+        return hBox;
+    }
+
     //Företagsinfo på faktura
     public static Label createCompanyNameLabel(String text) {
         Label label = new Label(text);
         label.getStyleClass().add("company-name");
         return label;
     }
+
     //Företagsinfo på faktura VBox
     public static VBox createCompanyInfoBox() {
         VBox companyBox = new VBox(4);
@@ -209,4 +238,302 @@ public class UIComponents {
         return label;
     }
 
+    //Label ovanför inputfälten i formulär, css-klass "form-label"
+    public static Label createFormLabel(String formLabelText) {
+        Label formLabel = new Label(formLabelText);
+        formLabel.getStyleClass().add("form-label");
+        return formLabel;
+    }
+
+    //Label med felmeddelande om fel input i formulär, css-klass "validation-error"
+    public static Label createWrongInputLabel(String text) {
+        Label wrongInputLabel = new Label(text);
+        wrongInputLabel.getStyleClass().add("wrong-input-label");
+        return wrongInputLabel;
+    }
+
+    // Huvudknappar i huvudmenyn med ikon
+    public static Button createMenuButton(String text, String icon) {
+        Button button = new Button(text);
+
+        FontIcon menuIcon = new FontIcon(icon);
+        menuIcon.setIconSize(18);
+
+        button.setGraphic(menuIcon);
+
+        button.setGraphicTextGap(10);
+
+        return button;
+    }
+
+    // Skapar menyval för Create new order med ikon, rubrik och beskrivning
+    public static MenuItem createOrderMenuItem(
+            Label titleLabel,
+            Label descriptionLabel,
+            String icon
+    ) {
+        MenuItem item = new MenuItem();
+
+        FontIcon menuIcon = new FontIcon(icon);
+        menuIcon.setIconSize(22);
+        menuIcon.getStyleClass().add("order-menu-icon");
+
+        titleLabel.getStyleClass().add("order-menu-title");
+        descriptionLabel.getStyleClass().add("order-menu-description");
+
+        VBox textBox = new VBox(2);
+        textBox.getChildren().addAll(titleLabel, descriptionLabel);
+
+        HBox content = new HBox(12);
+        content.setAlignment(Pos.CENTER_LEFT);
+        content.getChildren().addAll(menuIcon, textBox);
+
+        item.setGraphic(content);
+
+        return item;
+    }
+
+
+    //skapa forumäret i creatework order:
+    public static VBox createFormSection() {
+        VBox section = new VBox(10);
+
+        section.setPadding(new Insets(16));
+
+        section.setMaxWidth(Double.MAX_VALUE);
+
+        section.getStyleClass().add("form-section");
+
+        return section;
+    }
+
+    // Standardknapp för att ta bort en rad/tjänst -> soptunna
+    public static Button createDeleteButton() {
+        Button deleteButton = new Button();
+
+        FontIcon deleteIcon = new FontIcon("fa-trash");
+        deleteIcon.setIconSize(18);
+        deleteIcon.getStyleClass().add("delete-icon");
+
+        deleteButton.setGraphic(deleteIcon);
+        deleteButton.getStyleClass().add("delete-button");
+
+        return deleteButton;
+    }
+
+    //Skapar Lägg till-knapp
+    public static Button createCreateButton(String text)   {
+        Button createButton = new Button(text);
+        createButton.getStyleClass().add("create-order-button");
+
+        return createButton;
+    }
+
+    public static Label createPlaceholderLabel(String text) {
+        Label label = new Label(text);
+        label.getStyleClass().add("placeholder-text");
+        return label;
+    }
+
+    public static Button createAddRemoveServiceButton(String text) {
+        Button button = new Button(text);
+        button.getStyleClass().add("add-service-button");
+        return button;
+    }
+
+    //Skapar redigera-knapp som visas när man är i redigera-läge på t.ex. en bokning.
+    //css-klass "editing-button"
+    public static Button createIsEditingButton(String text) {
+        Button button = new Button(text);
+
+        FontIcon icon = new FontIcon("fa-pencil");
+        button.setGraphic(icon);
+        button.getStyleClass().add("editing-button");
+
+        return button;
+    }
+
+    public static Button createSaveEditingButton(String text) {
+        Button button = new Button(text);
+
+        FontIcon icon = new FontIcon("fa-check");
+        button.setGraphic(icon);
+        button.getStyleClass().add("save-editing-button");
+
+        return button;
+    }
+
+    //Används till cancel-knappar
+    public static Button createCancelButton(String text) {
+        Button button = new Button(text);
+
+        FontIcon icon = new FontIcon("fa-times");
+        button.setGraphic(icon);
+        button.getStyleClass().add("cancel-editing-button");
+
+        return button;
+    }
+
+
+    //hänglåsikon på icke valbara comboboxar som i planned order
+    public static <T> StackPane createLockedComboBox(ComboBox<T> comboBox) {
+
+        comboBox.setMouseTransparent(true);
+        comboBox.setFocusTraversable(false);
+        comboBox.getStyleClass().add("locked-combo-box");
+
+        FontIcon lockIcon = new FontIcon("fa-lock");
+        lockIcon.setIconSize(14);
+        lockIcon.getStyleClass().add("locked-field-icon");
+        lockIcon.setMouseTransparent(true);
+
+        StackPane container = new StackPane();
+
+        container.setMaxWidth(Double.MAX_VALUE);
+
+        container.getChildren().addAll(
+                comboBox,
+                lockIcon
+        );
+
+        StackPane.setAlignment(lockIcon, Pos.CENTER_RIGHT);
+        StackPane.setMargin(lockIcon, new Insets(0, 14, 0, 0));
+
+        return container;
+    }
+
+
+    //hänglåsikon på datepicker
+    public static StackPane createLockedDatePicker(DatePicker datePicker) {
+
+        // Gör DatePicker ej klickbar
+        datePicker.setMouseTransparent(true);
+        datePicker.setFocusTraversable(false);
+
+        // CSS-klass för att gömma kalenderknappen
+        datePicker.getStyleClass().add("locked-date-picker");
+
+        FontIcon lockIcon = new FontIcon("fa-lock");
+        lockIcon.setIconSize(13);
+        lockIcon.getStyleClass().add("locked-field-icon");
+
+        StackPane container = new StackPane();
+        container.setMaxWidth(Double.MAX_VALUE);
+        container.getChildren().addAll(
+                datePicker,
+                lockIcon
+        );
+
+        StackPane.setAlignment(lockIcon, Pos.CENTER_RIGHT);
+        StackPane.setMargin(lockIcon, new Insets(0, 12, 0, 0));
+
+        return container;
+    }
+
+    //hänglåsikon på textrutor
+    public static StackPane createLockedTextField(TextField textField) {
+
+        // Användaren kan inte ändra texten
+        textField.setEditable(false);
+        textField.setFocusTraversable(false);
+
+        FontIcon lockIcon = new FontIcon("fa-lock");
+        lockIcon.setIconSize(13);
+        lockIcon.getStyleClass().add("locked-field-icon");
+
+        StackPane container = new StackPane();
+        container.setMaxWidth(Double.MAX_VALUE);
+        container.getChildren().addAll(
+                textField,
+                lockIcon
+        );
+
+        StackPane.setAlignment(lockIcon, Pos.CENTER_RIGHT);
+        StackPane.setMargin(lockIcon, new Insets(0, 12, 0, 0));
+
+        return container;
+    }
+
+    // Hänglåsikon på textarea
+    public static StackPane createLockedTextArea(TextArea textArea) {
+
+        // Användaren kan inte ändra texten
+        textArea.setEditable(false);
+        textArea.setFocusTraversable(false);
+
+        FontIcon lockIcon = new FontIcon("fa-lock");
+        lockIcon.setIconSize(13);
+        lockIcon.getStyleClass().add("locked-field-icon");
+
+        StackPane container = new StackPane();
+        container.setMaxWidth(Double.MAX_VALUE);
+
+        container.getChildren().addAll(
+                textArea,
+                lockIcon
+        );
+
+        StackPane.setAlignment(lockIcon, Pos.CENTER_RIGHT);
+        StackPane.setMargin(lockIcon, new Insets(0, 12, 0, 0));
+
+        return container;
+    }
+
+
+    // Skapar en färgad status-badge
+    public static Label createStatusBadge(String status) {
+        Label statusLabel = new Label(status);
+
+        statusLabel.getStyleClass().add("status-badge");
+
+        switch (status) {
+
+            case "Created":
+            case "Skapad":
+                statusLabel.getStyleClass().add("status-created");
+                break;
+
+            case "In progress":
+            case "Pågående":
+                statusLabel.getStyleClass().add("status-in-progress");
+                break;
+
+            case "Completed":
+            case "Slutförd":
+                statusLabel.getStyleClass().add("status-completed");
+                break;
+
+            case "BOOKED":
+                statusLabel.getStyleClass().add("status-booked");
+                break;
+
+            case "WORK_ORDER_CREATED":
+                statusLabel.getStyleClass().add("status-created");
+                break;
+
+            case "IN_PROGRESS":
+                statusLabel.getStyleClass().add("status-in-progress");
+                break;
+
+            case "COMPLETED":
+                statusLabel.getStyleClass().add("status-completed");
+                break;
+        }
+        return statusLabel;
+    }
+
+
+    public static HBox createSearchBox(TextField textField) {
+        HBox searchBox = new HBox(10);
+
+        textField.getStyleClass().add("standard-text-field");
+        textField.setPrefWidth(280);
+
+        FontIcon searchIcon = new FontIcon("fa-search");
+        searchIcon.setIconSize(18);
+
+        searchBox.getChildren().addAll(textField, searchIcon);
+
+        return searchBox;
+    }
 }
