@@ -45,6 +45,9 @@ public class BookingController {
         this.app = app;
         this.bookingView = bookingView;
         this.bookingListView = bookingListView;
+        bookingView.getCustomerComboBox().getItems().setAll(customerService.getAllCustomers());
+        bookingView.getVehicleComboBox().getItems().setAll(vehicleService.getVehicles());
+
         wireEvents();
         refreshBookingList();
 

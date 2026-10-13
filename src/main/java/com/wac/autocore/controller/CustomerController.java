@@ -15,8 +15,8 @@ public class CustomerController {
     private final CustomerListView customerListView;
 
     public CustomerController(CustomerService customerService,
-            AutoCoreApplication app, CustomerView customerView,
-            CustomerListView customerListView) {
+                              AutoCoreApplication app, CustomerView customerView,
+                              CustomerListView customerListView) {
         this.customerService = customerService;
         this.app = app;
         this.customerView = customerView;
@@ -25,7 +25,7 @@ public class CustomerController {
         refreshCustomerList();
     }
 
-    //Saknas översättning på felmeddelandena
+    //Saknas översättning på felmeddelandena!
     public void wireEvents() {
         customerView.getCreateCustomerButton().setOnAction(actionEvent -> {
 

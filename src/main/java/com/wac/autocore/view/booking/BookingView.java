@@ -1,7 +1,4 @@
 package com.wac.autocore.view.booking;
-
-import com.wac.autocore.dao.CustomerDAO;
-import com.wac.autocore.dao.VehicleDAO;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.model.ServiceComponent;
 import com.wac.autocore.model.ServiceItem;
@@ -20,9 +17,6 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.List;
-
-
 //UI vy klass för att skapa en ny bokning (fordons-ID, datum, beskrivning).
 public class BookingView {
 
@@ -38,10 +32,6 @@ public class BookingView {
 
     //tabellen är ett fält så att controllern kan läsa de valda tjänsterna
     private TableView<ServiceItem> servicesTable;
-
-    //ÄNDRA. Ska inte gå direkt till DAO
-    private final CustomerDAO customerDAO = new CustomerDAO();
-    private final VehicleDAO vehicleDAO = new VehicleDAO();
 
     private TableColumn<ServiceItem, String> serviceColumn;
     private TableColumn<ServiceItem, String> timeColumn;
@@ -136,14 +126,6 @@ public class BookingView {
 
         customerComboBox = UIComponents.createComboBox();
         vehicleComboBox = UIComponents.createComboBox();
-
-
-        //ÄNDRA. Ska inte gå direkt till DAO
-        List<Customer> customers = customerDAO.findAll();
-        List<Vehicle> vehicles = vehicleDAO.findAll();
-
-        customerComboBox.getItems().addAll(customers);
-        vehicleComboBox.getItems().addAll(vehicles);
 
         //visa namn i dropdown
         customerComboBox.setConverter(new StringConverter<Customer>() {

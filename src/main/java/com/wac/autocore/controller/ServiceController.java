@@ -1,9 +1,9 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
-import com.wac.autocore.dao.MechanicDAO;
-import com.wac.autocore.dao.WorkOrderDAO;
+import com.wac.autocore.service.MechanicService;
 import com.wac.autocore.service.ServiceItemService;
+import com.wac.autocore.service.WorkOrderService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.model.ServiceItem;
@@ -16,18 +16,20 @@ import javafx.scene.control.TextInputDialog;
 public class ServiceController {
 
     private final ServiceItemService serviceItemService;
+    private final MechanicService mechanicService;
+    private final WorkOrderService workOrderService;
 
     private final AutoCoreApplication app;
-    private final MechanicDAO mechanicDAO = new MechanicDAO();
-    private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
     private final ServiceItemView serviceItemView;
     private final MechanicView mechanicView;
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
-    public ServiceController(ServiceItemService serviceItemService, AutoCoreApplication app,
+    public ServiceController(ServiceItemService serviceItemService, MechanicService mechanicService, WorkOrderService workOrderService, AutoCoreApplication app,
                              ServiceItemView serviceItemView, MechanicView mechanicView) {
         this.serviceItemService = serviceItemService;
+        this.mechanicService = mechanicService;
+        this.workOrderService = workOrderService;
         this.app = app;
         this.serviceItemView = serviceItemView;
         this.mechanicView = mechanicView;
@@ -49,28 +51,28 @@ public class ServiceController {
 
         mechanicView.getMechanicListView().getItems().clear();
 
-        for (Mechanic mechanic : mechanicDAO.findAll()) {
+        for (Mechanic mechanic : mechanicService.getMechanics())   {
+                String bookedYesOrNo;
 
-            String bookedYesOrNo;
+                if (mechanic.isAvailable()) {
+                    bookedYesOrNo = languageManager.getString("availableYes");
+                } else {
+                    bookedYesOrNo = languageManager.getString("availableNo");
+                }
 
-            if (mechanic.isAvailable()) {
-                bookedYesOrNo = languageManager.getString("availableYes");
-            } else {
-                bookedYesOrNo = languageManager.getString("availableNo");
-            }
+                String mechanicInfo =
+                        mechanic.getId() + " | "
+                                + languageManager.getString("mechanicName")
+                                + ": " + mechanic.getName() + " | "
+                                + languageManager.getString("mechanicPhone")
+                                + ": " + mechanic.getPhone() + " | "
+                                + languageManager.getString("mechanicSpecialization")
+                                + ": " + mechanic.getSpecialization() + " | "
+                                + languageManager.getString("available")
+                                + ": " + bookedYesOrNo + " | ";
 
-            String mechanicInfo =
-                    mechanic.getId() + " | "
-                            + languageManager.getString("mechanicName")
-                            + ": " + mechanic.getName() + " | "
-                            + languageManager.getString("mechanicPhone")
-                            + ": " + mechanic.getPhone() + " | "
-                            + languageManager.getString("mechanicSpecialization")
-                            + ": " + mechanic.getSpecialization() + " | "
-                            + languageManager.getString("available")
-                            + ": " + bookedYesOrNo + " | ";
+                mechanicView.getMechanicListView().getItems().add(mechanicInfo);
 
-            mechanicView.getMechanicListView().getItems().add(mechanicInfo);
 
         }
 
@@ -108,13 +110,13 @@ public class ServiceController {
     private void showMechanicWork(int selectedIndex) {
         mechanicView.getMechanicWorkListView().getItems().clear();
 
-        if (selectedIndex < 0 || selectedIndex >= mechanicDAO.findAll().size()) {
+        if (selectedIndex < 0 || selectedIndex >= mechanicService.getMechanics().size()) {
             return;
         }
 
-        Mechanic selectedMechanic = mechanicDAO.findAll().get(selectedIndex);
+        Mechanic selectedMechanic = mechanicService.getMechanics().get(selectedIndex);
 
-        for (WorkOrder workOrder : workOrderDAO.findAll()) {
+        for (WorkOrder workOrder : workOrderService.findAllWorkOrders()) {
             if (workOrder.getMechanicId() == selectedMechanic.getId()) {
 
                 String workOrderStatus;

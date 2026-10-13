@@ -2,7 +2,6 @@ package com.wac.autocore.controller;
 
 
 import com.wac.autocore.AutoCoreApplication;
-import com.wac.autocore.dao.*;
 import com.wac.autocore.model.*;
 import com.wac.autocore.service.*;
 import com.wac.autocore.util.LanguageManager;
@@ -58,6 +57,10 @@ public class OrderController {
         this.invoiceService = invoiceService;
         this.app = app;
         this.orderListView = orderListView;
+
+        orderListView.setGetMechanicName(mechanicId -> getMechanicName(mechanicId));
+        orderListView.setGetServiceItem(serviceItemId ->
+        serviceItemService.findServiceItem(serviceItemId));
 
         wireEvents();
         refreshOrderList();
@@ -1058,5 +1061,15 @@ public class OrderController {
                         services
                 )
         );
+    }
+
+    private String getMechanicName(int mechanicId) {
+        Mechanic mechanic = mechanicService.findMechanic(mechanicId);
+
+        if (mechanic != null) {
+            return mechanic.getName();
+        }
+
+        return "-";
     }
 }

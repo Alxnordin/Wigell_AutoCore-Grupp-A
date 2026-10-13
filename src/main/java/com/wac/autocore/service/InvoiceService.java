@@ -18,7 +18,9 @@ public class InvoiceService {
     private final CustomerService customerService;
     private final ServiceItemService serviceItemService;
 
-    public InvoiceService(WorkOrderService workOrderService, BookingService bookingService, VehicleService vehicleService, CustomerService customerService, ServiceItemService serviceItemService) {
+    public InvoiceService(WorkOrderService workOrderService, BookingService bookingService,
+                          VehicleService vehicleService, CustomerService customerService,
+                          ServiceItemService serviceItemService) {
         this.workOrderService = workOrderService;
         this.bookingService = bookingService;
         this.vehicleService = vehicleService;

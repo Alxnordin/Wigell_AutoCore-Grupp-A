@@ -41,7 +41,7 @@ public class AutoCoreApplication extends Application {
 
     private final InvoiceLineService invoiceLineService = new InvoiceLineService();
     private final MechanicService mechanicService = new MechanicService();
-    private final CustomerService customerService = new CustomerService();
+    private final CustomerService customerService = new CustomerServiceImpl();
     private final VehicleService vehicleService = new VehicleService(customerService);
     private final ServiceItemService serviceItemService = new ServiceItemService();
     private final ServicePackageService servicePackageService = new ServicePackageService(serviceItemService);
@@ -170,6 +170,7 @@ public class AutoCoreApplication extends Application {
     public void showServiceItemView() {
         ServiceItemView serviceItemView = new ServiceItemView();
         ServiceController controller = new ServiceController(serviceItemService,
+                mechanicService, workOrderService,
                 this, serviceItemView, new MechanicView());
 
         //Alexander
@@ -182,8 +183,8 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showMechanicView() {
-        ServiceController controller = new ServiceController(serviceItemService,
-                this, new ServiceItemView(), new MechanicView());
+        ServiceController controller = new ServiceController(serviceItemService,  mechanicService,
+                workOrderService,this, new ServiceItemView(), new MechanicView());
         borderPane.setCenter(controller.getMechanicView());
     }
 

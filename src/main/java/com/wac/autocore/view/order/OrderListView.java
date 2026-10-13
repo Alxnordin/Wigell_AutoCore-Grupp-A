@@ -1,26 +1,18 @@
 package com.wac.autocore.view.order;
 
-import com.wac.autocore.dao.ServiceItemDAO;
-import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.WorkOrder;
-import com.wac.autocore.service.MechanicService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
-import javafx.animation.FadeTransition;
-import javafx.animation.PauseTransition;
-import javafx.animation.SequentialTransition;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
-import javafx.util.Duration;
 
-import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 //UI-vy som visar arbetsorder listan samt kontroller för att starta och slutföra en arbetsorder
 public class OrderListView {
@@ -54,15 +46,15 @@ public class OrderListView {
     private final Label warrantyOrderTitle;
     private final Label warrantyOrderDescription;
 
-    private final ServiceItemDAO serviceItemDAO;
-    private final MechanicService mechanicService;
+    private Function<Integer, String> getMechanicName;
+    private Function<Integer, ServiceItem> getServiceItem;
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
 
     public OrderListView() {
-        serviceItemDAO = new ServiceItemDAO();
-        mechanicService = new MechanicService();
+        //serviceItemDAO = new ServiceItemDAO();
+        //mechanicService = new MechanicService();
 
         //Huvudlayout
         VBox box = new VBox(12);
@@ -184,52 +176,27 @@ public class OrderListView {
         );
 
         // Visar mekanikerns namn istället för mekaniker-ID
-        mechanicIdColumn.setCellValueFactory(
-                cellData -> {
-
-                    int mechanicId =
-                            cellData.getValue().getMechanicId();
-
-                    Mechanic mechanic =
-                            mechanicService.findMechanic(mechanicId);
-
-                    if (mechanic == null) {
-                        return new SimpleStringProperty("-");
-                    }
-
-                    return new SimpleStringProperty(
-                            mechanic.getName()
-                    );
-                }
+        mechanicIdColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(
+                        getMechanicName.apply(cellData.getValue().getMechanicId())
+                )
         );
 
         serviceColumn.setCellValueFactory(
                 cellData -> {
 
                     WorkOrder workOrder = cellData.getValue();
-                    List<ServiceItem> allServices = serviceItemDAO.findAll();
 
                     String serviceNames = workOrder.getServiceItemIds()
-                                    .stream()
-                                    .map(serviceId ->
-                                            allServices.stream()
-                                                    .filter(service ->
-                                                            service.getId() == serviceId)
-                                                    .findFirst()
-                                                    .orElse(null)
-                                    )
+                            .stream()
+                            .map(serviceId -> getServiceItem.apply(serviceId))
                             .filter(service -> service != null)
                             .map(service -> getTranslatedServiceName(service.getName()))
-                            .collect(
-                                    java.util.stream.Collectors.joining(", ")
-                            );
+                            .collect(java.util.stream.Collectors.joining(", "));
 
-                    return new SimpleStringProperty(
-                            serviceNames
-                    );
+                    return new SimpleStringProperty(serviceNames);
                 }
         );
-
 
         statusColumn.setCellValueFactory(
                 cellData -> {
@@ -359,6 +326,14 @@ public class OrderListView {
 
     public void setOnCreateOrderType(Consumer<String> onCreateOrderType) {
         this.onCreateOrderType = onCreateOrderType;
+    }
+
+    public void setGetMechanicName(Function<Integer, String> getMechanicName) {
+        this.getMechanicName = getMechanicName;
+    }
+
+    public void setGetServiceItem(Function<Integer, ServiceItem> getServiceItem) {
+         this.getServiceItem = getServiceItem;
     }
 
     // Översätter service-namn beroende på valt språk

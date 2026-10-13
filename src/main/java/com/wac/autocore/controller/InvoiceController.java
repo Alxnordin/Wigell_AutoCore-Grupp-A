@@ -1,7 +1,6 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
-import com.wac.autocore.dao.*;
 import com.wac.autocore.model.*;
 import com.wac.autocore.service.*;
 import com.wac.autocore.view.invoice.InvoiceDetailsView;
@@ -25,7 +24,10 @@ public class InvoiceController {
     private final InvoiceListView invoiceListView;
     private final InvoiceView invoiceView;
 
-    public InvoiceController(InvoiceService invoiceService, WorkOrderService workOrderService, BookingService bookingService, VehicleService vehicleService, CustomerService customerService, MechanicService mechanicService, InvoiceLineService invoiceLineService, AutoCoreApplication app,
+    public InvoiceController(InvoiceService invoiceService, WorkOrderService workOrderService,
+                             BookingService bookingService, VehicleService vehicleService,
+                             CustomerService customerService, MechanicService mechanicService,
+                             InvoiceLineService invoiceLineService, AutoCoreApplication app,
                              InvoiceListView invoiceListView, InvoiceView invoiceView) {
         this.invoiceService = invoiceService;
         this.workOrderService = workOrderService;
