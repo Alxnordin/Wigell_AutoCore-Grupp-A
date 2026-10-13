@@ -141,6 +141,9 @@ public class OrderController {
 
             detailsView.setOnDeleteService(serviceItem -> {
 
+                //Lägger till att status måste vara created för att kunna delete service
+                if(!"CREATED".equals(workOrder.getStatus()));
+
                 System.out.println(
                         "Antal services före delete "
                                 + workOrder.getServiceItemIds().size()

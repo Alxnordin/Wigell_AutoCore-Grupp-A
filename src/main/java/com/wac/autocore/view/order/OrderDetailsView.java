@@ -305,6 +305,8 @@ public class OrderDetailsView {
 
         deleteServiceColumn.setCellFactory(column -> new TableCell<ServiceItem, Button>(){
                     private final Button deleteButton = new Button(languageManager.getString("deleteServiceInTable"));{
+                        //Lägger till att status måste vara created för deleteService-knappen
+                        deleteButton.setDisable(!"CREATED".equals(workOrder.getStatus()));
                         deleteButton.setOnAction(event -> {
                             ServiceItem serviceItem = getTableView().getItems().get(getIndex());
 
