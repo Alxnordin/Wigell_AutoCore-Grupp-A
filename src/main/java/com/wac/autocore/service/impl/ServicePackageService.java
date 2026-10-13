@@ -1,7 +1,6 @@
-package com.wac.autocore.service;
+package com.wac.autocore.service.impl;
 
 import com.wac.autocore.dao.ServicePackageDAO;
-import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.ServicePackage;
 import java.util.List;
 

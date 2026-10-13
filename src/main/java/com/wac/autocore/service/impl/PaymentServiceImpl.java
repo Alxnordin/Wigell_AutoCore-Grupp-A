@@ -1,18 +1,20 @@
-package com.wac.autocore.service;
+package com.wac.autocore.service.impl;
 
 import com.wac.autocore.dao.PaymentDAO;
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.model.Payment;
+import com.wac.autocore.service.interf.InvoiceService;
+import com.wac.autocore.service.interf.PaymentService;
 
 import java.util.List;
 
-public class PaymentService {
+public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentDAO paymentDAO = new PaymentDAO();
 
     private final InvoiceService invoiceService;
 
-    public PaymentService(InvoiceService invoiceService) {
+    public PaymentServiceImpl(InvoiceService invoiceService) {
         this.invoiceService = invoiceService;
     }
 

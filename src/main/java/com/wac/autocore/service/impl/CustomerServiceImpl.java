@@ -45,6 +45,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     }
 
+    //Kan tas bort va?
     public boolean isInputFieldEmpty(String input) {
         return input == null || input.trim().isEmpty();
     }

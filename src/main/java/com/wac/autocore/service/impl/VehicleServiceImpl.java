@@ -1,4 +1,4 @@
-package com.wac.autocore.service;
+package com.wac.autocore.service.impl;
 
 import com.wac.autocore.dao.VehicleDAO;
 import com.wac.autocore.model.Customer;
@@ -7,13 +7,13 @@ import com.wac.autocore.service.interf.CustomerService;
 
 import java.util.List;
 
-public class VehicleService {
+public class VehicleServiceImpl {
 
     private final VehicleDAO vehicleDAO = new VehicleDAO();
 
     private final CustomerService customerService;
 
-    public VehicleService(CustomerService customerService) {
+    public VehicleServiceImpl(CustomerService customerService) {
         this.customerService = customerService;
     }
 

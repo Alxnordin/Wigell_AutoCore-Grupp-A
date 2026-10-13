@@ -3,11 +3,11 @@ package com.wac.autocore;
 
 import com.wac.autocore.controller.*;
 import com.wac.autocore.model.Booking;
-import com.wac.autocore.service.impl.CustomerServiceImpl;
-import com.wac.autocore.service.interf.CustomerService;
+import com.wac.autocore.service.impl.*;
+import com.wac.autocore.service.impl.PaymentServiceImpl;
+import com.wac.autocore.service.interf.*;
 import com.wac.autocore.view.service.ServicePackageView;
 import com.wac.autocore.data.DatabaseConnection;
-import com.wac.autocore.service.*;
 import com.wac.autocore.view.vehicle.VehicleListView;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.*;
@@ -41,25 +41,25 @@ import org.kordamp.ikonli.javafx.FontIcon;
 //JavaFX startpunkt, bygger upp scenen/fönstret, skapar vyer och kontroller, och styr växling mellan de olika vyerna
 public class AutoCoreApplication extends Application {
 
-    private final InvoiceLineService invoiceLineService = new InvoiceLineService();
-    private final MechanicService mechanicService = new MechanicService();
+    private final InvoiceLineService invoiceLineService = new InvoiceLineServiceImpl();
+    private final MechanicService mechanicService = new MechanicServiceImpl();
     private final CustomerService customerService = new CustomerServiceImpl();
-    private final VehicleService vehicleService = new VehicleService(customerService);
+    private final VehicleServiceImpl vehicleService = new VehicleServiceImpl(customerService);
     private final ServiceItemService serviceItemService = new ServiceItemService();
     private final ServicePackageService servicePackageService = new ServicePackageService(serviceItemService);
 
     private final BookingService bookingService =
-            new BookingService(vehicleService, serviceItemService);
+            new BookingServiceImpl(vehicleService, serviceItemService);
 
     private final WorkOrderService workOrderService = new WorkOrderService(
             bookingService, mechanicService, serviceItemService,
             customerService, vehicleService);
 
-    private final InvoiceService invoiceService = new InvoiceService(
+    private final InvoiceService invoiceService = new InvoiceServiceImpl(
             workOrderService, bookingService, vehicleService,
             customerService, serviceItemService);
 
-    private final PaymentService paymentService = new PaymentService(invoiceService);
+    private final PaymentService paymentService = new PaymentServiceImpl(invoiceService);
 
     private BorderPane borderPane;
     private Stage stage;

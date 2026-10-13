@@ -10,8 +10,11 @@ import com.wac.autocore.model.WorkOrderType;
 
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.*;
-import com.wac.autocore.service.*;
+import com.wac.autocore.service.impl.*;
+import com.wac.autocore.service.interf.BookingService;
 import com.wac.autocore.service.interf.CustomerService;
+import com.wac.autocore.service.interf.InvoiceService;
+import com.wac.autocore.service.interf.MechanicService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.order.CreateWorkOrderView;
 import com.wac.autocore.view.order.OrderDetailsView;
@@ -30,7 +33,7 @@ public class OrderController {
     private final BookingService bookingService;
     private final WorkOrderService workOrderService;
     private final MechanicService mechanicService;
-    private final VehicleService vehicleService;
+    private final VehicleServiceImpl vehicleService;
     private final CustomerService customerService;
     private final ServiceItemService serviceItemService;
     private final InvoiceService invoiceService;
@@ -52,7 +55,7 @@ public class OrderController {
             MechanicService mechanicService,
             ServiceItemService serviceItemService,
             ServicePackageService servicePackageService,
-            VehicleService vehicleService,
+            VehicleServiceImpl vehicleService,
             CustomerService customerService,
             InvoiceService invoiceService,
             AutoCoreApplication app,

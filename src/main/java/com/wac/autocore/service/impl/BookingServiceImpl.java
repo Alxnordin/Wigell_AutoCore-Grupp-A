@@ -1,22 +1,23 @@
-package com.wac.autocore.service;
+package com.wac.autocore.service.impl;
 
 import com.wac.autocore.dao.BookingDAO;
 import com.wac.autocore.model.Booking;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.Vehicle;
+import com.wac.autocore.service.interf.BookingService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookingService {
+public class BookingServiceImpl implements BookingService {
 
     private final BookingDAO bookingDAO =  new BookingDAO();
 
-    private final VehicleService vehicleService;
+    private final VehicleServiceImpl vehicleService;
     private final ServiceItemService serviceItemService;
 
-    public BookingService(VehicleService vehicleService, ServiceItemService serviceItemService) {
+    public BookingServiceImpl(VehicleServiceImpl vehicleService, ServiceItemService serviceItemService) {
         this.vehicleService = vehicleService;
         this.serviceItemService = serviceItemService;
     }

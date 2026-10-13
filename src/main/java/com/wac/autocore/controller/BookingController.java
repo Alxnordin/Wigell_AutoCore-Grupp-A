@@ -2,7 +2,8 @@ package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.*;
-import com.wac.autocore.service.*;
+import com.wac.autocore.service.impl.*;
+import com.wac.autocore.service.interf.BookingService;
 import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.booking.BookingDetailsView;
@@ -21,7 +22,7 @@ public class BookingController {
     private final ServicePackageService servicePackageService;
     private final BookingService bookingService;
     private final WorkOrderService workOrderService;
-    private final VehicleService vehicleService;
+    private final VehicleServiceImpl vehicleService;
     private final CustomerService customerService;
 
     private final AutoCoreApplication app;
@@ -34,7 +35,7 @@ public class BookingController {
     public BookingController(ServiceItemService serviceItemService,
                              ServicePackageService servicePackageService,
                              BookingService bookingService, WorkOrderService workOrderService,
-                             VehicleService vehicleService, CustomerService customerService,
+                             VehicleServiceImpl vehicleService, CustomerService customerService,
                              AutoCoreApplication app, BookingView bookingView,
                              BookingListView bookingListView) {
         this.serviceItemService = serviceItemService;

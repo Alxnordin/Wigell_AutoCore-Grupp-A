@@ -1,4 +1,4 @@
-package com.wac.autocore.service;
+package com.wac.autocore.service.impl;
 
 import com.wac.autocore.dao.ServiceItemDAO;
 import com.wac.autocore.model.ServiceItem;

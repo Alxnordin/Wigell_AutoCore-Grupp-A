@@ -2,8 +2,8 @@ package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.*;
-import com.wac.autocore.service.*;
-import com.wac.autocore.service.interf.CustomerService;
+import com.wac.autocore.service.impl.*;
+import com.wac.autocore.service.interf.*;
 import com.wac.autocore.view.invoice.InvoiceDetailsView;
 import com.wac.autocore.view.invoice.InvoiceListView;
 import com.wac.autocore.view.invoice.InvoiceView;
@@ -16,7 +16,7 @@ public class InvoiceController {
     private final InvoiceService invoiceService;
     private final WorkOrderService workOrderService;
     private final BookingService bookingService;
-    private final VehicleService vehicleService;
+    private final VehicleServiceImpl vehicleService;
     private final CustomerService customerService;
     private final MechanicService mechanicService;
     private final InvoiceLineService invoiceLineService;
@@ -26,7 +26,7 @@ public class InvoiceController {
     private final InvoiceView invoiceView;
 
     public InvoiceController(InvoiceService invoiceService, WorkOrderService workOrderService,
-                             BookingService bookingService, VehicleService vehicleService,
+                             BookingService bookingService, VehicleServiceImpl vehicleService,
                              CustomerService customerService, MechanicService mechanicService,
                              InvoiceLineService invoiceLineService, AutoCoreApplication app,
                              InvoiceListView invoiceListView, InvoiceView invoiceView) {

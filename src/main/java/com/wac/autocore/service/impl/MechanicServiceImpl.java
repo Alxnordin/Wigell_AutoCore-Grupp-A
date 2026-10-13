@@ -1,11 +1,12 @@
-package com.wac.autocore.service;
+package com.wac.autocore.service.impl;
 
 import com.wac.autocore.dao.MechanicDAO;
 import com.wac.autocore.model.Mechanic;
+import com.wac.autocore.service.interf.MechanicService;
 
 import java.util.List;
 
-public class MechanicService {
+public class MechanicServiceImpl implements MechanicService {
 
     private final MechanicDAO mechanicDAO = new MechanicDAO();
 
