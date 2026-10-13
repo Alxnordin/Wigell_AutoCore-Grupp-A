@@ -1,5 +1,8 @@
 package com.wac.autocore.view;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -7,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class UIComponents {
@@ -535,5 +539,64 @@ public class UIComponents {
         searchBox.getChildren().addAll(textField, searchIcon);
 
         return searchBox;
+    }
+
+
+    //pop upp ruta för success -> lyckad händelse
+    public static void showSuccessPopup(
+            StackPane root,
+            String message
+    ) {
+
+        Label popup = new Label("✓ " + message);
+        popup.getStyleClass().add("success-popup");
+
+        StackPane.setAlignment(
+                popup,
+                Pos.BOTTOM_RIGHT
+        );
+
+        StackPane.setMargin(
+                popup,
+                new Insets(0, 25, 25, 0)
+        );
+
+        root.getChildren().add(popup);
+
+        FadeTransition fadeIn =
+                new FadeTransition(
+                        Duration.millis(200),
+                        popup
+                );
+
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        PauseTransition pause =
+                new PauseTransition(
+                        Duration.seconds(2)
+                );
+
+        FadeTransition fadeOut =
+                new FadeTransition(
+                        Duration.millis(500),
+                        popup
+                );
+
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+
+        SequentialTransition sequence =
+                new SequentialTransition(
+                        fadeIn,
+                        pause,
+                        fadeOut
+                );
+
+        sequence.setOnFinished(event ->
+                root.getChildren().remove(popup)
+        );
+
+        sequence.play();
     }
 }

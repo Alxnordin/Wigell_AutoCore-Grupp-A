@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
@@ -16,7 +17,7 @@ import java.util.function.Consumer;
 
 public class OrderDetailsView {
 
-    private final Parent root;
+    private final StackPane root;
     private final WorkOrder workOrder;
 
     private final Label title;
@@ -51,6 +52,9 @@ public class OrderDetailsView {
 
     private final Button backButton;
     private Runnable onBack;
+
+    private final Button createInvoiceButton;
+    private Consumer<WorkOrder> onCreateInvoice;
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -327,6 +331,20 @@ public class OrderDetailsView {
             }
         });
 
+        // Knapp för att skapa faktura
+        createInvoiceButton = UIComponents.createCreateButton(
+                languageManager.getString("createInvoiceButton")
+        );
+
+        // Faktura kan bara skapas för slutförd arbetsorder
+        createInvoiceButton.setDisable(
+                !"COMPLETED".equals(workOrder.getStatus())
+        );
+        createInvoiceButton.setOnAction(event -> {
+            if (onCreateInvoice != null) {
+                onCreateInvoice.accept(workOrder);
+            }
+        });
 
         // HÄR BÖRJAR SUMMARY-KORTEN
         summaryTitle = UIComponents.createSectionTitle(
@@ -371,6 +389,13 @@ public class OrderDetailsView {
         // HÄR SLUTAR SUMMARY-KORTEN
 
 
+        HBox buttonBox = UIComponents.createButtonBox();
+        buttonBox.getChildren().addAll(
+                backButton,
+                createInvoiceButton
+        );
+
+
         // Lägg allt på sidan
         box.getChildren().addAll(
                 titleBox,
@@ -378,7 +403,7 @@ public class OrderDetailsView {
                 bookingInfoBox,
                 servicesBox,
                 summaryBox,
-                backButton
+                buttonBox
         );
 
         ScrollPane scrollPane = new ScrollPane(box);
@@ -392,7 +417,8 @@ public class OrderDetailsView {
                 }
         );
 
-        this.root = scrollPane;
+        //StackkPane används som yttersta lager så popup kan visas ovanpå vyn
+        this.root = new StackPane(scrollPane);
     }
 
     public void updateStartButtonState() {
@@ -413,6 +439,7 @@ public class OrderDetailsView {
     public void setOnStatusChange(Consumer<String> onStatusChange) {
         this.onStatusChange = onStatusChange;
     }
+    public void setOnCreateInvoice(Consumer<WorkOrder> onCreateInvoice) {this.onCreateInvoice = onCreateInvoice;}
     public void setOnDeleteService(Consumer<ServiceItem> onDeleteService){
         this.onDeleteService = onDeleteService;
     }
@@ -496,7 +523,23 @@ public class OrderDetailsView {
 
             statusActionButton.setVisible(false);
             statusActionButton.setManaged(false);
+
+            // Uppdatera fakturaknappen beroende på status
+            if (createInvoiceButton != null) {
+                createInvoiceButton.setDisable(
+                        !"COMPLETED".equals(workOrder.getStatus())
+                );
+            }
         }
+    }
+
+    public void showInvoiceCreatedPopup() {
+        UIComponents.showSuccessPopup(
+                root,
+                languageManager.getString(
+                        "invoiceCreatedSuccessfully"
+                )
+        );
     }
 
     public void changeTextAllComponents() {
@@ -519,6 +562,7 @@ public class OrderDetailsView {
         totalPriceTitle.setText(languageManager.getString("estimatedTotalPrice"));
 
         backButton.setText(languageManager.getString("backButton"));
+        createInvoiceButton.setText(languageManager.getString("createInvoiceButton"));
 
         updateStatus();
     }
