@@ -1,6 +1,5 @@
 package com.wac.autocore.view.order;
 
-import com.wac.autocore.dao.ServiceItemDAO;
 import com.wac.autocore.model.*;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
@@ -75,10 +74,9 @@ public class CreateWorkOrderView {
     private final Label warrantyDescriptionLabel;
     private final TextArea warrantyDescriptionField;
 
-    private final ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
     private final List<Integer> bookingServiceItemIds = new ArrayList<>();
 
-    private final ComboBox<ServiceItem> serviceComboBox;
+    private final ComboBox<ServiceComponent> serviceComboBox;
     private final Button addServiceButton;
 
     private final Label selectServiceLabel;
@@ -397,20 +395,28 @@ public class CreateWorkOrderView {
         addServiceButton = new Button(languageManager.getString("addService"));
         addServiceButton.getStyleClass().add("add-service-button");
 
-        List<ServiceItem> serviceItems = serviceItemDAO.findAll();
-
+        //Alexander
+        //rullistan fylls av OrderController med tjänster och servicepaket, samma som i BookingView
         serviceComboBox = UIComponents.createComboBox();
-        serviceComboBox.getItems().addAll(serviceItems);
 
-        serviceComboBox.setConverter(new StringConverter<ServiceItem>() {
+        //en tjänst visas med sitt namn, ett paket visas som "Paket: namn (antal tjänster)"
+        serviceComboBox.setConverter(new StringConverter<ServiceComponent>() {
 
             @Override
-            public String toString(ServiceItem serviceItem) {
-                return serviceItem == null ? "" : serviceItem.getName();
+            public String toString(ServiceComponent serviceComponent) {
+                if (serviceComponent == null) {
+                    return "";
+                }
+                if (serviceComponent instanceof ServicePackage) {
+                    return languageManager.getString("packageInListLabel") + ": " + serviceComponent.getName()
+                            + " (" + serviceComponent.getServiceItems().size() + " "
+                            + languageManager.getString("packageInListServices") + ")";
+                }
+                return serviceComponent.getName();
             }
 
             @Override
-            public ServiceItem fromString(String string) {
+            public ServiceComponent fromString(String string) {
                 return null;
             }
         });
@@ -538,12 +544,16 @@ public class CreateWorkOrderView {
         });
 
         addServiceButton.setOnAction(event -> {
-            ServiceItem selectedService = serviceComboBox.getValue();
+            //Alexander
+            //ett paket lägger till alla sina tjänster (Composite). Ersätts av OrderController.addServiceToWorkOrder
+            ServiceComponent selected = serviceComboBox.getValue();
 
-            if (selectedService != null &&
-                    !servicesTable.getItems().contains(selectedService)) {
-
-                servicesTable.getItems().add(selectedService);
+            if (selected != null) {
+                for (ServiceItem serviceItem : selected.getServiceItems()) {
+                    if (!servicesTable.getItems().contains(serviceItem)) {
+                        servicesTable.getItems().add(serviceItem);
+                    }
+                }
                 serviceComboBox.getSelectionModel().clearSelection();
 
                 updateSummary();
@@ -820,7 +830,7 @@ public class CreateWorkOrderView {
         return nextButton;
     }
 
-    public ComboBox<ServiceItem> getServiceComboBox() {
+    public ComboBox<ServiceComponent> getServiceComboBox() {
         return serviceComboBox;
     }
 

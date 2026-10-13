@@ -207,6 +207,7 @@ public class AutoCoreApplication extends Application {
                 workOrderService,
                 mechanicService,
                 serviceItemService,
+                servicePackageService,
                 vehicleService,
                 customerService,
                 invoiceService,
@@ -217,12 +218,8 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showOrderListView() {
-        OrderController controller = new OrderController(
-                bookingService,
-                workOrderService,
-                mechanicService,
-                serviceItemService,
-                vehicleService,
+        OrderController controller = new OrderController(bookingService,
+                workOrderService, mechanicService, serviceItemService,servicePackageService, vehicleService,
                 customerService,
                 invoiceService,
                 this,

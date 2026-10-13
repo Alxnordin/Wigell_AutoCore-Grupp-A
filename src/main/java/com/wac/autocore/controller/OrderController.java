@@ -1,6 +1,6 @@
 package com.wac.autocore.controller;
 
-import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
+
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.dao.*;
 import com.wac.autocore.model.*;
@@ -26,6 +26,7 @@ public class OrderController {
     private final CustomerService customerService;
     private final ServiceItemService serviceItemService;
     private final InvoiceService invoiceService;
+    private final ServicePackageService servicePackageService;
 
     private final AutoCoreApplication app;
 
@@ -40,6 +41,7 @@ public class OrderController {
             WorkOrderService workOrderService,
             MechanicService mechanicService,
             ServiceItemService serviceItemService,
+            ServicePackageService servicePackageService,
             VehicleService vehicleService,
             CustomerService customerService,
             InvoiceService invoiceService,
@@ -50,6 +52,7 @@ public class OrderController {
         this.workOrderService = workOrderService;
         this.mechanicService = mechanicService;
         this.serviceItemService = serviceItemService;
+        this.servicePackageService = servicePackageService;
         this.vehicleService = vehicleService;
         this.customerService = customerService;
         this.invoiceService = invoiceService;
@@ -225,6 +228,8 @@ public class OrderController {
                         orderType,
                         null
                 );
+
+        fillServiceComboBox(createWorkOrderView);
 
         if ("dropIn".equals(orderType) || "planned".equals(orderType)) {
 
@@ -519,6 +524,8 @@ public class OrderController {
                         "planned",
                         booking
                 );
+
+        fillServiceComboBox(createWorkOrderView);
 
 
         createWorkOrderView
@@ -877,50 +884,53 @@ public class OrderController {
                 .getSelectionModel()
                 .clearSelection();
     }
+    //Alexander
+    //rullistan "välj tjänster", först de enskilda tjänsterna sedan servicepaketen
+    //ett paket utan tjänster visas inte eftersom det inte finns något att lägga till
+    private void fillServiceComboBox(CreateWorkOrderView view) {
+        view.getServiceComboBox().getItems().addAll(serviceItemService.getServiceItems());
 
-
-    private void addServiceToWorkOrder(
-            CreateWorkOrderView view) {
-
-        ServiceItem selectedService =
-                view.getServiceComboBox().getValue();
-
-
-        List<ServiceItem> selectedServices =
-                view.getServicesTable().getItems();
-
-
-        if (selectedService == null) {
-            return;
-        }
-
-
-        boolean alreadyExists =
-                selectedServices.stream()
-                        .anyMatch(service ->
-                                service.getId()
-                                        == selectedService.getId()
-                        );
-
-
-        if (!alreadyExists) {
-
-            selectedServices.add(
-                    selectedService
-            );
-
-
-            view.getServiceComboBox()
-                    .setValue(null);
-
-
-            view.showSummary(
-                    formatTotalTime(selectedServices),
-                    formatTotalPrice(selectedServices)
-            );
+        for (ServicePackage servicePackage : servicePackageService.servicePackages()) {
+            if (servicePackage.getServiceCount()> 0){
+                view.getServiceComboBox().getItems().add(servicePackage);
+            }
         }
     }
 
+    //Alexander
+    //Composite: en tjänst visas sig själv & ett paket visar alla sina tjänster
+    private void addServiceToWorkOrder(CreateWorkOrderView view) {
+        ServiceComponent selected = view.getServiceComboBox().getValue();
+        List<ServiceItem> selectedServices = view.getServicesTable().getItems();
+
+        if (selected == null) {
+            return;
+        }
+
+        for (ServiceItem serviceItem : selected.getServiceItems()) {
+            if (!containsService(selectedServices, serviceItem.getId())) {
+                selectedServices.add(serviceItem);
+            }
+        }
+
+        view.getServiceComboBox().setValue(null);
+
+        view.showSummary(
+                formatTotalTime(selectedServices),
+                formatTotalPrice(selectedServices)
+        );
+    }
+
+    //Alexander
+    //true om tjänsten redan finns blan de valda tjänsterna(jämför med ID)
+    private boolean containsService(List<ServiceItem> services, int serviceItemId) {
+        for (ServiceItem serviceItem : services) {
+            if (serviceItem.getId()== serviceItemId) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     // Fyller i formuläret från en bokning
     // Används när man kommer från bokningslistan
