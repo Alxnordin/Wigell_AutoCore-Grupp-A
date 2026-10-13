@@ -3,6 +3,7 @@ package com.wac.autocore.controller;
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.*;
 import com.wac.autocore.service.*;
+import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.booking.BookingDetailsView;
 import com.wac.autocore.view.booking.BookingListView;

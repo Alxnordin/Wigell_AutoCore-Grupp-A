@@ -2,6 +2,7 @@ package com.wac.autocore.service;
 
 import com.wac.autocore.dao.WorkOrderDAO;
 import com.wac.autocore.model.*;
+import com.wac.autocore.service.interf.CustomerService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

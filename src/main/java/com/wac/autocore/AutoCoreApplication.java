@@ -3,6 +3,8 @@ package com.wac.autocore;
 
 import com.wac.autocore.controller.*;
 import com.wac.autocore.model.Booking;
+import com.wac.autocore.service.impl.CustomerServiceImpl;
+import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.view.service.ServicePackageView;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.service.*;

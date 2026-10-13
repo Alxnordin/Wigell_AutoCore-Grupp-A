@@ -1,7 +1,8 @@
-package com.wac.autocore.service;
+package com.wac.autocore.service.impl;
 
 import com.wac.autocore.dao.CustomerDAO;
 import com.wac.autocore.model.Customer;
+import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.validation.Validator;
 
 import java.util.List;

@@ -3,6 +3,7 @@ package com.wac.autocore.service;
 import com.wac.autocore.dao.VehicleDAO;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.model.Vehicle;
+import com.wac.autocore.service.interf.CustomerService;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
-import com.wac.autocore.service.CustomerService;
+import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.view.customer.CustomerListView;
 import com.wac.autocore.view.customer.CustomerView;

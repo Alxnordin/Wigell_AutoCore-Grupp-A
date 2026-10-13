@@ -3,7 +3,7 @@ package com.wac.autocore.controller;
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.model.Vehicle;
-import com.wac.autocore.service.CustomerService;
+import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.service.VehicleService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.vehicle.VehicleListView;

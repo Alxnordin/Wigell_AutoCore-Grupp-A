@@ -1,7 +1,6 @@
-package com.wac.autocore.service;
+package com.wac.autocore.service.interf;
 
 import com.wac.autocore.model.Customer;
-import com.wac.autocore.validation.Validator;
 
 import java.util.List;
 
