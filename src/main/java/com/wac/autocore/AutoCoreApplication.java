@@ -209,6 +209,7 @@ public class AutoCoreApplication extends Application {
                 serviceItemService,
                 vehicleService,
                 customerService,
+                invoiceService,
                 this,
                 new OrderListView()
         );
@@ -216,10 +217,18 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showOrderListView() {
-        OrderController controller = new OrderController(bookingService,
-                workOrderService, mechanicService, serviceItemService, vehicleService,
+        OrderController controller = new OrderController(
+                bookingService,
+                workOrderService,
+                mechanicService,
+                serviceItemService,
+                vehicleService,
                 customerService,
-                this, new OrderListView());
+                invoiceService,
+                this,
+                new OrderListView()
+        );
+
         borderPane.setCenter(controller.getOrderListPane());
     }
 

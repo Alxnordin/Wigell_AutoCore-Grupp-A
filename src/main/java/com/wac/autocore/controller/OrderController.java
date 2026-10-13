@@ -25,6 +25,7 @@ public class OrderController {
     private final VehicleService vehicleService;
     private final CustomerService customerService;
     private final ServiceItemService serviceItemService;
+    private final InvoiceService invoiceService;
 
     private final AutoCoreApplication app;
 
@@ -41,6 +42,7 @@ public class OrderController {
             ServiceItemService serviceItemService,
             VehicleService vehicleService,
             CustomerService customerService,
+            InvoiceService invoiceService,
             AutoCoreApplication app,
             OrderListView orderListView) {
 
@@ -50,6 +52,7 @@ public class OrderController {
         this.serviceItemService = serviceItemService;
         this.vehicleService = vehicleService;
         this.customerService = customerService;
+        this.invoiceService = invoiceService;
         this.app = app;
         this.orderListView = orderListView;
 
@@ -169,7 +172,6 @@ public class OrderController {
 
 
             detailsView.setOnStatusChange(newStatus -> {
-
                 if ("IN_PROGRESS".equals(newStatus)) {
 
                     workOrderService.startWorkOrder(
@@ -184,6 +186,18 @@ public class OrderController {
                 }
 
                 detailsView.updateStatus();
+            });
+
+            detailsView.setOnCreateInvoice(workOrderToInvoice -> {
+
+                Invoice invoice = invoiceService.createInvoice(
+                        workOrderToInvoice.getId(),
+                        null
+                );
+
+                if (invoice != null) {
+                    detailsView.showInvoiceCreatedPopup();
+                }
             });
 
 
