@@ -2,6 +2,7 @@ package com.wac.autocore.service;
 
 import com.wac.autocore.dao.CustomerDAO;
 import com.wac.autocore.model.Customer;
+import com.wac.autocore.validation.Validator;
 
 import java.util.List;
 
@@ -15,27 +16,32 @@ public class CustomerService {
 
     public Customer findCustomer(int id) {
 
-        for (Customer customer : customerDAO.findAll()){
-            if (customer.getId() == id){
+        for (Customer customer : customerDAO.findAll()) {
+            if (customer.getId() == id) {
                 return customer;
             }
         }
         return null;
     }
 
-    public Customer createCustomer(String name, String phone, String email) {
+    //Alexander
+    //servicen avgör nu själv vad som är giltigt, inte controllern.
+    //saknas en uppgift kastas ValidationException med en språknyckel som säger vad som saknas.
+    //samma regler gäller oavsett om kunden skapas från appen, ett test eller ett annat system.
 
-        Customer customer = new Customer(0, name, phone, email);
+    public Customer createCustomer(String firstName, String lastName, String phone, String email) {
+
+        Validator.requireText(firstName, "customerFirstNameRequiredError");
+        Validator.requireText(lastName, "customerLastNameRequiredError");
+        Validator.requireText(phone, "customerPhoneRequiredError");
+        Validator.requireText(email, "customerEmailRequiredError");
+
+        String fullName = firstName.trim() + " " + lastName.trim();
+        Customer customer = new Customer(0, fullName, phone.trim(), email.trim());
+
         customerDAO.save(customer);
 
-        System.out.println("Customer created successfully.");
-        System.out.println(customer);
-
         return customer;
-    }
 
-    public boolean isInputFieldEmpty(String input)  {
-        return input == null || input.trim().isEmpty();
     }
-
 }

@@ -5,6 +5,7 @@ import com.wac.autocore.service.CustomerService;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.view.customer.CustomerListView;
 import com.wac.autocore.view.customer.CustomerView;
+import com.wac.autocore.view.ErrorHandler;
 import javafx.scene.Parent;
 
 public class CustomerController {
@@ -25,53 +26,21 @@ public class CustomerController {
         refreshCustomerList();
     }
 
-    //Saknas översättning på felmeddelandena
-    public void wireEvents() {
-        customerView.getCreateCustomerButton().setOnAction(actionEvent -> {
 
-            boolean validInput = true;
+    public void wireEvents() {
+        //Alexander
+        //Controllern läser bara formuläret och anropar servicen.
+        //Kontrollen av tomma fält ligger nu i CustomerService, och fel visas via ErrorHandler.
+        customerView.getCreateCustomerButton().setOnAction(actionEvent -> {
 
             String firstName = customerView.getFirstNameField().getText();
             String lastName = customerView.getLastNameField().getText();
-            String fullName = firstName.trim() + " " + lastName.trim();
-
-            if (customerService.isInputFieldEmpty(firstName)) {
-                customerView.getFirstNameWrongInputLabel().setText("Du måste fylla i namn");
-                validInput = false;
-            } else {
-                customerView.getFirstNameWrongInputLabel().setText("");
-            }
-
-            if (customerService.isInputFieldEmpty(lastName)) {
-                customerView.getLastNameWrongInputLabel().setText("Du måste fylla i namn");
-                validInput = false;
-            } else {
-                customerView.getLastNameWrongInputLabel().setText("");
-            }
-
-            String phoneNumber = customerView.getPhoneField().getText().trim();
-            if (customerService.isInputFieldEmpty(phoneNumber)) {
-                customerView.getPhoneWrongInputLabel().setText("Du måste fylla i telefonnummer");
-                validInput = false;
-            } else {
-                customerView.getPhoneWrongInputLabel().setText("");
-            }
-
+            String phoneNumber = customerView.getPhoneField().getText();
             String email = customerView.getEmailField().getText();
-            if (customerService.isInputFieldEmpty(email)) {
-                customerView.getEmailWrongInputLabel().setText("Du måste fylla i e-post");
-                validInput = false;
-            } else {
-                customerView.getEmailWrongInputLabel().setText("");
-            }
 
-            if (!validInput) {
-                return;
-            }
+            try {
+                customerService.createCustomer(firstName, lastName, phoneNumber, email);
 
-            Customer customer = customerService.createCustomer(fullName, phoneNumber, email);
-
-            if (customer != null) {
                 refreshCustomerList();
 
                 customerView.getFirstNameField().clear();
@@ -81,9 +50,11 @@ public class CustomerController {
 
                 //Ej klar med denna
                 customerView.getConfirmationLabel().setText(
-                        "Kund " + firstName + " " + lastName + " har lagts till.");
-            }
+                        "Kund " + firstName.trim() + " " + lastName.trim() + " har lagts till.");
 
+            } catch (Exception e) {
+                ErrorHandler.show(e);
+            }
         });
 
         customerView.getBackButton().setOnAction(actionEvent -> {
