@@ -1,5 +1,12 @@
 package com.wac.autocore.controller;
 
+// Importerar Factory Pattern för skapande av arbetsordrar.
+import com.wac.autocore.factory.WorkOrderFactory;
+import com.wac.autocore.factory.WorkOrderCreator;
+import com.wac.autocore.factory.PlannedOrderCreator;
+import com.wac.autocore.factory.DropInOrderCreator;
+import com.wac.autocore.factory.WarrantyOrderCreator;
+import com.wac.autocore.model.WorkOrderType;
 
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.*;
@@ -13,6 +20,7 @@ import javafx.scene.control.Alert;
 
 import java.text.MessageFormat;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +34,8 @@ public class OrderController {
     private final ServiceItemService serviceItemService;
     private final InvoiceService invoiceService;
     private final ServicePackageService servicePackageService;
+
+    private final WorkOrderFactory workOrderFactory;
 
     private final AutoCoreApplication app;
 
@@ -61,6 +71,13 @@ public class OrderController {
         orderListView.setGetMechanicName(mechanicId -> getMechanicName(mechanicId));
         orderListView.setGetServiceItem(serviceItemId ->
         serviceItemService.findServiceItem(serviceItemId));
+
+        // Registrerar vilken skapare som ansvarar för respektive arbetsorderstyp.
+        this.workOrderFactory = new WorkOrderFactory(Arrays.asList(
+                new PlannedOrderCreator(workOrderService, bookingService),
+                new DropInOrderCreator(workOrderService),
+                new WarrantyOrderCreator(workOrderService)
+        ));
 
         wireEvents();
         refreshOrderList();
@@ -144,9 +161,13 @@ public class OrderController {
 
             detailsView.setOnDeleteService(serviceItem -> {
 
-                //Lägger till att status måste vara created för att kunna delete service
-                if(!"CREATED".equals(workOrder.getStatus()));
-
+                // Tjänster får bara tas bort innan arbetsordern har startat.
+                if (!"CREATED".equals(workOrder.getStatus())) {
+                    showWarning(languageManager.getString(
+                            "serviceCanOnlyBeRemovedBeforeWorkStarts"
+                    ));
+                    return;
+                }
                 System.out.println(
                         "Antal services före delete "
                                 + workOrder.getServiceItemIds().size()
@@ -237,6 +258,28 @@ public class OrderController {
 
         fillServiceComboBox(createWorkOrderView);
 
+
+        // Översätter menyvalet till rätt ordertyp.
+        WorkOrderType type;
+        switch (orderType) {
+            case "planned":
+                type = WorkOrderType.PLANNED;
+                break;
+            case "dropIn":
+                type = WorkOrderType.DROP_IN;
+                break;
+            case "warranty":
+                type = WorkOrderType.WARRANTY;
+                break;
+            default:
+                return;
+        }
+
+        // Låter respektive skapare konfigurera sin del av formuläret.
+        WorkOrderCreator creator = workOrderFactory.getCreator(type);
+        creator.configureView(createWorkOrderView);
+
+
         if ("dropIn".equals(orderType) || "planned".equals(orderType)) {
 
             createWorkOrderView.getCustomerComboBox()
@@ -305,13 +348,13 @@ public class OrderController {
                                         .getOriginalWorkOrderComboBox()
                                         .getValue();
 
-                        System.out.println("Mechanic-id from original word-order: " +
-                                selectedWorkOrder.getMechanicId());
-
-
                         if (selectedWorkOrder == null) {
                             return;
                         }
+
+                        System.out.println("Mechanic-id from original word-order: " +
+                                selectedWorkOrder.getMechanicId());
+
 
 
                         // Debug - visar vilka ID:n originalordern innehåller
@@ -610,129 +653,58 @@ public class OrderController {
         //Create-knappen när man kommer från "Skapa arbetsorder" på en bokning
         createWorkOrderView.getNextButton().setOnAction(event -> createOrder(createWorkOrderView, "planned"));
 
-
         app.showView(
                 createWorkOrderView.getView()
         );
     }
 
 
-    //Alexander
-    //skapar ordern med den metod i WorkOrderService som hör till ordertypen.
-    //Varje metod kontrollerar formuläret först och visar en varning om något saknas.
-    private void createOrder(CreateWorkOrderView view, String orderType) {
-        WorkOrder workOrder;
 
-        if ("planned".equals(orderType)) {
-            workOrder = createPlannedOrder(view);
-        } else if ("dropIn".equals(orderType)) {
-            workOrder = createDropInOrder(view);
-        } else if ("warranty".equals(orderType)) {
-            workOrder = createWarrantyOrder(view);
-        } else {
-            return;
+    // Fabriken väljer skapare, medan controllern behåller gemensam hantering.
+    private void createOrder(CreateWorkOrderView view, String orderType) {
+        WorkOrderType type;
+
+        // Översätter de befintliga menyvärdena till enum-värden.
+        switch (orderType) {
+            case "planned":
+                type = WorkOrderType.PLANNED;
+                break;
+            case "dropIn":
+                type = WorkOrderType.DROP_IN;
+                break;
+            case "warranty":
+                type = WorkOrderType.WARRANTY;
+                break;
+            default:
+                return;
         }
+
+        // Hämtar rätt skapare och låter den validera och skapa arbetsordern.
+        WorkOrderCreator creator = workOrderFactory.getCreator(type);
+        WorkOrder workOrder = creator.createOrder(view);
 
         if (workOrder == null) {
             return;
         }
 
+        // Behåller samma bekräftelser som tidigare.
         if (workOrder.isComplaint()) {
-            showInformation(MessageFormat.format(languageManager.getString("warrantyOrderCreatedInfo"),
-                    String.valueOf(workOrder.getId()), String.valueOf(workOrder.getOriginalWorkOrderId())));
+            showInformation(MessageFormat.format(
+                    languageManager.getString("warrantyOrderCreatedInfo"),
+                    String.valueOf(workOrder.getId()),
+                    String.valueOf(workOrder.getOriginalWorkOrderId())
+            ));
         } else {
-            showInformation(MessageFormat.format(languageManager.getString("workOrderCreatedInfo"),
-                    String.valueOf(workOrder.getId())));
+            showInformation(MessageFormat.format(
+                    languageManager.getString("workOrderCreatedInfo"),
+                    String.valueOf(workOrder.getId())
+            ));
         }
+
+        // Uppdaterar listan och återgår till den.
         showOrderList();
     }
 
-    //Planned: bokning, mekaniker och minst en tjänst -> createWorkOrder
-    private WorkOrder createPlannedOrder(CreateWorkOrderView view) {
-        Booking booking = view.getBookingComboBox().getValue();
-        Mechanic mechanic = view.getMechanicComboBox().getValue();
-
-
-        int[] serviceItemIds = getServiceItemIds(view);
-
-        if (booking == null) {
-            showWarning(languageManager.getString("selectBookingWarning"));
-            return null;
-        }
-        if (mechanic == null) {
-            showWarning(languageManager.getString("selectMechanicWarning"));
-            return null;
-        }
-        if (serviceItemIds.length == 0) {
-            showWarning(languageManager.getString("noServiceSelectedWarning"));
-            return null;
-        }
-
-        WorkOrder workOrder = workOrderService.createWorkOrder(booking.getId(), mechanic.getId(), serviceItemIds);
-
-        if (workOrder == null) {
-            showWarning(languageManager.getString("workOrderNotCreatedWarning"));
-        }
-        return workOrder;
-    }
-
-    //Drop-in: kund, fordon (som tillhör kunden), mekaniker och minst en tjänst -> createDropInWorkOrder
-    private WorkOrder createDropInOrder(CreateWorkOrderView view) {
-        Customer customer = view.getCustomerComboBox().getValue();
-        Vehicle vehicle = view.getVehicleComboBox().getValue();
-        Mechanic mechanic = view.getMechanicComboBox().getValue();
-        int[] serviceItemIds = getServiceItemIds(view);
-
-        if (customer == null || vehicle == null) {
-            showWarning(languageManager.getString("selectCustomerAndVehicleWarning"));
-            return null;
-        }
-        if (vehicle.getCustomerId() != customer.getId()) {
-            showWarning(languageManager.getString("vehicleNotOwnedByCustomerWarning"));
-            return null;
-        }
-        if (mechanic == null) {
-            showWarning(languageManager.getString("selectMechanicWarning"));
-            return null;
-        }
-        if (serviceItemIds.length == 0) {
-            showWarning(languageManager.getString("noServiceSelectedWarning"));
-            return null;
-        }
-
-        WorkOrder workOrder = workOrderService.createDropInWorkOrder(
-                customer.getId(), vehicle.getId(), mechanic.getId(), serviceItemIds);
-
-        if (workOrder == null) {
-            showWarning(languageManager.getString("workOrderNotCreatedWarning"));
-        }
-        return workOrder;
-    }
-
-    //Warranty: en slutförd ursprunglig order -> createComplaint (Prototype: originalet kopieras)
-    private WorkOrder createWarrantyOrder(CreateWorkOrderView view) {
-        WorkOrder original = view.getOriginalWorkOrderComboBox().getValue();
-
-        if (original == null) {
-            showWarning(languageManager.getString("selectOriginalWorkOrderWarning"));
-            return null;
-        }
-
-        WorkOrder complaint = workOrderService.createComplaint(
-                original.getId(), view.getWarrantyDescriptionField().getText());
-
-        if (complaint == null) {
-            showWarning(languageManager.getString("workOrderNotCreatedWarning"));
-        }
-        return complaint;
-    }
-
-    //ID:n för tjänsterna i formulärets tabell
-    private int[] getServiceItemIds(CreateWorkOrderView view) {
-        return view.getServicesTable().getItems().stream()
-                .mapToInt(ServiceItem::getId)
-                .toArray();
-    }
 
     //tillbaka till orderlistan, med den nya ordern i listan
     private void showOrderList() {
