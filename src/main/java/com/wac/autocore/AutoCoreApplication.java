@@ -201,24 +201,6 @@ public class AutoCoreApplication extends Application {
         borderPane.setCenter(controller.getBookingListPane());
     }
 
-//    public void showOrderFormView() {
-//        OrderController controller = new OrderController(bookingService,
-//                workOrderService, mechanicService, serviceItemService, vehicleService,
-//                customerService,
-//                this, new OrderFormView(), new OrderListView());
-//        borderPane.setCenter(controller.getOrderFormView());
-//    }
-
-    //öppnar "Skapa order" med en bokning redan ifylld (från knappen i bokningslistan)
-//    public void showOrderFormView(Booking booking) {
-//        OrderController controller = new OrderController(bookingService,
-//                workOrderService, mechanicService, serviceItemService, vehicleService,
-//                customerService,
-//                this, new OrderFormView(), new OrderListView());
-//        controller.prefillFromBooking(booking);
-//        borderPane.setCenter(controller.getOrderFormView());
-//    }
-
     public void showCreateWorkOrderView(Booking booking) {
         OrderController controller = new OrderController(
                 bookingService,
@@ -228,7 +210,6 @@ public class AutoCoreApplication extends Application {
                 vehicleService,
                 customerService,
                 this,
-//                new OrderFormView(),
                 new OrderListView()
         );
         controller.openCreateWorkOrderView(booking);
@@ -238,7 +219,6 @@ public class AutoCoreApplication extends Application {
         OrderController controller = new OrderController(bookingService,
                 workOrderService, mechanicService, serviceItemService, vehicleService,
                 customerService,
-//                this, new OrderFormView(), new OrderListView());
                 this, new OrderListView());
         borderPane.setCenter(controller.getOrderListPane());
     }
