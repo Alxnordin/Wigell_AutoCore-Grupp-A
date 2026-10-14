@@ -37,8 +37,7 @@ public class CustomerServiceImpl implements CustomerService {
         Validator.requireText(phone, "customerPhoneRequiredError");
         Validator.requireText(email, "customerEmailRequiredError");
 
-        //OBS! Måste fixa vad som ska skrivas ut, ska gå att översätta.:wq
-
+        //OBS! Måste fixa vad som ska skrivas ut, ska gå att översätta.
         if (emailAlreadyExists(email)) {
             throw new BusinessRuleException("E-post finns redan");
         }

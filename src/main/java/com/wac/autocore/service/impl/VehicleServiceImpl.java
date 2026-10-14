@@ -4,10 +4,11 @@ import com.wac.autocore.dao.VehicleDAO;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.service.interf.CustomerService;
+import com.wac.autocore.service.interf.VehicleService;
 
 import java.util.List;
 
-public class VehicleServiceImpl {
+public class VehicleServiceImpl implements VehicleService {
 
     private final VehicleDAO vehicleDAO = new VehicleDAO();
 

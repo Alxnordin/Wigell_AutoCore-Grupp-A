@@ -44,14 +44,14 @@ public class AutoCoreApplication extends Application {
     private final InvoiceLineService invoiceLineService = new InvoiceLineServiceImpl();
     private final MechanicService mechanicService = new MechanicServiceImpl();
     private final CustomerService customerService = new CustomerServiceImpl();
-    private final VehicleServiceImpl vehicleService = new VehicleServiceImpl(customerService);
-    private final ServiceItemService serviceItemService = new ServiceItemService();
-    private final ServicePackageService servicePackageService = new ServicePackageService(serviceItemService);
+    private final VehicleService vehicleService = new VehicleServiceImpl(customerService);
+    private final ServiceItemService serviceItemService = new ServiceItemServiceImpl();
+    private final ServicePackageService servicePackageService = new ServicePackageServiceImpl(serviceItemService);
 
     private final BookingService bookingService =
             new BookingServiceImpl(vehicleService, serviceItemService);
 
-    private final WorkOrderService workOrderService = new WorkOrderService(
+    private final WorkOrderService workOrderService = new WorkOrderServiceImpl(
             bookingService, mechanicService, serviceItemService,
             customerService, vehicleService);
 

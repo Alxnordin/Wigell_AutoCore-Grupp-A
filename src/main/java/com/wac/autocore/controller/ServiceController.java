@@ -1,9 +1,9 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
-import com.wac.autocore.service.impl.ServiceItemService;
-import com.wac.autocore.service.impl.WorkOrderService;
 import com.wac.autocore.service.interf.MechanicService;
+import com.wac.autocore.service.interf.ServiceItemService;
+import com.wac.autocore.service.interf.WorkOrderService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.model.ServiceItem;

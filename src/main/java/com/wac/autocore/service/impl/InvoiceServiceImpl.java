@@ -3,9 +3,7 @@ package com.wac.autocore.service.impl;
 import com.wac.autocore.dao.InvoiceDAO;
 import com.wac.autocore.dao.InvoiceLineDAO;
 import com.wac.autocore.model.*;
-import com.wac.autocore.service.interf.BookingService;
-import com.wac.autocore.service.interf.CustomerService;
-import com.wac.autocore.service.interf.InvoiceService;
+import com.wac.autocore.service.interf.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,12 +15,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     private final WorkOrderService workOrderService;
     private final BookingService bookingService;
-    private final VehicleServiceImpl vehicleService;
+    private final VehicleService vehicleService;
     private final CustomerService customerService;
     private final ServiceItemService serviceItemService;
 
     public InvoiceServiceImpl(WorkOrderService workOrderService, BookingService bookingService,
-                              VehicleServiceImpl vehicleService, CustomerService customerService,
+                              VehicleService vehicleService, CustomerService customerService,
                               ServiceItemService serviceItemService) {
         this.workOrderService = workOrderService;
         this.bookingService = bookingService;

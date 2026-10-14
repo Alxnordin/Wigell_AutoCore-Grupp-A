@@ -3,8 +3,8 @@ package com.wac.autocore.controller;
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.ServicePackage;
-import com.wac.autocore.service.impl.ServiceItemService;
-import com.wac.autocore.service.impl.ServicePackageService;
+import com.wac.autocore.service.interf.ServiceItemService;
+import com.wac.autocore.service.interf.ServicePackageService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.service.ServicePackageView;
 import javafx.scene.Parent;
@@ -21,7 +21,6 @@ public class ServicePackageController {
     private final ServicePackageView servicePackageView;
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
-
 
     public ServicePackageController(ServicePackageService servicePackageService, ServiceItemService serviceItemService,
                                     AutoCoreApplication app, ServicePackageView servicePackageView) {

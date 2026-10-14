@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorkOrderService {
+public class WorkOrderServiceImpl implements WorkOrderService {
 
     private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
 
@@ -18,9 +18,9 @@ public class WorkOrderService {
     private final CustomerService customerService;
     private final VehicleService vehicleService;
 
-    public WorkOrderService(BookingService bookingService, MechanicService mechanicService,
-                            ServiceItemService serviceItemService,
-                            CustomerService customerService, VehicleService vehicleService) {
+    public WorkOrderServiceImpl(BookingService bookingService, MechanicService mechanicService,
+                                ServiceItemService serviceItemService,
+                                CustomerService customerService, VehicleService vehicleService) {
         this.bookingService = bookingService;
         this.mechanicService = mechanicService;
         this.serviceItemService = serviceItemService;

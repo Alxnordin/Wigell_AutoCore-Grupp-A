@@ -5,6 +5,8 @@ import com.wac.autocore.model.Booking;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.service.interf.BookingService;
+import com.wac.autocore.service.interf.ServiceItemService;
+import com.wac.autocore.service.interf.VehicleService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,10 +16,10 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingDAO bookingDAO =  new BookingDAO();
 
-    private final VehicleServiceImpl vehicleService;
+    private final VehicleService vehicleService;
     private final ServiceItemService serviceItemService;
 
-    public BookingServiceImpl(VehicleServiceImpl vehicleService, ServiceItemService serviceItemService) {
+    public BookingServiceImpl(VehicleService vehicleService, ServiceItemService serviceItemService) {
         this.vehicleService = vehicleService;
         this.serviceItemService = serviceItemService;
     }

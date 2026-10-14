@@ -2,7 +2,7 @@ package com.wac.autocore.factory;
 
 import com.wac.autocore.model.WorkOrder;
 import com.wac.autocore.model.WorkOrderType;
-import com.wac.autocore.service.impl.WorkOrderService;
+import com.wac.autocore.service.interf.WorkOrderService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.order.CreateWorkOrderView;
 import javafx.scene.control.Alert;
