@@ -8,7 +8,11 @@ import java.util.List;
 
 public class MechanicServiceImpl implements MechanicService {
 
-    private final MechanicDAO mechanicDAO = new MechanicDAO();
+    private final MechanicDAO mechanicDAO;
+
+    public MechanicServiceImpl(MechanicDAO mechanicDAO) {
+        this.mechanicDAO = mechanicDAO;
+    }
 
     public List<Mechanic> getMechanics() {
         return mechanicDAO.findAll();

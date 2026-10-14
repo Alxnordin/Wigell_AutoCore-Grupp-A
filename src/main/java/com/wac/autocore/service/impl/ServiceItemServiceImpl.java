@@ -8,7 +8,11 @@ import java.util.List;
 
 public class ServiceItemServiceImpl implements ServiceItemService {
 
-    private final ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
+    private final ServiceItemDAO serviceItemDAO;
+
+    public ServiceItemServiceImpl(ServiceItemDAO serviceItemDAO) {
+        this.serviceItemDAO = serviceItemDAO;
+    }
 
     public List<ServiceItem> getServiceItems() {
         return serviceItemDAO.findAll();

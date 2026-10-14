@@ -12,11 +12,12 @@ import java.util.List;
 //paketet är en mall. Bokningar som redan skapats från ett paket påverkas inte när paketet ändras
 public class ServicePackageServiceImpl implements ServicePackageService {
 
-    private final ServicePackageDAO servicePackageDAO = new ServicePackageDAO();
+    private final ServicePackageDAO servicePackageDAO;
 
     private final ServiceItemService serviceItemService;
 
-    public ServicePackageServiceImpl(ServiceItemService serviceItemService) {
+    public ServicePackageServiceImpl(ServicePackageDAO servicePackageDAO, ServiceItemService serviceItemService) {
+        this.servicePackageDAO = servicePackageDAO;
         this.serviceItemService = serviceItemService;
     }
 

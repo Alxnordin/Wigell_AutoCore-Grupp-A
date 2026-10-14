@@ -10,7 +10,7 @@ import java.util.List;
 
 public class WorkOrderServiceImpl implements WorkOrderService {
 
-    private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
+    private final WorkOrderDAO workOrderDAO;
 
     private final BookingService bookingService;
     private final MechanicService mechanicService;
@@ -18,9 +18,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     private final CustomerService customerService;
     private final VehicleService vehicleService;
 
-    public WorkOrderServiceImpl(BookingService bookingService, MechanicService mechanicService,
+    public WorkOrderServiceImpl(WorkOrderDAO workOrderDAO, BookingService bookingService,
+                                MechanicService mechanicService,
                                 ServiceItemService serviceItemService,
                                 CustomerService customerService, VehicleService vehicleService) {
+        this.workOrderDAO = workOrderDAO;
         this.bookingService = bookingService;
         this.mechanicService = mechanicService;
         this.serviceItemService = serviceItemService;

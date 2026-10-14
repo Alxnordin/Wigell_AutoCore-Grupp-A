@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface WorkOrderService {
 
-
     List<WorkOrder> findAllWorkOrders();
 
     WorkOrder findWorkOrder(int id);

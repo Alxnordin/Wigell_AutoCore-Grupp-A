@@ -14,12 +14,13 @@ import java.util.List;
 
 public class BookingServiceImpl implements BookingService {
 
-    private final BookingDAO bookingDAO =  new BookingDAO();
+    private final BookingDAO bookingDAO;
 
     private final VehicleService vehicleService;
     private final ServiceItemService serviceItemService;
 
-    public BookingServiceImpl(VehicleService vehicleService, ServiceItemService serviceItemService) {
+    public BookingServiceImpl(BookingDAO bookingDAO, VehicleService vehicleService, ServiceItemService serviceItemService) {
+        this.bookingDAO = bookingDAO;
         this.vehicleService = vehicleService;
         this.serviceItemService = serviceItemService;
     }

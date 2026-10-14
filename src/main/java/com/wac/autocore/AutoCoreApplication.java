@@ -1,7 +1,7 @@
 package com.wac.autocore;
 
-
 import com.wac.autocore.controller.*;
+import com.wac.autocore.dao.*;
 import com.wac.autocore.model.Booking;
 import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.impl.PaymentServiceImpl;
@@ -41,25 +41,39 @@ import org.kordamp.ikonli.javafx.FontIcon;
 //JavaFX startpunkt, bygger upp scenen/fönstret, skapar vyer och kontroller, och styr växling mellan de olika vyerna
 public class AutoCoreApplication extends Application {
 
-    private final InvoiceLineService invoiceLineService = new InvoiceLineServiceImpl();
-    private final MechanicService mechanicService = new MechanicServiceImpl();
-    private final CustomerService customerService = new CustomerServiceImpl();
-    private final VehicleService vehicleService = new VehicleServiceImpl(customerService);
-    private final ServiceItemService serviceItemService = new ServiceItemServiceImpl();
-    private final ServicePackageService servicePackageService = new ServicePackageServiceImpl(serviceItemService);
+    private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
+    private final CustomerDAO customerDAO = new CustomerDAO();
+    private final InvoiceDAO invoiceDAO = new InvoiceDAO();
+    private final InvoiceLineDAO invoiceLineDAO = new InvoiceLineDAO();
+    private final PaymentDAO paymentDAO = new PaymentDAO();
+    private final ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
+    private final ServicePackageDAO servicePackageDAO = new ServicePackageDAO();
+    private final BookingDAO bookingDAO = new BookingDAO();
+    private final MechanicDAO mechanicDAO = new MechanicDAO();
+    private final VehicleDAO vehicleDAO = new VehicleDAO();
+
+    private final InvoiceLineService invoiceLineService = new InvoiceLineServiceImpl(invoiceLineDAO);
+    private final MechanicService mechanicService = new MechanicServiceImpl(mechanicDAO);
+    private final CustomerService customerService = new CustomerServiceImpl(customerDAO);
+    private final VehicleService vehicleService = new VehicleServiceImpl(vehicleDAO, customerService);
+    private final ServiceItemService serviceItemService = new ServiceItemServiceImpl(serviceItemDAO);
+
+    private final ServicePackageService servicePackageService =
+            new ServicePackageServiceImpl(servicePackageDAO, serviceItemService);
 
     private final BookingService bookingService =
-            new BookingServiceImpl(vehicleService, serviceItemService);
+            new BookingServiceImpl(bookingDAO, vehicleService, serviceItemService);
 
-    private final WorkOrderService workOrderService = new WorkOrderServiceImpl(
+    private final WorkOrderService workOrderService =
+            new WorkOrderServiceImpl(workOrderDAO,
             bookingService, mechanicService, serviceItemService,
             customerService, vehicleService);
 
     private final InvoiceService invoiceService = new InvoiceServiceImpl(
-            workOrderService, bookingService, vehicleService,
+            invoiceDAO, workOrderService, bookingService, vehicleService,
             customerService, serviceItemService);
 
-    private final PaymentService paymentService = new PaymentServiceImpl(invoiceService);
+    private final PaymentService paymentService = new PaymentServiceImpl(paymentDAO, invoiceService);
 
     private BorderPane borderPane;
     private Stage stage;

@@ -9,7 +9,11 @@ import java.util.List;
 
 public class InvoiceLineServiceImpl implements InvoiceLineService {
 
-    private final InvoiceLineDAO invoiceLineDAO = new InvoiceLineDAO();
+    private final InvoiceLineDAO invoiceLineDAO;
+
+    public InvoiceLineServiceImpl(InvoiceLineDAO invoiceLineDAO) {
+        this.invoiceLineDAO = invoiceLineDAO;
+    }
 
     public List<InvoiceLine> findInvoiceLinesByInvoiceId(int invoiceId) {
 

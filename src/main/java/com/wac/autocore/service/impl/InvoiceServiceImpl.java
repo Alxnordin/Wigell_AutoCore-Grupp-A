@@ -10,7 +10,7 @@ import java.util.List;
 
 public class InvoiceServiceImpl implements InvoiceService {
 
-    private final InvoiceDAO invoiceDAO = new InvoiceDAO();
+    private final InvoiceDAO invoiceDAO;
     private final InvoiceLineDAO invoiceLineDAO = new InvoiceLineDAO();
 
     private final WorkOrderService workOrderService;
@@ -19,9 +19,10 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final CustomerService customerService;
     private final ServiceItemService serviceItemService;
 
-    public InvoiceServiceImpl(WorkOrderService workOrderService, BookingService bookingService,
+    public InvoiceServiceImpl(InvoiceDAO invoiceDAO, WorkOrderService workOrderService, BookingService bookingService,
                               VehicleService vehicleService, CustomerService customerService,
                               ServiceItemService serviceItemService) {
+        this.invoiceDAO = invoiceDAO;
         this.workOrderService = workOrderService;
         this.bookingService = bookingService;
         this.vehicleService = vehicleService;

@@ -10,7 +10,11 @@ import java.util.List;
 
 public class CustomerServiceImpl implements CustomerService {
 
-    private final CustomerDAO customerDAO = new CustomerDAO();
+    private final CustomerDAO customerDAO;
+
+    public CustomerServiceImpl(CustomerDAO customerDAO) {
+        this.customerDAO = customerDAO;
+    }
 
     public List<Customer> getAllCustomers() {
         return customerDAO.findAll();

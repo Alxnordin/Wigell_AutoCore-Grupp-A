@@ -10,11 +10,12 @@ import java.util.List;
 
 public class PaymentServiceImpl implements PaymentService {
 
-    private final PaymentDAO paymentDAO = new PaymentDAO();
+    private final PaymentDAO paymentDAO;
 
     private final InvoiceService invoiceService;
 
-    public PaymentServiceImpl(InvoiceService invoiceService) {
+    public PaymentServiceImpl(PaymentDAO paymentDAO, InvoiceService invoiceService) {
+        this.paymentDAO = paymentDAO;
         this.invoiceService = invoiceService;
     }
 

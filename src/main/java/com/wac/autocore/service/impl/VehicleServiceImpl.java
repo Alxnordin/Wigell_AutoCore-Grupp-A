@@ -10,11 +10,12 @@ import java.util.List;
 
 public class VehicleServiceImpl implements VehicleService {
 
-    private final VehicleDAO vehicleDAO = new VehicleDAO();
+    private final VehicleDAO vehicleDAO;
 
     private final CustomerService customerService;
 
-    public VehicleServiceImpl(CustomerService customerService) {
+    public VehicleServiceImpl(VehicleDAO vehicleDAO, CustomerService customerService) {
+        this.vehicleDAO = vehicleDAO;
         this.customerService = customerService;
     }
 
