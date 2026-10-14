@@ -2,6 +2,7 @@ package com.wac.autocore.dao;
 
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.WorkOrder;
+import com.wac.autocore.repository.WorkOrderRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 //Har lagt till price så att detta kan lagras i en workOrder. på sätt sparas
 //priset på en service ifall priset på en service skulle uppdateras
-public class WorkOrderDAO {
-
+public class WorkOrderDAO implements WorkOrderRepository {
+    @Override
     public List<WorkOrder> findAll() {
         List<WorkOrder> workOrders = new ArrayList<WorkOrder>();
 
@@ -55,7 +56,7 @@ public class WorkOrderDAO {
         }
         return workOrders;
     }
-
+    @Override
     public WorkOrder findById(int workOrderId){
         String sql = "SELECT id, booking_id, customer_id, vehicle_id, description, mechanic_id, status, " +
                 "is_complaint, original_work_order_id " +
@@ -93,7 +94,7 @@ public class WorkOrderDAO {
         }
         return null;
     }
-
+    @Override
     public void update(WorkOrder workOrder) {
         String sql = "UPDATE work_order SET " +
                 "booking_id = ?, " +
@@ -166,7 +167,7 @@ public class WorkOrderDAO {
             }
         }
     }
-
+    @Override
     public WorkOrder save(WorkOrder workOrder){
         String sql = "INSERT INTO work_order " +
                 "(booking_id, customer_id,vehicle_id, description, mechanic_id, status, is_complaint, original_work_order_id) " +
@@ -221,7 +222,7 @@ public class WorkOrderDAO {
             }
         }
     }
-
+    @Override
     public void removeServiceItem(int workOrderId, int serviceItemId){
         String sql = "DELETE FROM work_order_service_item " +
                 "WHERE work_order_id = ? AND service_item_id = ?";
@@ -237,7 +238,7 @@ public class WorkOrderDAO {
         }
 
     }
-
+    @Override
     public void updateStatus (WorkOrder workOrder){
         String sql = "UPDATE work_order SET status = ? where id = ?";
         try (Connection connection = DatabaseConnection.getConnection();

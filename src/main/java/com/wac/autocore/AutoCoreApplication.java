@@ -3,6 +3,7 @@ package com.wac.autocore;
 import com.wac.autocore.controller.*;
 import com.wac.autocore.dao.*;
 import com.wac.autocore.model.Booking;
+import com.wac.autocore.repository.*;
 import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.impl.PaymentServiceImpl;
 import com.wac.autocore.service.interf.*;
@@ -41,39 +42,40 @@ import org.kordamp.ikonli.javafx.FontIcon;
 //JavaFX startpunkt, bygger upp scenen/fönstret, skapar vyer och kontroller, och styr växling mellan de olika vyerna
 public class AutoCoreApplication extends Application {
 
-    private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
-    private final CustomerDAO customerDAO = new CustomerDAO();
-    private final InvoiceDAO invoiceDAO = new InvoiceDAO();
-    private final InvoiceLineDAO invoiceLineDAO = new InvoiceLineDAO();
-    private final PaymentDAO paymentDAO = new PaymentDAO();
-    private final ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
-    private final ServicePackageDAO servicePackageDAO = new ServicePackageDAO();
-    private final BookingDAO bookingDAO = new BookingDAO();
-    private final MechanicDAO mechanicDAO = new MechanicDAO();
-    private final VehicleDAO vehicleDAO = new VehicleDAO();
+    private final WorkOrderRepository workOrderRepository = new WorkOrderDAO();
+    private final CustomerRepository customerRepository = new CustomerDAO();
+    private final InvoiceRepository invoiceRepository = new InvoiceDAO();
+    private final InvoiceLineRepository invoiceLineRepository = new InvoiceLineDAO();
+    private final PaymentRepository paymentRepository = new PaymentDAO();
+    private final ServiceItemRepository serviceItemRepository = new ServiceItemDAO();
+    private final ServicePackageRepository servicePackageRepository = new ServicePackageDAO();
+    private final BookingRepository bookingRepository = new BookingDAO();
+    private final MechanicRepository mechanicRepository = new MechanicDAO();
+    private final VehicleRepository vehicleRepository = new VehicleDAO();
 
-    private final InvoiceLineService invoiceLineService = new InvoiceLineServiceImpl(invoiceLineDAO);
-    private final MechanicService mechanicService = new MechanicServiceImpl(mechanicDAO);
-    private final CustomerService customerService = new CustomerServiceImpl(customerDAO);
-    private final VehicleService vehicleService = new VehicleServiceImpl(vehicleDAO, customerService);
-    private final ServiceItemService serviceItemService = new ServiceItemServiceImpl(serviceItemDAO);
-
+    private final InvoiceLineService invoiceLineService = new InvoiceLineServiceImpl(invoiceLineRepository);
+    private final MechanicService mechanicService = new MechanicServiceImpl(mechanicRepository);
+    private final CustomerService customerService = new CustomerServiceImpl(customerRepository);
+    private final VehicleService vehicleService = new VehicleServiceImpl(vehicleRepository, customerService);
+    private final ServiceItemService serviceItemService = new ServiceItemServiceImpl(serviceItemRepository);
     private final ServicePackageService servicePackageService =
-            new ServicePackageServiceImpl(servicePackageDAO, serviceItemService);
+            new ServicePackageServiceImpl(servicePackageRepository, serviceItemService);
 
     private final BookingService bookingService =
-            new BookingServiceImpl(bookingDAO, vehicleService, serviceItemService);
+            new BookingServiceImpl(bookingRepository, vehicleService,  serviceItemService);
 
     private final WorkOrderService workOrderService =
-            new WorkOrderServiceImpl(workOrderDAO,
-            bookingService, mechanicService, serviceItemService,
-            customerService, vehicleService);
+            new WorkOrderServiceImpl(workOrderRepository, bookingService,
+                    mechanicService, serviceItemService,
+                    customerService, vehicleService);
 
-    private final InvoiceService invoiceService = new InvoiceServiceImpl(
-            invoiceDAO, workOrderService, bookingService, vehicleService,
-            customerService, serviceItemService);
+    private final InvoiceService invoiceService =
+            new InvoiceServiceImpl(invoiceRepository, invoiceLineRepository, workOrderService, bookingService,
+                    vehicleService, customerService,
+                    serviceItemService);
 
-    private final PaymentService paymentService = new PaymentServiceImpl(paymentDAO, invoiceService);
+    private final PaymentService paymentService =
+            new PaymentServiceImpl(paymentRepository, invoiceService);
 
     private BorderPane borderPane;
     private Stage stage;

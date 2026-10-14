@@ -3,6 +3,7 @@ package com.wac.autocore.dao;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.model.Payment;
+import com.wac.autocore.repository.PaymentRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +11,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PaymentDAO {
+public class PaymentDAO implements PaymentRepository {
+    @Override
     public List<Payment> findAll() {
         List<Payment> payments = new ArrayList<>();
         String sql = "SELECT id, invoice_id, amount, payment_type, payment_date, successful " +
@@ -39,6 +41,7 @@ public class PaymentDAO {
         }
         return payments;
     }
+    @Override
     public Payment save(Payment payment){
         String sql = "INSERT INTO payment " +
                 "(invoice_id, amount, payment_type, payment_date, successful)" +

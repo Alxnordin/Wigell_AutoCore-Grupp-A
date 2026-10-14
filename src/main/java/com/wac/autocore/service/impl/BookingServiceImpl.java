@@ -1,6 +1,4 @@
 package com.wac.autocore.service.impl;
-
-import com.wac.autocore.dao.BookingDAO;
 import com.wac.autocore.exception.BusinessRuleException;
 import com.wac.autocore.exception.NotFoundException;
 import com.wac.autocore.exception.ValidationException;
@@ -10,29 +8,30 @@ import com.wac.autocore.service.interf.BookingService;
 import com.wac.autocore.service.interf.ServiceItemService;
 import com.wac.autocore.service.interf.VehicleService;
 
+import com.wac.autocore.repository.BookingRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BookingServiceImpl implements BookingService {
 
-    private final BookingDAO bookingDAO;
+    private final BookingRepository bookingRepository;
 
     private final VehicleService vehicleService;
     private final ServiceItemService serviceItemService;
 
-    public BookingServiceImpl(BookingDAO bookingDAO, VehicleService vehicleService, ServiceItemService serviceItemService) {
-        this.bookingDAO = bookingDAO;
+    public BookingServiceImpl(BookingRepository bookingRepository, VehicleService vehicleService, ServiceItemService serviceItemService) {
+        this.bookingRepository = bookingRepository;
         this.vehicleService = vehicleService;
         this.serviceItemService = serviceItemService;
     }
 
     public List<Booking> getBookings() {
-        return bookingDAO.findAll();
+        return bookingRepository.findAll();
     }
 
     public Booking findBooking(int id) {
-        for (Booking booking : bookingDAO.findAll()) {
+        for (Booking booking : bookingRepository.findAll()) {
             if (booking.getId() == id) {
                 return booking;
             }
@@ -79,7 +78,7 @@ public class BookingServiceImpl implements BookingService {
                 booking.addServiceItem(serviceItemId);
             }
         }
-        bookingDAO.save(booking); //sparar bokning + tjänster i en transaktion (commit/rollback);
+        bookingRepository.save(booking); //sparar bokning + tjänster i en transaktion (commit/rollback);
 
         return booking;
     }
@@ -101,7 +100,9 @@ public class BookingServiceImpl implements BookingService {
             throw new BusinessRuleException("serviceAlreadyInBookingWarning");
         }
 
-        bookingDAO.addServiceItem(bookingId, serviceItemId);
+        bookingRepository.addServiceItem(bookingId, serviceItemId);
+        System.out.println("Service item " + serviceItemId + " added to booking " + bookingId + ".");
+
     }
 
     //ta bort en tjänst från en bokning, bara innan arbetet har påbörjats
@@ -117,7 +118,8 @@ public class BookingServiceImpl implements BookingService {
             throw new BusinessRuleException("lastServiceWarning");
         }
 
-        bookingDAO.removeServiceItem(bookingId, serviceItemId);
+        bookingRepository.removeServiceItem(bookingId, serviceItemId);
+        System.out.println("Service item " + serviceItemId + " removed from booking " + bookingId + ".");
     }
 
     //gör om bokningens tjänste-ID:n till hela ServiceItem-objekt (namn, pris, tid)
@@ -159,7 +161,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     public void updateStatus(Booking booking) {
-        bookingDAO.updateStatus(booking);
+        bookingRepository.updateStatus(booking);
     }
 
     public Booking createBookingFromPreviousBooking(int originalBookingId, LocalDate newDate) {
@@ -186,7 +188,7 @@ public class BookingServiceImpl implements BookingService {
         newBooking.setStatus("BOOKED");
         newBooking.setOriginalBookingId(original.getId());
 
-        bookingDAO.save(newBooking);
+        bookingRepository.save(newBooking);
 
         return newBooking;
     }

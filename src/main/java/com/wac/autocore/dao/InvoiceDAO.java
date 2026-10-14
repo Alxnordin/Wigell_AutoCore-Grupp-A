@@ -2,6 +2,7 @@ package com.wac.autocore.dao;
 
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Invoice;
+import com.wac.autocore.repository.InvoiceRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,7 +10,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InvoiceDAO {
+public class InvoiceDAO implements InvoiceRepository {
+    @Override
     public List<Invoice> findAll() {
         List<Invoice> invoices = new ArrayList<>();
 
@@ -38,7 +40,7 @@ public class InvoiceDAO {
     return invoices;
     }
 
-    //RÄTTAT FEL
+    @Override
     public Invoice save(Invoice invoice) {
         String sql = "INSERT INTO invoice " +
                 "(work_order_id, invoice_date, amount, discount, total_amount, paid) " +
@@ -65,6 +67,7 @@ public class InvoiceDAO {
         }
         return invoice;
     }
+    @Override
     public void updatePaid(Invoice invoice){
         String sql = "UPDATE invoice SET paid = ? WHERE id = ?";
 

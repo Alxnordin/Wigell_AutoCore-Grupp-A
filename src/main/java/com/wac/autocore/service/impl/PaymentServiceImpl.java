@@ -1,26 +1,27 @@
 package com.wac.autocore.service.impl;
 
-import com.wac.autocore.dao.PaymentDAO;
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.model.Payment;
 import com.wac.autocore.service.interf.InvoiceService;
 import com.wac.autocore.service.interf.PaymentService;
+import com.wac.autocore.repository.PaymentRepository;
 
 import java.util.List;
 
 public class PaymentServiceImpl implements PaymentService {
 
-    private final PaymentDAO paymentDAO;
-
+    //private final PaymentDAO paymentDAO = new PaymentDAO();
+    private final PaymentRepository paymentRepository;
     private final InvoiceService invoiceService;
 
-    public PaymentServiceImpl(PaymentDAO paymentDAO, InvoiceService invoiceService) {
-        this.paymentDAO = paymentDAO;
+
+    public PaymentServiceImpl(PaymentRepository paymentRepository, InvoiceService invoiceService) {
+        this.paymentRepository = paymentRepository;
         this.invoiceService = invoiceService;
     }
 
     public List<Payment> findAll() {
-        return paymentDAO.findAll();
+        return paymentRepository.findAll();
     }
 
     public Payment processPayment(int invoiceId, String paymentType) {
@@ -67,7 +68,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         payment.setSuccessful(successful);
-        paymentDAO.save(payment);
+        paymentRepository.save(payment);
 
         if (successful) {
             invoice.setPaid(true);

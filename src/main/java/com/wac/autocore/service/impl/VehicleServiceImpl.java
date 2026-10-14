@@ -1,10 +1,10 @@
 package com.wac.autocore.service.impl;
 
-import com.wac.autocore.dao.VehicleDAO;
 import com.wac.autocore.exception.NotFoundException;
 import com.wac.autocore.exception.ValidationException;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.model.Vehicle;
+import com.wac.autocore.repository.VehicleRepository;
 import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.service.interf.VehicleService;
 import com.wac.autocore.validation.Validator;
@@ -14,25 +14,24 @@ import java.util.List;
 
 public class VehicleServiceImpl implements VehicleService {
 
-    private final VehicleDAO vehicleDAO;
+    private final VehicleRepository vehicleRepository;
     private final CustomerService customerService;
 
     //Alexander
     //första bilen i världen kom 1886, och nästa års modeller kan redan finnas
     private static final int FIRST_MODEL_YEAR = 1886;
 
-
-    public VehicleServiceImpl(VehicleDAO vehicleDAO, CustomerService customerService) {
-        this.vehicleDAO = vehicleDAO;
+    public VehicleServiceImpl(VehicleRepository vehicleRepository, CustomerService customerService) {
+        this.vehicleRepository = vehicleRepository;
         this.customerService = customerService;
     }
 
     public List<Vehicle> getVehicles() {
-        return vehicleDAO.findAll();
+        return vehicleRepository.findAll();
     }
 
     public Vehicle findVehicle(int id) {
-        for (Vehicle vehicle : vehicleDAO.findAll()) {
+        for (Vehicle vehicle : vehicleRepository.findAll()) {
             if (vehicle.getId() == id) {
                 return vehicle;
             }
@@ -67,7 +66,7 @@ public class VehicleServiceImpl implements VehicleService {
         }
 
         Vehicle vehicle = new Vehicle(0, registrationNumber.trim(), brand.trim(), model.trim(), year, customerId);
-        vehicleDAO.save(vehicle);
+        vehicleRepository.save(vehicle);
 
         return vehicle;
     }

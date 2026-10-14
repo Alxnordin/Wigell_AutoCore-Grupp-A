@@ -3,6 +3,7 @@ package com.wac.autocore.service.impl;
 import com.wac.autocore.dao.CustomerDAO;
 import com.wac.autocore.exception.BusinessRuleException;
 import com.wac.autocore.model.Customer;
+import com.wac.autocore.repository.CustomerRepository;
 import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.validation.Validator;
 
@@ -10,19 +11,19 @@ import java.util.List;
 
 public class CustomerServiceImpl implements CustomerService {
 
-    private final CustomerDAO customerDAO;
+    private final CustomerRepository customerRepository;
 
-    public CustomerServiceImpl(CustomerDAO customerDAO) {
-        this.customerDAO = customerDAO;
+    public CustomerServiceImpl(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
     }
 
     public List<Customer> getAllCustomers() {
-        return customerDAO.findAll();
+        return customerRepository.findAll();
     }
 
     public Customer findCustomer(int id) {
 
-        for (Customer customer : customerDAO.findAll()) {
+        for (Customer customer : customerRepository.findAll()) {
             if (customer.getId() == id) {
                 return customer;
             }
@@ -50,7 +51,7 @@ public class CustomerServiceImpl implements CustomerService {
         String fullName = firstName.trim() + " " + lastName.trim();
         Customer customer = new Customer(0, fullName, phone.trim(), email.trim());
 
-        customerDAO.save(customer);
+        customerRepository.save(customer);
 
         return customer;
 
@@ -58,7 +59,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private boolean emailAlreadyExists(String email) {
 
-        for (Customer customer : customerDAO.findAll()) {
+        for (Customer customer : customerRepository.findAll()) {
             //email.trim() först, så att en kund utan e-post (null) inte kan krascha jämförelsen
             if (email.trim().equalsIgnoreCase(customer.getEmail())) {
                 return true;

@@ -2,6 +2,7 @@ package com.wac.autocore.dao;
 
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Mechanic;
+import com.wac.autocore.repository.MechanicRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +11,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MechanicDAO {
+public class MechanicDAO implements MechanicRepository {
+    @Override
     public List<Mechanic> findAll() {
         List<Mechanic> mechanics = new ArrayList<>();
 
@@ -37,7 +39,7 @@ public class MechanicDAO {
         }
         return mechanics;
     }
-
+    @Override
     public Mechanic save(Mechanic mechanic){
         String sql =
                 "INSERT INTO mechanic " +
@@ -61,6 +63,7 @@ public class MechanicDAO {
         }
         return mechanic;
     }
+    @Override
     public void updateAvailable(Mechanic mechanic){
         String sql = "UPDATE mechanic SET available = ? WHERE id = ?";
 
