@@ -1,6 +1,7 @@
 package com.wac.autocore.service.impl;
 
 import com.wac.autocore.dao.CustomerDAO;
+import com.wac.autocore.exception.BusinessRuleException;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.validation.Validator;
@@ -36,6 +37,11 @@ public class CustomerServiceImpl implements CustomerService {
         Validator.requireText(phone, "customerPhoneRequiredError");
         Validator.requireText(email, "customerEmailRequiredError");
 
+        //OBS! Måste fixa vad som ska skrivas ut, ska gå att översätta.:wq
+
+        if (emailAlreadyExists(email)) {
+            throw new BusinessRuleException("E-post finns redan");
+        }
         String fullName = firstName.trim() + " " + lastName.trim();
         Customer customer = new Customer(0, fullName, phone.trim(), email.trim());
 
@@ -43,6 +49,17 @@ public class CustomerServiceImpl implements CustomerService {
 
         return customer;
 
+    }
+
+    private boolean emailAlreadyExists(String email) {
+
+        for (Customer customer : customerDAO.findAll()) {
+            if (customer.getEmail().equalsIgnoreCase(email.trim())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     //Kan tas bort va?

@@ -18,4 +18,12 @@ public class Validator {
             throw new ValidationException(messageKey);
         }
     }
+
+    //Kan användas för alla fält där input är siffror
+    public static void requireNumber(String value, String messageKey) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new ValidationException(messageKey);
+        }
+    }
+
 }
