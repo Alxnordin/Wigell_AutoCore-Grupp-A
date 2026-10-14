@@ -2,6 +2,7 @@ package com.wac.autocore.service;
 
 import com.wac.autocore.dao.WorkOrderDAO;
 import com.wac.autocore.model.*;
+import com.wac.autocore.repository.WorkOrderRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,7 +10,8 @@ import java.util.List;
 
 public class WorkOrderService {
 
-    private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
+    //private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
+    private final WorkOrderRepository workOrderRepository;
 
     private final BookingService bookingService;
     private final MechanicService mechanicService;
@@ -18,19 +20,28 @@ public class WorkOrderService {
     private final VehicleService vehicleService;
 
     public WorkOrderService(BookingService bookingService, MechanicService mechanicService, ServiceItemService serviceItemService, CustomerService customerService, VehicleService vehicleService) {
+        this(bookingService,
+        mechanicService,
+        serviceItemService,
+        customerService,
+        vehicleService,
+        new WorkOrderDAO());
+    }
+    public WorkOrderService(BookingService bookingService, MechanicService mechanicService, ServiceItemService serviceItemService, CustomerService customerService, VehicleService vehicleService, WorkOrderRepository workOrderRepository){
         this.bookingService = bookingService;
         this.mechanicService = mechanicService;
         this.serviceItemService = serviceItemService;
         this.customerService = customerService;
         this.vehicleService = vehicleService;
+        this.workOrderRepository = workOrderRepository;
     }
 
     public List<WorkOrder> findAllWorkOrders() {
-        return workOrderDAO.findAll();
+        return workOrderRepository.findAll();
     }
 
     public WorkOrder findWorkOrder(int id) {
-        for (WorkOrder workOrder : workOrderDAO.findAll()) {
+        for (WorkOrder workOrder : workOrderRepository.findAll()) {
             if (workOrder.getId() == id) {
                 return workOrder;
             }
@@ -49,12 +60,12 @@ public class WorkOrderService {
         }
 
         workOrder.setMechanicId(mechanicId);
-        workOrderDAO.update(workOrder);
+        workOrderRepository.update(workOrder);
     }
 
     //true om bokningen redan har en arbetsorder (en bokning kan bara ha en)
     public boolean hasWorkOrder(int bookingId) {
-        for (WorkOrder workOrder : workOrderDAO.findAll()) {
+        for (WorkOrder workOrder : workOrderRepository.findAll()) {
             //Alexander
             //drop-in saknar bokning (null), och då ska den inte jämföras med bokningens id
             Integer orderBookingId = workOrder.getBookingId();
@@ -128,7 +139,7 @@ public class WorkOrderService {
         }
 
         WorkOrder workOrder = builder.build();
-        workOrderDAO.save(workOrder);
+        workOrderRepository.save(workOrder);
 
         //bokningens nya status sparas i databasen
         booking.setStatus("WORK_ORDER_CREATED");
@@ -146,7 +157,7 @@ public class WorkOrderService {
             return;
         }
         workOrder.removeServiceItem(serviceItemId);
-        workOrderDAO.removeServiceItem(workOrder.getId(), serviceItemId);
+        workOrderRepository.removeServiceItem(workOrder.getId(), serviceItemId);
 
         System.out.println("ServiceItem " + serviceItemId + " removed from workOrder " + workOrder.getId());
     }
@@ -268,7 +279,7 @@ public class WorkOrderService {
         }
 
         workOrder.setStatus("IN_PROGRESS");
-        workOrderDAO.updateStatus(workOrder);
+        workOrderRepository.updateStatus(workOrder);
 
         System.out.println("Work order " + workOrderId + " has been started.");
     }
@@ -294,7 +305,7 @@ public class WorkOrderService {
                 : null;
 
         workOrder.setStatus("COMPLETED");
-        workOrderDAO.updateStatus(workOrder);
+        workOrderRepository.updateStatus(workOrder);
 
         if (mechanic != null) {
             mechanic.setAvailable(true);
@@ -340,7 +351,7 @@ public class WorkOrderService {
             complaint.setDescription(complaintDescription.trim());
         }
 
-        workOrderDAO.save(complaint);
+        workOrderRepository.save(complaint);
 
         System.out.println("Complaint created");
         System.out.println(complaint);
@@ -402,7 +413,7 @@ public class WorkOrderService {
         }
         WorkOrder workOrder = builder.build();
 
-        workOrderDAO.save(workOrder);
+        workOrderRepository.save(workOrder);
 
         System.out.println("Drop-in work order created successfully.");
         System.out.println(workOrder);
@@ -435,7 +446,7 @@ public class WorkOrderService {
                 .status("DRAFT");
 
         WorkOrder workOrder = builder.build();
-        workOrderDAO.save(workOrder);
+        workOrderRepository.save(workOrder);
 
         System.out.println("Draft work order created successfully");
         System.out.println(workOrder);
@@ -446,7 +457,7 @@ public class WorkOrderService {
                                             int mechanicId,
                                             int... serviceItemsIds) {
 
-        WorkOrder workOrder = workOrderDAO.findById(workOrderId);
+        WorkOrder workOrder = workOrderRepository.findById(workOrderId);
 
         if(workOrder == null) {
             System.out.println("work order with ID " + workOrderId + " does not exist.");
@@ -496,7 +507,7 @@ public class WorkOrderService {
         workOrder.setMechanicId(mechanicId);
         workOrder.setStatus("CREATED");
 
-        workOrderDAO.update(workOrder);
+        workOrderRepository.update(workOrder);
         System.out.println("Draft workorder completed successfully");
         System.out.println(workOrder);
 

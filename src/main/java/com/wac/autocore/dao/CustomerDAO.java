@@ -2,6 +2,7 @@ package com.wac.autocore.dao;
 
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Customer;
+import com.wac.autocore.repository.CustomerRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +11,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomerDAO {
+public class CustomerDAO implements CustomerRepository {
+    @Override
     public List<Customer> findAll(){
         List<Customer> customers = new ArrayList<>();
 
@@ -36,7 +38,7 @@ public class CustomerDAO {
         }
         return customers;
     }
-
+    @Override
     public Customer save (Customer customer){
         //Spara kunden
         String sql =

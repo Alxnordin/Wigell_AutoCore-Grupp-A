@@ -2,6 +2,7 @@ package com.wac.autocore.dao;
 
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.InvoiceLine;
+import com.wac.autocore.repository.InvoiceLineRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,8 +10,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InvoiceLineDAO {
-
+public class InvoiceLineDAO implements InvoiceLineRepository {
+    @Override
     public List<InvoiceLine> findAll() {
 
         List<InvoiceLine> invoiceLines = new ArrayList<>();
@@ -43,7 +44,7 @@ public class InvoiceLineDAO {
 
         return invoiceLines;
     }
-
+    @Override
     public InvoiceLine save(InvoiceLine invoiceLine) {
 
         String sql = "INSERT INTO invoice_line " +

@@ -3,6 +3,8 @@ package com.wac.autocore.service;
 import com.wac.autocore.dao.ServicePackageDAO;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.ServicePackage;
+import com.wac.autocore.repository.ServicePackageRepository;
+
 import java.util.List;
 
 //Alexander'
@@ -10,20 +12,26 @@ import java.util.List;
 //paketet är en mall. Bokningar som redan skapats från ett paket påverkas inte när paketet ändras
 public class ServicePackageService {
 
-    private final ServicePackageDAO servicePackageDAO = new ServicePackageDAO();
-
+    //private final ServicePackageDAO servicePackageDAO = new ServicePackageDAO();
+    private final ServicePackageRepository servicePackageRepository;
     private final ServiceItemService serviceItemService;
 
-    public ServicePackageService (ServiceItemService serviceItemService) {
+    public ServicePackageService(ServiceItemService serviceItemService){
+        this(serviceItemService, new ServicePackageDAO());
+    }
+
+
+    public ServicePackageService (ServiceItemService serviceItemService, ServicePackageRepository servicePackageRepository) {
         this.serviceItemService = serviceItemService;
+        this.servicePackageRepository = servicePackageRepository;
     }
 
     public List<ServicePackage> servicePackages() {
-        return servicePackageDAO.findAll();
+        return servicePackageRepository.findAll();
     }
 
     public ServicePackage findServicePackage(int id) {
-        for (ServicePackage servicePackage : servicePackageDAO.findAll()) {
+        for (ServicePackage servicePackage : servicePackageRepository.findAll()) {
             if (servicePackage.getId()==id){
                 return servicePackage;
             }
@@ -38,14 +46,14 @@ public class ServicePackageService {
             System.out.println("Service package name is missing");
             return null;
         }
-        for (ServicePackage servicePackage : servicePackageDAO.findAll()) {
+        for (ServicePackage servicePackage : servicePackageRepository.findAll()) {
             if (servicePackage.getName().equalsIgnoreCase(name.trim())) {
                 System.out.println("Service package " + name.trim() + " already exists");
                 return null;
             }
         }
 
-        ServicePackage servicePackage = servicePackageDAO.save(new ServicePackage(0, name.trim()));
+        ServicePackage servicePackage = servicePackageRepository.save(new ServicePackage(0, name.trim()));
         System.out.println("Service package created: " + servicePackage);
         return servicePackage;
     }
@@ -70,7 +78,7 @@ public class ServicePackageService {
             return false;
         }
 
-        servicePackageDAO.addServiceItem(servicePackageId, serviceItemId);
+        servicePackageRepository.addServiceItem(servicePackageId, serviceItemId);
         System.out.println("Service item " + serviceItemId + " added to service package " + servicePackageId + ".");
         return true;
     }
@@ -89,7 +97,7 @@ public class ServicePackageService {
             return false;
         }
 
-        servicePackageDAO.removeServiceItem(servicePackageId, serviceItemId);
+        servicePackageRepository.removeServiceItem(servicePackageId, serviceItemId);
         System.out.println("Service item " + serviceItemId + " removed from service package " + servicePackageId + ".");
         return true;
     }

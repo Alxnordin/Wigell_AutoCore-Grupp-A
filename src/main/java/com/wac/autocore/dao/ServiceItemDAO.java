@@ -2,6 +2,7 @@ package com.wac.autocore.dao;
 
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.ServiceItem;
+import com.wac.autocore.repository.ServiceItemRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,7 +10,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceItemDAO {
+public class ServiceItemDAO implements ServiceItemRepository {
+    @Override
     public List<ServiceItem> findAll(){
         List<ServiceItem> serviceItems = new ArrayList<>();
         String sql = "SELECT id, name, description, price, estimated_minutes " +
@@ -34,6 +36,7 @@ public class ServiceItemDAO {
         }
         return serviceItems;
     }
+    @Override
     public ServiceItem save(ServiceItem serviceItem){
         String sql = "INSERT INTO service_item " +
                 "(name, description, price, estimated_minutes) " +
@@ -60,6 +63,7 @@ public class ServiceItemDAO {
     }
 
      //NY METOD FÖR ATT UPPDATERA PRISET
+     @Override
     public void updatePrice(int serviceItemId, double newPrice){
         String sql = "UPDATE service_item SET price = ? Where id = ?";
 

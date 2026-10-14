@@ -2,6 +2,7 @@ package com.wac.autocore.dao;
 
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Vehicle;
+import com.wac.autocore.repository.VehicleRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,7 +10,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VehicleDAO {
+public class VehicleDAO implements VehicleRepository {
+    @Override
     public List<Vehicle> findAll(){
         List<Vehicle> vehicles = new ArrayList<>();
         String sql = "SELECT id, registration_number, brand, model,year,customer_id " +
@@ -36,6 +38,7 @@ public class VehicleDAO {
         }
         return vehicles;
     }
+    @Override
     public Vehicle save(Vehicle vehicle){
         String sql = "INSERT INTO vehicle " +
                 "(registration_number, brand, model, year,customer_id)" +

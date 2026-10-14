@@ -3,25 +3,30 @@ package com.wac.autocore.service;
 import com.wac.autocore.dao.VehicleDAO;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.model.Vehicle;
+import com.wac.autocore.repository.VehicleRepository;
 
 import java.util.List;
 
 public class VehicleService {
 
-    private final VehicleDAO vehicleDAO = new VehicleDAO();
-
+    //private final VehicleDAO vehicleDAO = new VehicleDAO();
+    private final VehicleRepository vehicleRepository;
     private final CustomerService customerService;
 
     public VehicleService(CustomerService customerService) {
+        this(customerService, new VehicleDAO());
+    }
+    public VehicleService(CustomerService customerService, VehicleRepository vehicleRepository) {
         this.customerService = customerService;
+        this.vehicleRepository = vehicleRepository;
     }
 
     public List<Vehicle> getVehicles() {
-        return vehicleDAO.findAll();
+        return vehicleRepository.findAll();
     }
 
     public Vehicle findVehicle(int id) {
-        for (Vehicle vehicle : vehicleDAO.findAll()) {
+        for (Vehicle vehicle : vehicleRepository.findAll()) {
             if (vehicle.getId() == id) {
                 return vehicle;
             }
@@ -43,7 +48,7 @@ public class VehicleService {
             return null;
         }
         Vehicle vehicle = new Vehicle(0, registrationNumber, brand, model, year, customerId);
-        vehicleDAO.save(vehicle);
+        vehicleRepository.save(vehicle);
 
         System.out.println("Vehicle created successfully.");
         System.out.println(vehicle);

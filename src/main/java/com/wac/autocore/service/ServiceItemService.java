@@ -1,20 +1,32 @@
 package com.wac.autocore.service;
 
+import com.wac.autocore.dao.CustomerDAO;
 import com.wac.autocore.dao.ServiceItemDAO;
 import com.wac.autocore.model.ServiceItem;
+import com.wac.autocore.repository.CustomerRepository;
+import com.wac.autocore.repository.ServiceItemRepository;
 
 import java.util.List;
 
 public class ServiceItemService {
 
-    private final ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
+    //private final ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
+    private final ServiceItemRepository serviceItemRepository;
+
+    public ServiceItemService() {
+        this(new ServiceItemDAO());
+    }
+
+    public ServiceItemService(ServiceItemRepository serviceItemRepository){
+        this.serviceItemRepository = serviceItemRepository;
+    }
 
     public List<ServiceItem> getServiceItems() {
-        return serviceItemDAO.findAll();
+        return serviceItemRepository.findAll();
     }
 
     public ServiceItem findServiceItem(int id) {
-        for (ServiceItem serviceItem : serviceItemDAO.findAll()) {
+        for (ServiceItem serviceItem : serviceItemRepository.findAll()) {
             if (serviceItem.getId() == id) {
                 return serviceItem;
             }
@@ -35,7 +47,7 @@ public class ServiceItemService {
             return;
         }
 
-        serviceItemDAO.updatePrice(serviceItemId,newPrice);
+        serviceItemRepository.updatePrice(serviceItemId,newPrice);
         serviceItem.setPrice(newPrice);
     }
 

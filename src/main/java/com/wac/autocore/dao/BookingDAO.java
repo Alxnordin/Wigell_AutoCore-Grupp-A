@@ -2,6 +2,7 @@ package com.wac.autocore.dao;
 
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Booking;
+import com.wac.autocore.repository.BookingRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,12 +10,12 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookingDAO {
-
+public class BookingDAO implements BookingRepository {
+    @Override
     public List<Booking> findAll() {
         List<Booking> bookings = new ArrayList<>();
 
-        String sql = "Select id, vehicle_id, date, description, status " +
+        String sql = "SELECT id, vehicle_id, date, description, status " +
                 "FROM booking " +
                 "ORDER BY id";
 
@@ -37,7 +38,7 @@ public class BookingDAO {
         }
         return bookings;
     }
-
+    @Override
     public Booking findById(int bookingId){
         String sql = "SELECCT id, vehicle_id, date, description, status " +
                 "FROM booking WHERE id = ?";
@@ -88,6 +89,7 @@ public class BookingDAO {
     }
 
     //sparar bokningen och alla dess tjänster
+    @Override
     public Booking save (Booking booking) {
         String sql = "INSERT INTO booking " +
                 "(vehicle_id, date, description, status) " +
@@ -149,6 +151,7 @@ public class BookingDAO {
 
     //Alexander
     //lägger till en tjänst i en befintlig bokning, publik för anrop av GarageSystem
+    @Override
     public void addServiceItem(int bookingId, int serviceItemId) {
         try (Connection connection = DatabaseConnection.getConnection()) {
             insertServiceItem(connection, bookingId, serviceItemId);   // återanvänder hjälpmetoden från 3b
@@ -159,6 +162,7 @@ public class BookingDAO {
 
     //Alexander
     //tar bort en tjänst från en befintlig bokning, publik för anrop av GarageSystem
+    @Override
     public void removeServiceItem(int bookingId, int serviceItemId) {
         String sql = "DELETE FROM booking_service_item " +
                 "WHERE booking_id = ? AND service_item_id = ?";
@@ -173,7 +177,7 @@ public class BookingDAO {
             throw new RuntimeException("Could not remove service item from booking.", e);
         }
     }
-
+    @Override
     public void updateStatus(Booking booking){
         String sql = "UPDATE booking SET status = ? WHERE id = ?";
 

@@ -3,21 +3,27 @@ package com.wac.autocore.service;
 import com.wac.autocore.dao.PaymentDAO;
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.model.Payment;
+import com.wac.autocore.repository.PaymentRepository;
 
 import java.util.List;
 
 public class PaymentService {
 
-    private final PaymentDAO paymentDAO = new PaymentDAO();
-
+    //private final PaymentDAO paymentDAO = new PaymentDAO();
+    private final PaymentRepository paymentRepository;
     private final InvoiceService invoiceService;
 
     public PaymentService(InvoiceService invoiceService) {
+        this(invoiceService, new PaymentDAO());
+    }
+
+    public PaymentService(InvoiceService invoiceService, PaymentRepository paymentRepository){
         this.invoiceService = invoiceService;
+        this.paymentRepository = paymentRepository;
     }
 
     public List<Payment> findAll() {
-        return paymentDAO.findAll();
+        return paymentRepository.findAll();
     }
 
     public Payment processPayment(int invoiceId, String paymentType) {
@@ -64,7 +70,7 @@ public class PaymentService {
         }
 
         payment.setSuccessful(successful);
-        paymentDAO.save(payment);
+        paymentRepository.save(payment);
 
         if (successful) {
             invoice.setPaid(true);

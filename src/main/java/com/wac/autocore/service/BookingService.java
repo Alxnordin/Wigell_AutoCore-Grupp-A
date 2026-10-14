@@ -4,6 +4,7 @@ import com.wac.autocore.dao.BookingDAO;
 import com.wac.autocore.model.Booking;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.Vehicle;
+import com.wac.autocore.repository.BookingRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,22 +12,29 @@ import java.util.List;
 
 public class BookingService {
 
-    private final BookingDAO bookingDAO =  new BookingDAO();
+    //private final BookingDAO bookingDAO =  new BookingDAO();
+    private final BookingRepository bookingRepository;
 
     private final VehicleService vehicleService;
     private final ServiceItemService serviceItemService;
 
     public BookingService(VehicleService vehicleService, ServiceItemService serviceItemService) {
+        this(vehicleService,
+                serviceItemService,
+                new BookingDAO());
+    }
+    public BookingService(VehicleService vehicleService, ServiceItemService serviceItemService, BookingRepository bookingRepository) {
         this.vehicleService = vehicleService;
         this.serviceItemService = serviceItemService;
+        this.bookingRepository = bookingRepository;
     }
 
     public List<Booking> getBookings() {
-        return bookingDAO.findAll();
+        return bookingRepository.findAll();
     }
 
     public Booking findBooking(int id) {
-        for (Booking booking : bookingDAO.findAll()) {
+        for (Booking booking : bookingRepository.findAll()) {
             if (booking.getId() == id) {
                 return booking;
             }
@@ -67,7 +75,7 @@ public class BookingService {
                 booking.addServiceItem(serviceItemId);
             }
         }
-        bookingDAO.save(booking); //sparar bokning + tjänster i en transaktion (commit/rollback);
+        bookingRepository.save(booking); //sparar bokning + tjänster i en transaktion (commit/rollback);
 
         System.out.println("Booking created successfully.");
         System.out.println(booking);
@@ -107,7 +115,7 @@ public class BookingService {
             return false;
         }
 
-        bookingDAO.addServiceItem(bookingId, serviceItemId);
+        bookingRepository.addServiceItem(bookingId, serviceItemId);
         System.out.println("Service item " + serviceItemId + " added to booking " + bookingId + ".");
         return true;
     }
@@ -137,7 +145,7 @@ public class BookingService {
             return false;
         }
 
-        bookingDAO.removeServiceItem(bookingId, serviceItemId);
+        bookingRepository.removeServiceItem(bookingId, serviceItemId);
         System.out.println("Service item " + serviceItemId + " removed from booking " + bookingId + ".");
         return true;
     }
@@ -181,7 +189,7 @@ public class BookingService {
     }
 
     public void updateStatus(Booking booking) {
-        bookingDAO.updateStatus(booking);
+        bookingRepository.updateStatus(booking);
     }
 
     public Booking createBookingFromPreviousBooking(int originalBookingId, LocalDate newDate) {
@@ -215,7 +223,7 @@ public class BookingService {
         newBooking.setStatus("BOOKED");
         newBooking.setOriginalBookingId(original.getId());
 
-        bookingDAO.save(newBooking);
+        bookingRepository.save(newBooking);
 
         System.out.println("New booking created from previous booking");
         System.out.println(newBooking);

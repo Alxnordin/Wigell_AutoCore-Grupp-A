@@ -3,14 +3,19 @@ package com.wac.autocore.service;
 import com.wac.autocore.dao.InvoiceDAO;
 import com.wac.autocore.dao.InvoiceLineDAO;
 import com.wac.autocore.model.*;
+import com.wac.autocore.repository.InvoiceLineRepository;
+import com.wac.autocore.repository.InvoiceRepository;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 public class InvoiceService {
 
-    private final InvoiceDAO invoiceDAO = new InvoiceDAO();
-    private final InvoiceLineDAO invoiceLineDAO = new InvoiceLineDAO();
+    //private final InvoiceDAO invoiceDAO = new InvoiceDAO();
+    private final InvoiceRepository invoiceRepository;
+    //private final InvoiceLineDAO invoiceLineDAO = new InvoiceLineDAO();
+    private final InvoiceLineRepository invoiceLineRepository;
 
     private final WorkOrderService workOrderService;
     private final BookingService bookingService;
@@ -19,15 +24,26 @@ public class InvoiceService {
     private final ServiceItemService serviceItemService;
 
     public InvoiceService(WorkOrderService workOrderService, BookingService bookingService, VehicleService vehicleService, CustomerService customerService, ServiceItemService serviceItemService) {
+        this(workOrderService,
+                bookingService,
+                vehicleService,
+                customerService,
+                serviceItemService,
+                new InvoiceDAO(),
+                new InvoiceLineDAO());
+    }
+    public InvoiceService(WorkOrderService workOrderService, BookingService bookingService, VehicleService vehicleService, CustomerService customerService, ServiceItemService serviceItemService, InvoiceRepository invoiceRepository, InvoiceLineRepository invoiceLineRepository) {
         this.workOrderService = workOrderService;
         this.bookingService = bookingService;
         this.vehicleService = vehicleService;
         this.customerService = customerService;
         this.serviceItemService = serviceItemService;
+        this.invoiceRepository = invoiceRepository;
+        this.invoiceLineRepository = invoiceLineRepository;
     }
 
      public Invoice findInvoice(int id) {
-        for (Invoice invoice : invoiceDAO.findAll()) {
+        for (Invoice invoice : invoiceRepository.findAll()) {
             if (invoice.getId() == id) {
                 return invoice;
             }
@@ -37,7 +53,7 @@ public class InvoiceService {
     }
 
     public List<Invoice> findAll() {
-        return invoiceDAO.findAll();
+        return invoiceRepository.findAll();
     }
 
     public Invoice createInvoice(int workOrderId, String discountCode) {
@@ -139,7 +155,7 @@ public class InvoiceService {
 
         invoice.setDiscount(totalDiscount);
 
-        invoiceDAO.save(invoice);
+        invoiceRepository.save(invoice);
 
         for (Integer serviceItemId : workOrder.getServiceItemIds()) {
 
@@ -172,7 +188,7 @@ public class InvoiceService {
                         finalPrice
                 );
 
-                invoiceLineDAO.save(invoiceLine);
+                invoiceLineRepository.save(invoiceLine);
             }
         }
 
@@ -185,7 +201,7 @@ public class InvoiceService {
     }
 
     public Invoice updatePaidInvoice(Invoice invoice) {
-        invoiceDAO.save(invoice);
+        invoiceRepository.save(invoice);
         return invoice;
     }
 
