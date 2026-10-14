@@ -747,3 +747,14 @@ ListView .list-cell:filled:selected {
             3
     );
 }
+
+/* Vit pennikon på Continue-knappen för utkast */
+.continue-draft-icon {
+    -fx-icon-color: white;
+}
+
+/* Lila statusmarkering för sparade utkast */
+.status-draft {
+    -fx-background-color: #E8DDF5;
+    -fx-text-fill: #563C78;
+}

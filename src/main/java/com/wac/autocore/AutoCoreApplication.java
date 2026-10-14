@@ -88,7 +88,7 @@ public class AutoCoreApplication extends Application {
 
         borderPane = new BorderPane();
 
-        Label headerLabel = new Label("WAC AutoCore");
+
         LanguageManager languageManager = LanguageManager.getInstance();
 
         FontIcon globeIcon = new FontIcon("fa-globe");
@@ -122,12 +122,11 @@ public class AutoCoreApplication extends Application {
         //logotyp
         Image logoImage = new Image(getClass().getResourceAsStream("/WAC_1.png"));
         ImageView logoView = new ImageView(logoImage);
-        logoView.setFitHeight(40);
+        logoView.setFitHeight(60);
         logoView.setPreserveRatio(true);
 
         StackPane header = new StackPane();
-        // WAC AutoCore i mitten
-        StackPane.setAlignment(headerLabel, Pos.CENTER);
+
         // Logotyp till vänster
         StackPane.setAlignment(logoView, Pos.CENTER_LEFT);
         StackPane.setMargin(logoView, new Insets(0, 0, 0, 15));
@@ -135,7 +134,7 @@ public class AutoCoreApplication extends Application {
         StackPane.setAlignment(languageButton, Pos.CENTER_RIGHT);
         StackPane.setMargin(languageButton, new Insets(0, 15, 0, 0));
 
-        header.getChildren().addAll(logoView, headerLabel, languageButton);
+        header.getChildren().addAll(logoView, languageButton);
 
         languageButton.setOnAction(e -> {
             languageManager.changeLanguage();
@@ -155,7 +154,7 @@ public class AutoCoreApplication extends Application {
 
         showMainMenu();
 
-        Scene scene = new Scene(borderPane, 1000, 700);
+        Scene scene = new Scene(borderPane, 1100, 900);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
