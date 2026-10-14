@@ -10,7 +10,6 @@ public interface CustomerService {
     Customer findCustomer(int id);
     Customer createCustomer(String firstName, String lastName, String phone, String email);
 
-    boolean isInputFieldEmpty(String input);
 
 
 

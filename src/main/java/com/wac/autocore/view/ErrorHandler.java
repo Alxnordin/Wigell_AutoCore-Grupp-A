@@ -19,6 +19,7 @@ public class ErrorHandler {
 
     private static final Logger LOGGER = Logger.getLogger(ErrorHandler.class.getName());
 
+
     private ErrorHandler() {
     }
 

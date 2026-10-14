@@ -177,7 +177,8 @@ public class CustomerView {
     private VBox buildVIPSection() {
 
         vipLabel = UIComponents.createFormLabel(languageManager.getString("vipLabel"));
-        ComboBox vipComboBox = UIComponents.createComboBoxWithNoWidth();
+        //tilldela fältet (inte en ny lokal variabel), annars är fältet null vid språkbyte
+        vipComboBox = UIComponents.createComboBoxWithNoWidth();
         vipComboBox.setPromptText(languageManager.getString("vipComboBox"));
 
         //FIXA ÖVERSÄTTNING AV vipYes och vipNo. Kan inte göra så här.
@@ -202,10 +203,10 @@ public class CustomerView {
         subtitle.setText(languageManager.getString("customerViewSubtitle"));
 
         firstNameLabel.setText(languageManager.getString("firstNameLabel"));
-        firstNameField.setPromptText(languageManager.getString("lastNameField"));
+        firstNameField.setPromptText(languageManager.getString("firstNameField"));
 
         lastNameLabel.setText(languageManager.getString("lastNameLabel"));
-        lastNameField.setPromptText(languageManager.getString("firstNameField"));
+        lastNameField.setPromptText(languageManager.getString("lastNameField"));
 
         phoneLabel.setText(languageManager.getString("phoneLabel"));
         phoneField.setPromptText(languageManager.getString("phoneField"));
