@@ -6,6 +6,7 @@ import com.wac.autocore.util.LanguageManager;
 import javafx.scene.control.Alert;
 
 import java.text.MessageFormat;
+import java.util.MissingResourceException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,10 +31,17 @@ public class ErrorHandler {
             showAlert(Alert.AlertType.ERROR, languageManager.getString("technicalErrorMessage"));
         } else if (exception instanceof AutoCoreException) {
             AutoCoreException autoCoreException = (AutoCoreException) exception;
-            String message = MessageFormat.format(
-                    languageManager.getString(autoCoreException.getMessageKey()),
-                    autoCoreException.getArgs());
-            showAlert(Alert.AlertType.WARNING,message);
+            String message;
+            try {
+                message = MessageFormat.format(
+                        languageManager.getString(autoCoreException.getMessageKey()),
+                        autoCoreException.getArgs());
+            } catch (MissingResourceException e) {
+                //saknad språknyckel ska inte krascha appen: visa nyckeln och logga så att den kan läggas till
+                LOGGER.log(Level.WARNING, "Missing language key: " + autoCoreException.getMessageKey());
+                message = autoCoreException.getMessageKey();
+            }
+            showAlert(Alert.AlertType.WARNING, message);
 
         } else {
             LOGGER.log(Level.SEVERE, "Unexpected error", exception);

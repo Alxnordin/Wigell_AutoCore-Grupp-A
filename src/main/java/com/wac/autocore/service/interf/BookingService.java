@@ -12,16 +12,20 @@ public interface BookingService {
 
     Booking findBooking(int id);
 
-    Booking createBooking(int vehicleId,
+    //Alexander
+    //fordon kan saknas (null) - servicen validerar och kastar exception vid fel
+    Booking createBooking(Integer vehicleId,
                           LocalDate date,
                           String description,
                           int... serviceItemIds);
 
     boolean isWorkStarted(Booking booking);
 
-    boolean addServiceToBooking(int bookingId, int serviceItemId);
+    //Alexander
+    //kastar exception om tjänsten inte kan läggas till/tas bort, istället för att svara false
+    void addServiceToBooking(int bookingId, int serviceItemId);
 
-    boolean removeServiceFromBooking(int bookingId, int serviceItemId);
+    void removeServiceFromBooking(int bookingId, int serviceItemId);
 
     List<ServiceItem> getServicesForBooking(int bookingId);
 
@@ -34,4 +38,3 @@ public interface BookingService {
     void updateStatus(Booking booking);
 
 }
-

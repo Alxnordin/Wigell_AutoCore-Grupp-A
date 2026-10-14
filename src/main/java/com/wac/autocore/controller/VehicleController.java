@@ -6,6 +6,7 @@ import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.service.interf.VehicleService;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.vehicle.VehicleListView;
 import com.wac.autocore.view.vehicle.VehicleView;
 import javafx.scene.Parent;
@@ -46,58 +47,39 @@ public class VehicleController {
         vehicleListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
     }
 
-    //kontrollerar formuläret och skapar fordonet via GarageSystem
+    //Alexander
+    //Controllern läser bara formuläret och anropar servicen.
+    //Kontrollerna ligger nu i VehicleServiceImpl, och fel visas via ErrorHandler.
     private void createVehicle() {
         Customer selectedCustomer = vehicleView.getCustomerComboBox().getValue();
-        String registrationNumber = vehicleView.getRegistrationNumberField().getText().trim();
-        String brand = vehicleView.getBrandField().getText().trim();
-        String model = vehicleView.getModelField().getText().trim();
-        String yearText = vehicleView.getYearField().getText().trim();
+        Integer customerId = selectedCustomer != null ? selectedCustomer.getId() : null;
 
-        if (selectedCustomer == null) {
-            showWarning(languageManager.getString("missingCustomerWarning"));
-            return;
-        }
-
-        if (registrationNumber.isEmpty() || brand.isEmpty() || model.isEmpty()) {
-            showWarning(languageManager.getString("missingVehicleDetailsWarning"));
-            return;
-        }
-
-        int year;
         try {
-            year = Integer.parseInt(yearText);
-        } catch (NumberFormatException e) {
-            showWarning(languageManager.getString("invalidYearWarning"));
-            return;
+            Vehicle vehicle = vehicleService.createVehicle(
+                    vehicleView.getRegistrationNumberField().getText(),
+                    vehicleView.getBrandField().getText(),
+                    vehicleView.getModelField().getText(),
+                    vehicleView.getYearField().getText(),
+                    customerId);
+
+            refreshVehicleList();
+            vehicleView.getCustomerComboBox().setValue(null);
+            vehicleView.getRegistrationNumberField().clear();
+            vehicleView.getBrandField().clear();
+            vehicleView.getModelField().clear();
+            vehicleView.getYearField().clear();
+
+            //listan ligger på en annan sida, så användaren får en bekräftelse här
+            showInformation(MessageFormat.format(languageManager.getString("vehicleCreatedInfo"),
+                    vehicle.getRegistrationNumber()));
+
+        } catch (Exception e) {
+            ErrorHandler.show(e);
         }
-
-        Vehicle vehicle = vehicleService.createVehicle(registrationNumber, brand, model, year, selectedCustomer.getId());
-
-        if (vehicle == null) {
-            showWarning(languageManager.getString("vehicleNotCreatedWarning"));
-            return;
-        }
-
-        refreshVehicleList();
-        vehicleView.getCustomerComboBox().setValue(null);
-        vehicleView.getRegistrationNumberField().clear();
-        vehicleView.getBrandField().clear();
-        vehicleView.getModelField().clear();
-        vehicleView.getYearField().clear();
-
-        //listan ligger på en annan sida, så användaren får en bekräftelse här
-        showInformation(MessageFormat.format(languageManager.getString("vehicleCreatedInfo"), registrationNumber));
     }
 
     private void refreshVehicleList() {
         vehicleListView.getVehicleTable().getItems().setAll(vehicleService.getVehicles());
-    }
-
-    private void showWarning(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING, message);
-        alert.setHeaderText(null);
-        alert.showAndWait();
     }
 
     private void showInformation(String message) {

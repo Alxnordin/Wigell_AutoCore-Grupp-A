@@ -10,11 +10,14 @@ public interface VehicleService {
 
     Vehicle findVehicle(int id);
 
+    //Alexander
+    //årsmodell tas emot som text och kund kan saknas (null), så att servicen
+    //validerar allt och kastar ValidationException/NotFoundException vid fel
     Vehicle createVehicle(String registrationNumber,
-                                 String brand,
-                                 String model,
-                                 int year,
-                                 int customerId);
+                          String brand,
+                          String model,
+                          String yearText,
+                          Integer customerId);
 
 
 }
