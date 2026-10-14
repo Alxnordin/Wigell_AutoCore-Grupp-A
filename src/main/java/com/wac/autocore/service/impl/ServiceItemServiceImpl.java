@@ -2,10 +2,11 @@ package com.wac.autocore.service.impl;
 
 import com.wac.autocore.dao.ServiceItemDAO;
 import com.wac.autocore.model.ServiceItem;
+import com.wac.autocore.service.interf.ServiceItemService;
 
 import java.util.List;
 
-public class ServiceItemService {
+public class ServiceItemServiceImpl implements ServiceItemService {
 
     private final ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
 
@@ -23,7 +24,6 @@ public class ServiceItemService {
         return null;
     }
 
-    //NY METOD FÖR ATT UPPDATERA PRIS
     public void changeServicePrice(int serviceItemId, double newPrice){
         if (newPrice <= 0){
             System.out.println("Select price higher than 0");

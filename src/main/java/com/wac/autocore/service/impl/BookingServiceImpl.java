@@ -1,10 +1,14 @@
 package com.wac.autocore.service.impl;
 
 import com.wac.autocore.dao.BookingDAO;
+import com.wac.autocore.exception.BusinessRuleException;
+import com.wac.autocore.exception.NotFoundException;
+import com.wac.autocore.exception.ValidationException;
 import com.wac.autocore.model.Booking;
 import com.wac.autocore.model.ServiceItem;
-import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.service.interf.BookingService;
+import com.wac.autocore.service.interf.ServiceItemService;
+import com.wac.autocore.service.interf.VehicleService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,10 +18,10 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingDAO bookingDAO =  new BookingDAO();
 
-    private final VehicleServiceImpl vehicleService;
+    private final VehicleService vehicleService;
     private final ServiceItemService serviceItemService;
 
-    public BookingServiceImpl(VehicleServiceImpl vehicleService, ServiceItemService serviceItemService) {
+    public BookingServiceImpl(VehicleService vehicleService, ServiceItemService serviceItemService) {
         this.vehicleService = vehicleService;
         this.serviceItemService = serviceItemService;
     }
@@ -36,26 +40,32 @@ public class BookingServiceImpl implements BookingService {
         return null;
     }
 
-    public Booking createBooking(int vehicleId,
+    //Alexander
+    //validerar bokningen och kastar exception vid fel, så att controllern bara visar felet via ErrorHandler.
+    //ValidationException = något saknas i formuläret, NotFoundException = fordon/tjänst finns inte
+    public Booking createBooking(Integer vehicleId,
                                  LocalDate date,
                                  String description,
                                  int... serviceItemIds) {
 
-        Vehicle vehicle = vehicleService.findVehicle(vehicleId);
+        if (vehicleId == null) {
+            throw new ValidationException("missingVehicleWarning");
+        }
+        validateBookingDate(date);
 
-        if (vehicle == null) {
-            System.out.println("Vehicle with ID " + vehicleId + " does not exist.");
-            return null;
+        if (serviceItemIds == null || serviceItemIds.length == 0) {
+            throw new ValidationException("noServiceSelectedWarning");
         }
 
-        //Valda tjänster måste finnas
+        if (vehicleService.findVehicle(vehicleId) == null) {
+            throw new NotFoundException("vehicleNotFoundError", String.valueOf(vehicleId));
+        }
+
+        //valda tjänster måste finnas
         for (int serviceItemId : serviceItemIds) {
-
-            if (serviceItemService.findServiceItem(serviceItemId) == null) {
-                System.out.println("Service item with ID " + serviceItemId + " does not exist.");
-                return null;
-            }
+            requireServiceItem(serviceItemId);
         }
+
         //Alexander - ändrat
         Booking booking = new Booking(
                 0,
@@ -70,11 +80,7 @@ public class BookingServiceImpl implements BookingService {
         }
         bookingDAO.save(booking); //sparar bokning + tjänster i en transaktion (commit/rollback);
 
-        System.out.println("Booking created successfully.");
-        System.out.println(booking);
-
         return booking;
-
     }
 
     //arbetet räknas som påbörjat när arbetsordern har startats
@@ -85,62 +91,32 @@ public class BookingServiceImpl implements BookingService {
     }
 
     //lägg till en tjänst i en bokning, bara innan arbetet har påbörjats
-    public boolean addServiceToBooking(int bookingId, int serviceItemId) {
-        Booking booking = findBooking(bookingId);
-
-        if (booking == null) {
-            System.out.println("Booking with ID " + bookingId + " does not exist.");
-            return false;
-        }
-
-        if (isWorkStarted(booking)) {
-           System.out.println("Work on booking " + bookingId + " has started. Services can no longer be changed.");
-           return false;
-        }
-
-        if (serviceItemService.findServiceItem(serviceItemId) == null) {
-            System.out.println("Service item with ID " + serviceItemId + " does not exist.");
-            return false;
-        }
+    //Alexander: verksamhetsregler bryts -> BusinessRuleException
+    public void addServiceToBooking(int bookingId, int serviceItemId) {
+        Booking booking = requireEditableBooking(bookingId);
+        requireServiceItem(serviceItemId);
 
         if (booking.containsServiceItem(serviceItemId)) {
-            System.out.println("Service item " + serviceItemId + " is already in booking " + bookingId + ".");
-            return false;
+            throw new BusinessRuleException("serviceAlreadyInBookingWarning");
         }
 
         bookingDAO.addServiceItem(bookingId, serviceItemId);
-        System.out.println("Service item " + serviceItemId + " added to booking " + bookingId + ".");
-        return true;
     }
 
     //ta bort en tjänst från en bokning, bara innan arbetet har påbörjats
     //en bokning ska innehålla minst en tjänst, så den sista kan inte tas bort
-    public boolean removeServiceFromBooking(int bookingId, int serviceItemId) {
-        Booking booking = findBooking(bookingId);
-
-        if (booking == null) {
-            System.out.println("Booking with ID " + bookingId + " does not exist.");
-            return false;
-        }
-
-        if (isWorkStarted(booking)) {
-               System.out.println("Work on booking " + bookingId + " has started. Services can no longer be changed.");
-               return false;
-        }
+    public void removeServiceFromBooking(int bookingId, int serviceItemId) {
+        Booking booking = requireEditableBooking(bookingId);
 
         if (!booking.containsServiceItem(serviceItemId)) {
-            System.out.println("Service item " + serviceItemId + " is not in booking " + bookingId + ".");
-            return false;
+            throw new BusinessRuleException("serviceNotInBookingError");
         }
 
         if (booking.getServiceItemIds().size() <= 1) {
-            System.out.println("A booking must contain at least one service.");
-            return false;
+            throw new BusinessRuleException("lastServiceWarning");
         }
 
         bookingDAO.removeServiceItem(bookingId, serviceItemId);
-        System.out.println("Service item " + serviceItemId + " removed from booking " + bookingId + ".");
-        return true;
     }
 
     //gör om bokningens tjänste-ID:n till hela ServiceItem-objekt (namn, pris, tid)
@@ -189,27 +165,20 @@ public class BookingServiceImpl implements BookingService {
 
         Booking original = findBooking(originalBookingId);
 
-        if(original == null){
-            System.out.println("Original booking does not exist.");
-            return null;
-        }
-        Vehicle vehicle = vehicleService.findVehicle(original.getVehicleId());
-
-        if (vehicle == null){
-            System.out.println("Vehicle does not exist.");
-            return null;
+        if (original == null) {
+            throw new NotFoundException("bookingNotFoundError", String.valueOf(originalBookingId));
         }
 
-        if (newDate == null || newDate.isBefore(LocalDate.now())){
-            System.out.println("New booking date is invalid.");
-            return null;
+        if (vehicleService.findVehicle(original.getVehicleId()) == null) {
+            throw new NotFoundException("vehicleNotFoundError", String.valueOf(original.getVehicleId()));
         }
-        for (int serviceItemId : original.getServiceItemIds()){
-            if (serviceItemService.findServiceItem(serviceItemId) == null){
-                System.out.println("Service item " + serviceItemId + " does not exist.");
-                return null;
-            }
+
+        validateBookingDate(newDate);
+
+        for (int serviceItemId : original.getServiceItemIds()) {
+            requireServiceItem(serviceItemId);
         }
+
         Booking newBooking = original.cloneBooking();
         newBooking.setId(0);
         newBooking.setDate(newDate);
@@ -218,12 +187,39 @@ public class BookingServiceImpl implements BookingService {
 
         bookingDAO.save(newBooking);
 
-        System.out.println("New booking created from previous booking");
-        System.out.println(newBooking);
-
         return newBooking;
     }
 
+    //Alexander
+    //hjälpmetoder så att samma regel bara skrivs på ett ställe
 
+    //datum måste vara valt och får inte ligga bakåt i tiden
+    private void validateBookingDate(LocalDate date) {
+        if (date == null) {
+            throw new ValidationException("missingDateWarning");
+        }
+        if (date.isBefore(LocalDate.now())) {
+            throw new ValidationException("bookingDateInPastError");
+        }
+    }
 
+    //tjänsten måste finnas
+    private void requireServiceItem(int serviceItemId) {
+        if (serviceItemService.findServiceItem(serviceItemId) == null) {
+            throw new NotFoundException("serviceItemNotFoundError", String.valueOf(serviceItemId));
+        }
+    }
+
+    //bokningen måste finnas och arbetet får inte ha påbörjats
+    private Booking requireEditableBooking(int bookingId) {
+        Booking booking = findBooking(bookingId);
+
+        if (booking == null) {
+            throw new NotFoundException("bookingNotFoundError", String.valueOf(bookingId));
+        }
+        if (isWorkStarted(booking)) {
+            throw new BusinessRuleException("bookingLockedInfo");
+        }
+        return booking;
+    }
 }

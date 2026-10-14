@@ -4,7 +4,7 @@ import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.service.interf.CustomerService;
-import com.wac.autocore.service.impl.VehicleServiceImpl;
+import com.wac.autocore.service.interf.VehicleService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.vehicle.VehicleListView;
@@ -17,7 +17,7 @@ import java.text.MessageFormat;
 
 public class VehicleController {
 
-    private final VehicleServiceImpl vehicleService;
+    private final VehicleService vehicleService;
     private final CustomerService customerService;
 
     private final AutoCoreApplication app;
@@ -26,7 +26,7 @@ public class VehicleController {
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
-    public VehicleController(VehicleServiceImpl vehicleService, CustomerService customerService,
+    public VehicleController(VehicleService vehicleService, CustomerService customerService,
                              AutoCoreApplication app, VehicleView vehicleView,
                              VehicleListView vehicleListView) {
         this.customerService = customerService;

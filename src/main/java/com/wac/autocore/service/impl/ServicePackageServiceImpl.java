@@ -2,18 +2,21 @@ package com.wac.autocore.service.impl;
 
 import com.wac.autocore.dao.ServicePackageDAO;
 import com.wac.autocore.model.ServicePackage;
+import com.wac.autocore.service.interf.ServiceItemService;
+import com.wac.autocore.service.interf.ServicePackageService;
+
 import java.util.List;
 
 //Alexander'
 //Servicepaket: hämtar, skapar och ändrar paket
 //paketet är en mall. Bokningar som redan skapats från ett paket påverkas inte när paketet ändras
-public class ServicePackageService {
+public class ServicePackageServiceImpl implements ServicePackageService {
 
     private final ServicePackageDAO servicePackageDAO = new ServicePackageDAO();
 
     private final ServiceItemService serviceItemService;
 
-    public ServicePackageService (ServiceItemService serviceItemService) {
+    public ServicePackageServiceImpl(ServiceItemService serviceItemService) {
         this.serviceItemService = serviceItemService;
     }
 

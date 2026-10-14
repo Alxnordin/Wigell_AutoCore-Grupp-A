@@ -16,7 +16,7 @@ public class InvoiceController {
     private final InvoiceService invoiceService;
     private final WorkOrderService workOrderService;
     private final BookingService bookingService;
-    private final VehicleServiceImpl vehicleService;
+    private final VehicleService vehicleService;
     private final CustomerService customerService;
     private final MechanicService mechanicService;
     private final InvoiceLineService invoiceLineService;
@@ -26,7 +26,7 @@ public class InvoiceController {
     private final InvoiceView invoiceView;
 
     public InvoiceController(InvoiceService invoiceService, WorkOrderService workOrderService,
-                             BookingService bookingService, VehicleServiceImpl vehicleService,
+                             BookingService bookingService, VehicleService vehicleService,
                              CustomerService customerService, MechanicService mechanicService,
                              InvoiceLineService invoiceLineService, AutoCoreApplication app,
                              InvoiceListView invoiceListView, InvoiceView invoiceView) {
@@ -67,7 +67,7 @@ public class InvoiceController {
 
         invoiceListView.setOnViewInvoice(invoice -> {
 
-            WorkOrder workOrder = workOrderService.findWorkOrder(invoice.getWorkOrderId());
+            WorkOrder workOrder = workOrderService.findWorkOrder(invoice.getId());
             if (workOrder == null) {
                 return;
             }
