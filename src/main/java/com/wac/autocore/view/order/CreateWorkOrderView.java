@@ -616,7 +616,12 @@ public class CreateWorkOrderView {
         // Knappar
         backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
 
-        nextButton = new Button(languageManager.getString("nextButton"));
+        // Visar rätt knapptext beroende på om ett utkast redigeras.
+        String nextButtonText = "draft".equals(orderType)
+                ? languageManager.getString("completeDraft")
+                : languageManager.getString("nextButton");
+
+        nextButton = new Button(nextButtonText);
         nextButton.getStyleClass().add("create-order-button");
 
         saveDraftButton = new Button(languageManager.getString("saveDraft"));
@@ -679,6 +684,10 @@ public class CreateWorkOrderView {
             case "warranty":
                 return languageManager.getString("createWarrantyOrderTitle");
 
+            case "draft":
+                // Visar en särskild rubrik när ett utkast redigeras.
+                return languageManager.getString("editDraftOrderTitle");
+
             default:
                 return languageManager.getString("createWorkOrderTitle");
         }
@@ -694,6 +703,10 @@ public class CreateWorkOrderView {
 
             case "warranty":
                 return languageManager.getString("createWarrantyOrderSubtitle");
+
+            case "draft":
+                // Förklarar att användaren fortsätter med ett sparat utkast.
+                return languageManager.getString("editDraftOrderSubtitle");
 
             default:
                 return languageManager.getString("createWorkOrderSubtitle");
@@ -908,5 +921,7 @@ public class CreateWorkOrderView {
         backButton.setText(languageManager.getString("backButton"));
         nextButton.setText(languageManager.getString("nextButton"));
         saveDraftButton.setText(languageManager.getString("saveDraft"));
+
+        nextButton.setText(languageManager.getString("draft".equals(orderType) ? "completeDraft" : "nextButton"));
     }
 }

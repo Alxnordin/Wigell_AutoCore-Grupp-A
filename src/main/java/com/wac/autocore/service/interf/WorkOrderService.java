@@ -44,8 +44,23 @@ public interface WorkOrderService {
                                            int mechanicId,
                                            int... serviceItemIds);
 
-   WorkOrder createDraftWorkOrder(int customerId, int vehicleId,
-                                          String description);
+    // Skapar ett nytt utkast med valda tjänster.
+    WorkOrder createDraftWorkOrder(
+            int customerId,
+            int vehicleId,
+            String description,
+            int mechanicId,
+            int... serviceItemIds
+    );
+
+    // Sparar ändringar på en befintlig draft.
+    WorkOrder updateDraftWorkOrder(
+            int workorderId,
+            int customerId,
+            int vehicleId,
+            String description,
+            Integer mechanicId,
+            int... serviceItemIds);
 
    WorkOrder completeDraftWorkOrder(int workOrderId,
                                             int mechanicId,

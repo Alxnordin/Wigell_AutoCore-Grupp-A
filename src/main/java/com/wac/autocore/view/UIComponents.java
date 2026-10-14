@@ -507,6 +507,11 @@ public class UIComponents {
                 statusLabel.getStyleClass().add("status-completed");
                 break;
 
+            case "Draft":
+            case "Utkast":
+                statusLabel.getStyleClass().add("status-draft");
+                break;
+
             case "BOOKED":
                 statusLabel.getStyleClass().add("status-booked");
                 break;
