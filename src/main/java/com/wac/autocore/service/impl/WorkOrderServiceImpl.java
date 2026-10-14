@@ -2,9 +2,7 @@ package com.wac.autocore.service.impl;
 
 import com.wac.autocore.dao.WorkOrderDAO;
 import com.wac.autocore.model.*;
-import com.wac.autocore.service.interf.BookingService;
-import com.wac.autocore.service.interf.CustomerService;
-import com.wac.autocore.service.interf.MechanicService;
+import com.wac.autocore.service.interf.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,11 +16,11 @@ public class WorkOrderService {
     private final MechanicService mechanicService;
     private final ServiceItemService serviceItemService;
     private final CustomerService customerService;
-    private final VehicleServiceImpl vehicleService;
+    private final VehicleService vehicleService;
 
     public WorkOrderService(BookingService bookingService, MechanicService mechanicService,
                             ServiceItemService serviceItemService,
-                            CustomerService customerService, VehicleServiceImpl vehicleService) {
+                            CustomerService customerService, VehicleService vehicleService) {
         this.bookingService = bookingService;
         this.mechanicService = mechanicService;
         this.serviceItemService = serviceItemService;

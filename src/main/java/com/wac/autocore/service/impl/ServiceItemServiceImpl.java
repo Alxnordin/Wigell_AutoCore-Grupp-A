@@ -23,7 +23,6 @@ public class ServiceItemService {
         return null;
     }
 
-    //NY METOD FÖR ATT UPPDATERA PRIS
     public void changeServicePrice(int serviceItemId, double newPrice){
         if (newPrice <= 0){
             System.out.println("Select price higher than 0");
