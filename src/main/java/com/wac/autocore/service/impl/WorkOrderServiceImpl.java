@@ -1,5 +1,8 @@
 package com.wac.autocore.service.impl;
 
+import com.wac.autocore.exception.BusinessRuleException;
+import com.wac.autocore.exception.NotFoundException;
+import com.wac.autocore.exception.ValidationException;
 import com.wac.autocore.model.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.repository.WorkOrderRepository;
@@ -102,8 +105,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         //mekanikern får inte redan ha en arbetsorder samma dag som bokningen
         if (isMechanicBookedOnDate(mechanicId, booking.getDate(), bookingId)) {
-            System.out.println("Mechanic " + mechanic.getName() + " is already booked on " + booking.getDate() + ".");
-            return null;
+            System.out.println("Mechanic " + mechanic.getName() +
+                    " is already booked on " + booking.getDate() + ".");
+            throw new BusinessRuleException("mechanicAlreadyBookedError",
+                    mechanic.getName(), booking.getDate());
+//            return null;
         }
 
         if (serviceItemIds == null || serviceItemIds.length == 0) {
@@ -157,6 +163,17 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         workOrderRepository.removeServiceItem(workOrder.getId(), serviceItemId);
 
         System.out.println("ServiceItem " + serviceItemId + " removed from workOrder " + workOrder.getId());
+    }
+
+    //Det här fungerar inte eftersom vi ju inte sparar datum för workorder.
+    //Datum måste vara valt och får inte ligga bakåt i tiden
+    private void validateWorkOrderDate(LocalDate date) {
+        if (date == null) {
+            throw new ValidationException("missingDateWarning");
+        }
+        if (date.isBefore(LocalDate.now())) {
+            throw new ValidationException("workOrderDateInPastError");
+        }
     }
 
     // Kontrollera mekaniker
@@ -359,12 +376,13 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         if(original == null){
             System.out.println("WorkOrder with ID " + originalWorkOrderId + " does not exist.");
-            return null;
+            throw new NotFoundException("workOrderNotFoundError", String.valueOf(originalWorkOrderId));
+            //return null;
         }
 
         if(!original.getStatus().equals("COMPLETED")){
             System.out.println("A complaint can only be created for a completed work order");
-            return null;
+            throw new BusinessRuleException("complaintMusHaveStatusCompleted");
         }
         WorkOrder complaint = original.clone();
 

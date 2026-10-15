@@ -1,5 +1,6 @@
 package com.wac.autocore.service.impl;
 
+import com.wac.autocore.exception.BusinessRuleException;
 import com.wac.autocore.exception.NotFoundException;
 import com.wac.autocore.exception.ValidationException;
 import com.wac.autocore.model.Customer;
@@ -56,6 +57,10 @@ public class VehicleServiceImpl implements VehicleService {
         Validator.requireText(registrationNumber, "missingVehicleDetailsWarning");
         Validator.requireText(brand, "missingVehicleDetailsWarning");
         Validator.requireText(model, "missingVehicleDetailsWarning");
+
+//        if (vehicleRepository.existsByRegistrationNumber(registrationNumber)) {
+//            throw new BusinessRuleException("Registration number already exists");
+//        }
 
         int year = Validator.requireInteger(yearText, "invalidYearWarning");
         Validator.requireRange(year, FIRST_MODEL_YEAR, Year.now().getValue() + 1, "invalidYearRangeError");

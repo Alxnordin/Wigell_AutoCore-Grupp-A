@@ -2,6 +2,7 @@ package com.wac.autocore.service.impl;
 
 import com.wac.autocore.dao.*;
 import com.wac.autocore.model.WorkOrder;
+import com.wac.autocore.repository.WorkOrderRepository;
 import com.wac.autocore.service.interf.*;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WorkOrderServiceIntegrationTest {
 
-    private WorkOrderDAO workOrderDAO;
+    private WorkOrderRepository workOrderRepository;
 
     private BookingService bookingService;
     private MechanicService mechanicService;
@@ -20,8 +21,7 @@ public class WorkOrderServiceIntegrationTest {
 
     public WorkOrderServiceIntegrationTest() {
 
-        //Alla DAO
-        workOrderDAO = new WorkOrderDAO();
+        workOrderRepository = new WorkOrderDAO();
 
         CustomerDAO customerDAO = new CustomerDAO();
         VehicleDAO vehicleDAO = new VehicleDAO();
@@ -29,14 +29,13 @@ public class WorkOrderServiceIntegrationTest {
         MechanicDAO mechanicDAO = new MechanicDAO();
         ServiceItemDAO serviceItemDAO = new ServiceItemDAO();
 
-        //Alla servicar
         customerService = new CustomerServiceImpl(customerDAO);
         vehicleService = new VehicleServiceImpl(vehicleDAO, customerService);
         mechanicService = new MechanicServiceImpl(mechanicDAO);
         serviceItemService = new ServiceItemServiceImpl(serviceItemDAO);
         bookingService = new BookingServiceImpl(bookingDAO, vehicleService, serviceItemService);
 
-        workOrderService = new WorkOrderServiceImpl(workOrderDAO,
+        workOrderService = new WorkOrderServiceImpl(workOrderRepository,
                 bookingService, mechanicService,
                 serviceItemService, customerService, vehicleService);
     }
