@@ -38,4 +38,23 @@ public class Validator {
         }
     }
 
+    //Alexander
+    //decimaltal, t.ex. ett pris: får inte vara tomt och måste gå att tolka som tal.
+    //både 1200.50 och 1200,50 godkänns, eftersom svenska användare skriver komma.
+    public static double requireDecimal(String value, String messageKey) {
+        requireText(value, messageKey);
+        try {
+            return Double.parseDouble(value.trim().replace(',','.'));
+        } catch (NumberFormatException e) {
+            throw new ValidationException(messageKey);
+        }
+    }
+
+    //Alexander
+    //talet måste vara större än 0, t.ex pris eller tid
+    public static void requirePositive(double value, String messageKey) {
+        if (value <= 0) {
+            throw new ValidationException(messageKey);
+        }
+    }
 }
