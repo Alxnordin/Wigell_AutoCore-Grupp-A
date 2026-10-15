@@ -304,7 +304,7 @@ public class OrderDetailsView {
         //ta bort tjänst från en workorder
 
         deleteServiceColumn.setCellFactory(column -> new TableCell<ServiceItem, Button>(){
-                    private final Button deleteButton = new Button(languageManager.getString("deleteServiceInTable"));{
+            private final Button deleteButton = UIComponents.createDeleteButton();{
                         //Lägger till att status måste vara created för deleteService-knappen
                         deleteButton.setDisable(!"CREATED".equals(workOrder.getStatus()));
                         deleteButton.setOnAction(event -> {

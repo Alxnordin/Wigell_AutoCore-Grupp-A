@@ -346,162 +346,98 @@ public class OrderController {
                     );
 
 
-            // När användaren väljer en ursprunglig arbetsorder
-            createWorkOrderView
-                    .getOriginalWorkOrderComboBox()
+
+            createWorkOrderView.getOriginalWorkOrderComboBox()
                     .setOnAction(event -> {
 
                         WorkOrder selectedWorkOrder =
-                                createWorkOrderView
-                                        .getOriginalWorkOrderComboBox()
-                                        .getValue();
+                                createWorkOrderView.getOriginalWorkOrderComboBox().getValue();
 
                         if (selectedWorkOrder == null) {
                             return;
                         }
 
-                        System.out.println("Mechanic-id from original word-order: " +
-                                selectedWorkOrder.getMechanicId());
-
-
-
-                        // Debug - visar vilka ID:n originalordern innehåller
-                        System.out.println(
-                                "=== WARRANTY DEBUG ==="
-                        );
-
-                        System.out.println(
-                                "WorkOrder ID: "
-                                        + selectedWorkOrder.getId()
-                        );
-
-                        System.out.println(
-                                "Booking ID: "
-                                        + selectedWorkOrder.getBookingId()
-                        );
-
-                        System.out.println(
-                                "Customer ID: "
-                                        + selectedWorkOrder.getCustomerId()
-                        );
-
-                        System.out.println(
-                                "Vehicle ID: "
-                                        + selectedWorkOrder.getVehicleId()
-                        );
-
-                        System.out.println(
-                                "Mechanic ID: "
-                                        + selectedWorkOrder.getMechanicId()
-                        );
-
-
-                        // Hämta den ursprungliga bokningen
+                        // Hämtar bokningen om arbetsordern har en sådan.
                         Booking originalBooking = null;
-
                         if (selectedWorkOrder.getBookingId() != null) {
-
-                            originalBooking =
-                                    bookingService.findBooking(
-                                            selectedWorkOrder
-                                                    .getBookingId()
-                                    );
+                            originalBooking = bookingService.findBooking(
+                                    selectedWorkOrder.getBookingId()
+                            );
                         }
 
+                        // Hämtar fordonet från bokningen eller arbetsordern.
+                        int vehicleId = originalBooking != null
+                                ? originalBooking.getVehicleId()
+                                : selectedWorkOrder.getVehicleId();
 
-                        Vehicle vehicle = null;
-                        Customer customer = null;
+                        Vehicle vehicle = vehicleId > 0
+                                ? vehicleService.findVehicle(vehicleId)
+                                : null;
 
+                        // Hämtar kunden från arbetsordern, med fordonet som reserv.
+                        int customerId = selectedWorkOrder.getCustomerId();
+                        Customer customer = customerId > 0
+                                ? customerService.findCustomer(customerId)
+                                : null;
 
-                        // Kund och fordon hämtas från originalbokningen
-                        if (originalBooking != null) {
-
-                            vehicle =
-                                    vehicleService.findVehicle(
-                                            originalBooking.getVehicleId()
-                                    );
-
-
-                            if (vehicle != null) {
-
-                                customer =
-                                        customerService.findCustomer(
-                                                vehicle.getCustomerId()
-                                        );
-                            }
-
-
+                        if (customer == null && vehicle != null) {
+                            customer = customerService.findCustomer(
+                                    vehicle.getCustomerId()
+                            );
                         }
 
+                        // Uppdaterar vald kund och fordon vid varje byte av originalorder.
+                        createWorkOrderView.getVehicleComboBox().getItems().clear();
+                        createWorkOrderView.getCustomerComboBox().getItems().clear();
 
-                        // Fyll i Vehicle
                         if (vehicle != null) {
-
-                            createWorkOrderView
-                                    .getVehicleComboBox()
-                                    .getItems()
-                                    .clear();
-
-                            createWorkOrderView
-                                    .getVehicleComboBox()
-                                    .getItems()
-                                    .add(vehicle);
-
-                            createWorkOrderView
-                                    .getVehicleComboBox()
-                                    .setValue(vehicle);
+                            createWorkOrderView.getVehicleComboBox().getItems().add(vehicle);
+                            createWorkOrderView.getVehicleComboBox().setValue(vehicle);
+                        } else {
+                            createWorkOrderView.getVehicleComboBox().setValue(null);
                         }
 
-
-                        // Fyll i Customer
                         if (customer != null) {
-
-                            createWorkOrderView
-                                    .getCustomerComboBox()
-                                    .getItems()
-                                    .clear();
-
-                            createWorkOrderView
-                                    .getCustomerComboBox()
-                                    .getItems()
-                                    .add(customer);
-
-                            createWorkOrderView
-                                    .getCustomerComboBox()
-                                    .setValue(customer);
+                            createWorkOrderView.getCustomerComboBox().getItems().add(customer);
+                            createWorkOrderView.getCustomerComboBox().setValue(customer);
+                        } else {
+                            createWorkOrderView.getCustomerComboBox().setValue(null);
                         }
 
+                        // Hämtar mekanikern utan att riskera null-fel.
+                        Mechanic mechanic = selectedWorkOrder.getMechanicId() > 0
+                                ? mechanicService.findMechanic(
+                                selectedWorkOrder.getMechanicId())
+                                : null;
 
-                        // Hämta mekanikern från originalordern
-                        Mechanic mechanic =
-                                mechanicService.findMechanic(
-                                        selectedWorkOrder
-                                                .getMechanicId()
-                                );
-
-
-                        // Visa originalbokningens beskrivning
-                        if (originalBooking != null) {
-
-                            createWorkOrderView
-                                    .getDescriptionField()
-                                    .setText(
-                                            originalBooking.getDescription()
-                                    );
+                        if (mechanic != null) {
+                            createWorkOrderView.getMechanicComboBox().setValue(mechanic);
+                        } else {
+                            createWorkOrderView.getMechanicComboBox().setValue(null);
                         }
 
+                        // Använder arbetsorderns beskrivning först.
+                        String description = selectedWorkOrder.getDescription();
 
-                        // Visa information om originalordern
+                        // Hämtar bokningens text endast om arbetsordern saknar beskrivning.
+                        if ((description == null || description.trim().isEmpty())
+                                && originalBooking != null) {
+                            description = originalBooking.getDescription();
+                        }
+
+                        createWorkOrderView.getDescriptionField().setText(
+                                description != null ? description : ""
+                        );
+
+                        // Uppdaterar översikten med den valda originalordern.
                         createWorkOrderView.showOriginalWorkOrder(
                                 selectedWorkOrder,
                                 customer,
                                 vehicle,
                                 mechanic
                         );
-
-                        System.out.println("Work order-id: "
-                                + "\nMechanic name: " + mechanic.getName());
                     });
+
         }
 
 
@@ -707,6 +643,8 @@ public class OrderController {
 
         // Färdigställer utkastet när användaren väljer Next.
         view.getNextButton().setOnAction(event -> {
+            // Kontrollerar att klicket når händelsehanteraren.
+            System.out.println("COMPLETE DRAFT BUTTON CLICKED");
             Mechanic mechanic = view.getMechanicComboBox().getValue();
 
             if (mechanic == null) {
@@ -731,7 +669,9 @@ public class OrderController {
                     serviceIds
             );
 
+
             if (completedDraft != null) {
+                // Visar bekräftelse när utkastet har färdigställts.
                 showInformation(
                         MessageFormat.format(
                                 languageManager.getString("workOrderCreatedInfo"),
@@ -740,7 +680,11 @@ public class OrderController {
                 );
 
                 showOrderList();
+            } else {
+                // Visar felruta om utkastet inte kunde färdigställas.
+                showWarning(languageManager.getString("mechanicNotAvailable"));
             }
+
         });
 
         // Visar det förifyllda formuläret.
