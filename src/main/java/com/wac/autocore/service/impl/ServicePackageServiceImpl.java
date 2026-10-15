@@ -1,5 +1,8 @@
 package com.wac.autocore.service.impl;
 
+import com.wac.autocore.exception.BusinessRuleException;
+import com.wac.autocore.exception.NotFoundException;
+import com.wac.autocore.validation.Validator;
 import com.wac.autocore.model.ServicePackage;
 import com.wac.autocore.service.interf.ServiceItemService;
 import com.wac.autocore.service.interf.ServicePackageService;
@@ -37,64 +40,53 @@ public class ServicePackageServiceImpl implements ServicePackageService {
     }
 
     //skapar ett nytt tomt paket. Namnet måste finnas & får ej vara tomt
+    //Alexander: tomt namn -> ValidationException, namnet redan upptaget -> BusinessRuleException
     public ServicePackage createServicePackage(String name) {
-        if (name==null|| name.trim().isEmpty()) {
-            System.out.println("Service package name is missing");
-            return null;
-        }
+        Validator.requireText(name, "packageNameRequiredError");
+
         for (ServicePackage servicePackage : servicePackageRepository.findAll()) {
             if (servicePackage.getName().equalsIgnoreCase(name.trim())) {
-                System.out.println("Service package " + name.trim() + " already exists");
-                return null;
+                throw new BusinessRuleException("packageNameExistsError", name.trim());
             }
         }
 
-        ServicePackage servicePackage = servicePackageRepository.save(new ServicePackage(0, name.trim()));
-        System.out.println("Service package created: " + servicePackage);
-        return servicePackage;
+        return servicePackageRepository.save(new ServicePackage(0, name.trim()));
     }
 
     //lägger till en befintlig tjänst i ett paket
-    public boolean addServiceToPackage(int servicePackageId, int serviceItemId) {
-        ServicePackage servicePackage = findServicePackage(servicePackageId);
-
-        if (servicePackage == null) {
-            System.out.println("Service package with ID " + servicePackageId +
-                " does not exist.");
-            return false;
-        }
+    public void addServiceToPackage(int servicePackageId, int serviceItemId) {
+        ServicePackage servicePackage = requireServicePackage(servicePackageId);
 
         if (serviceItemService.findServiceItem(serviceItemId) == null) {
-            System.out.println("Service item with ID " + serviceItemId + " does not exist.");
-            return false;
+            throw new NotFoundException("serviceItemNotFoundError", String.valueOf(serviceItemId));
         }
 
         if (servicePackage.containsServiceItem(serviceItemId)) {
-            System.out.println("Service item " + serviceItemId + " is already in service package " + servicePackageId + ".");
-            return false;
+            throw new BusinessRuleException("serviceAlreadyInPackageWarning");
         }
 
         servicePackageRepository.addServiceItem(servicePackageId, serviceItemId);
-        System.out.println("Service item " + serviceItemId + " added to service package " + servicePackageId + ".");
-        return true;
     }
 
     //tar bort en tjänst från ett paket
-    public boolean removeServiceFromPackage(int servicePackageId, int serviceItemId) {
-        ServicePackage servicePackage = findServicePackage(servicePackageId);
-
-        if (servicePackage == null) {
-            System.out.println("Service package with ID " + servicePackageId + " does not exist.");
-            return false;
-        }
+    public void removeServiceFromPackage(int servicePackageId, int serviceItemId) {
+        ServicePackage servicePackage = requireServicePackage(servicePackageId);
 
         if (!servicePackage.containsServiceItem(serviceItemId)) {
-            System.out.println("Service item " + serviceItemId + " is not in service package " + servicePackageId + ".");
-            return false;
+            throw new BusinessRuleException("serviceNotInPackageError");
         }
 
         servicePackageRepository.removeServiceItem(servicePackageId, serviceItemId);
-        System.out.println("Service item " + serviceItemId + " removed from service package " + servicePackageId + ".");
-        return true;
+    }
+
+    //Alexander
+    //paketet måste finnas - samma kontroll används av add och remove
+    private ServicePackage requireServicePackage(int servicePackageId) {
+        ServicePackage servicePackage = findServicePackage(servicePackageId);
+
+        if (servicePackage == null) {
+            throw new NotFoundException("packageNotFoundError", String.valueOf(servicePackageId));
+        }
+        return servicePackage;
     }
 }

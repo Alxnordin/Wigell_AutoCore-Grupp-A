@@ -10,7 +10,9 @@ public interface ServiceItemService {
 
     ServiceItem findServiceItem(int id);
 
-    void changeServicePrice(int serviceItemId, double newPrice);
+    //Alexander
+    //priset tas emot som text och valideras i servicen, kastar exception vid fel
+    void changeServicePrice(int serviceItemId, String priceText);
 
 
 

@@ -8,6 +8,7 @@ import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.WorkOrder;
+import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.mechanic.MechanicView;
 import com.wac.autocore.view.service.ServiceItemView;
 import javafx.scene.Parent;
@@ -93,17 +94,17 @@ public class ServiceController {
             dialog.setHeaderText(serviceItem.getName());
             dialog.setContentText(languageManager.getString("newPrice"));
 
+            //Alexander
+            //servicen tolkar och kontrollerar priset. Vid fel visas orsaken via ErrorHandler
+            //(tidigare skrevs felet bara ut i konsolen och användaren såg ingenting)
             dialog.showAndWait().ifPresent(input -> {
-                        try {
-                            double newPrice = Double.parseDouble(input);
-                            serviceItemService.changeServicePrice(serviceItem.getId(), newPrice);
-                            refreshLists();
-                        }catch(NumberFormatException e) {
-                            System.out.println("Invalid price: " + input);
-                        }
-                    }
-
-            );
+                try {
+                    serviceItemService.changeServicePrice(serviceItem.getId(), input);
+                    refreshLists();
+                } catch (Exception e) {
+                    ErrorHandler.show(e);
+                }
+            });
         });
     }
 

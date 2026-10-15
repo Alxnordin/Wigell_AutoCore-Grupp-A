@@ -6,6 +6,7 @@ import com.wac.autocore.model.ServicePackage;
 import com.wac.autocore.service.interf.ServiceItemService;
 import com.wac.autocore.service.interf.ServicePackageService;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.service.ServicePackageView;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
@@ -52,16 +53,18 @@ public class ServicePackageController {
     private void createPackage() {
         String name = servicePackageView.getPackageNameField().getText();
 
-        //ServicePackageService kontrollerar namnet (tomt eller redan upptaget ger null)
-        ServicePackage servicePackage = servicePackageService.createServicePackage(name);
-        if (servicePackage == null) {
-            showWarning(languageManager.getString("packageNotCreatedWarning"));
-            return;
-        }
+        //Alexander
+        //ServicePackageService kontrollerar namnet och kastar exception vid fel,
+        //som visas via ErrorHandler med orsaken (tomt namn eller redan upptaget)
+        try {
+            ServicePackage servicePackage = servicePackageService.createServicePackage(name);
 
-        servicePackageView.getPackageNameField().clear();
-        refreshPackageList();
-        selectPackage(servicePackage.getId());
+            servicePackageView.getPackageNameField().clear();
+            refreshPackageList();
+            selectPackage(servicePackage.getId());
+        } catch (Exception e) {
+            ErrorHandler.show(e);
+        }
     }
 
     //visar tjänsterna i det paket som är markerat
@@ -95,20 +98,15 @@ public class ServicePackageController {
             return;
         }
 
-        if (servicePackage.containsServiceItem(service.getId())) {
-            showWarning(languageManager.getString("serviceAlreadyInPackageWarning"));
-            return;
-        }
-
         //ServicePackageService kontrollerar reglerna och sparar i databasen
-        if (!servicePackageService.addServiceToPackage(servicePackage.getId(),
-                service.getId())) {
-            showWarning(languageManager.getString("packageChangeFailedWarning"));
-
+        //Alexander: bryts en regel (t.ex. tjänsten finns redan) visas orsaken via ErrorHandler
+        try {
+            servicePackageService.addServiceToPackage(servicePackage.getId(), service.getId());
+            servicePackageView.getServiceComboBox().setValue(null);
+            refreshPackageList();
+        } catch (Exception e) {
+            ErrorHandler.show(e);
         }
-
-        servicePackageView.getServiceComboBox().setValue(null);
-        refreshPackageList();
     }
 
     //ta bort den markerade tjänsten från det markerade pakete
@@ -122,12 +120,12 @@ public class ServicePackageController {
             showWarning(languageManager.getString("selectServiceToRemoveFromPackageWarning"));
             return;
         }
-        if (!servicePackageService.removeServiceFromPackage(servicePackage.getId(),
-                service.getId())) {
-            showWarning(languageManager.getString("packageChangeFailedWarning"));
+        try {
+            servicePackageService.removeServiceFromPackage(servicePackage.getId(), service.getId());
+            refreshPackageList();
+        } catch (Exception e) {
+            ErrorHandler.show(e);
         }
-
-        refreshPackageList();
     }
 
     //hämta paketen på nytt, paketet som var markerat markeras igen,
