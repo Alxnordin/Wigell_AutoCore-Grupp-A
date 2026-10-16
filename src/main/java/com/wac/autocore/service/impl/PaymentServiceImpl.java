@@ -46,7 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         if (invoice.isPaid()) {
-            throw new BusinessRuleException("invoiceAlredyPaidError", String.valueOf(invoiceId));
+            throw new BusinessRuleException("invoiceAlreadyPaidError", String.valueOf(invoiceId));
         }
 
         Payment payment = new Payment(
