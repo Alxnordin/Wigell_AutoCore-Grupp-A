@@ -3,6 +3,7 @@ package com.wac.autocore.service.impl;
 import com.wac.autocore.exception.BusinessRuleException;
 import com.wac.autocore.exception.ValidationException;
 import com.wac.autocore.exception.NotFoundException;
+import com.wac.autocore.model.Customer;
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.model.Payment;
 import com.wac.autocore.service.interf.InvoiceService;
@@ -87,6 +88,16 @@ public class PaymentServiceImpl implements PaymentService {
             System.out.println("Confirmation sent.");
         }
         return payment;
+    }
+    //Alexander
+    //kunden hämtas via fakturan, ger null om fakturan eller kunde inte hittas
+
+    public Customer findCustomerForPayment(Payment payment) {
+        Invoice invoice = invoiceService.findInvoice(payment.getInvoiceId());
+        if (invoice == null) {
+            return null;
+        }
+        return invoiceService.findCustomerForInvoice(invoice);
     }
 
     //Alexander

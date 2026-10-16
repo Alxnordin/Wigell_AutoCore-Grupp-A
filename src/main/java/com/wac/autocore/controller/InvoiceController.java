@@ -6,6 +6,7 @@ import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.validation.Validator;
 import com.wac.autocore.view.ErrorHandler;
+import com.wac.autocore.view.InfoDialog;
 import com.wac.autocore.view.invoice.InvoiceDetailsView;
 import com.wac.autocore.view.invoice.InvoiceListView;
 import com.wac.autocore.view.invoice.InvoiceView;
@@ -47,22 +48,21 @@ public class InvoiceController {
     }
 
     private void wireEvents() {
-
         //Alexander
         //ID-fältet tolkas med den gemensamma Validator-regeln, och servicen kontrollerar resten.
         //alla fel visas via ErrorHandler (tidigare skrevs de bara ut i konsolen)
         invoiceView.getCreateInvoiceButton().setOnAction(actionEvent -> {
             try {
-                int workOrderId = Validator.requireInteger(invoiceView.getWorkOrderIdField().getText(),
-                        "invalidWorkOrderId");
+                int workOrderId = Validator.requireInteger(
+                        invoiceView.getWorkOrderIdField().getText(), "invalidWorkOrderId");
                 String discountCode = invoiceView.getDiscountCodeComboBox().getValue();
 
                 Invoice invoice = invoiceService.createInvoice(workOrderId, discountCode);
 
-                    refreshLists();
-                    invoiceView.getWorkOrderIdField().clear();
-                    invoiceView.getDiscountCodeComboBox().setValue(null);
-
+                refreshLists();
+                invoiceView.getWorkOrderIdField().clear();
+                invoiceView.getDiscountCodeComboBox().setValue(null);
+                showInvoiceConfirmation(invoice);
             } catch (Exception e) {
                 ErrorHandler.show(e);
             }
@@ -73,8 +73,7 @@ public class InvoiceController {
 
         invoiceListView.setOnViewInvoice(invoice -> {
 
-
-
+            //Alexander: arbetsordern hämtas med fakturans arbetsorder-ID (tidigare användes fakturans eget ID)
             WorkOrder workOrder = workOrderService.findWorkOrder(invoice.getWorkOrderId());
             if (workOrder == null) {
                 return;
@@ -111,6 +110,20 @@ public class InvoiceController {
             app.showView(detailsView.getView());
 
         });
+    }
+
+    //Alexander
+    //bekräftelse till användaren: fakturan är skapad och vem aviseringen skickades till
+    private void showInvoiceConfirmation(Invoice invoice) {
+        String amount = String.format("%.2f", invoice.getTotalAmount());
+        Customer customer = invoiceService.findCustomerForInvoice(invoice);
+
+        if (customer != null) {
+            InfoDialog.show("invoiceCreatedConfirmation", String.valueOf(invoice.getId()), amount,
+                    customer.getName(), customer.getEmail());
+        } else {
+            InfoDialog.show("invoiceCreatedConfirmationNoCustomer", String.valueOf(invoice.getId()), amount);
+        }
     }
 
     private void refreshLists() {

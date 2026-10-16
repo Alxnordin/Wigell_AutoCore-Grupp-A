@@ -207,4 +207,32 @@ public class InvoiceServiceImpl implements InvoiceService {
         return invoice;
     }
 
+    //Alexander
+    //kunden hämtas via arbetsordern. Finns ingen kund direkt på arbetsordern
+    //används bokningens fordon som tidigare. Ger null om kunden inte hittas.
+    public Customer findCustomerForInvoice(Invoice invoice) {
+        WorkOrder workOrder = workOrderService.findWorkOrder(invoice.getWorkOrderId());
+        if (workOrder == null) {
+            return null;
+        }
+
+        if (workOrder.getCustomerId() > 0) {
+            Customer customer = customerService.findCustomer(workOrder.getCustomerId());
+            if (customer != null) {
+                return customer;
+            }
+        }
+
+        if (workOrder.getBookingId() != null) {
+            Booking booking = bookingService.findBooking(workOrder.getBookingId());
+            if (booking != null) {
+                Vehicle vehicle = vehicleService.findVehicle(booking.getVehicleId());
+                if (vehicle != null) {
+                    return customerService.findCustomer(vehicle.getCustomerId());
+                }
+            }
+        }
+        return null;
+    }
+
 }

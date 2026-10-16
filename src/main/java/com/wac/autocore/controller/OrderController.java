@@ -73,7 +73,7 @@ public class OrderController {
 
         orderListView.setGetMechanicName(mechanicId -> getMechanicName(mechanicId));
         orderListView.setGetServiceItem(serviceItemId ->
-        serviceItemService.findServiceItem(serviceItemId));
+                serviceItemService.findServiceItem(serviceItemId));
 
         // Registrerar vilken skapare som ansvarar för respektive arbetsorderstyp.
         this.workOrderFactory = new WorkOrderFactory(Arrays.asList(
@@ -223,8 +223,9 @@ public class OrderController {
                 detailsView.updateStatus();
             });
 
+
             //Alexander
-            //createInvoice kastar exception om fakturan inte kan skapas t.ex. redan fakturerad
+            //createInvoice kastar exception om fakturan inte kan skapas (t.ex. redan fakturerad),
             //felet visas då via ErrorHandler
             detailsView.setOnCreateInvoice(workOrderToInvoice -> {
                 try {
@@ -234,6 +235,7 @@ public class OrderController {
                     ErrorHandler.show(e);
                 }
             });
+
 
             detailsView.setOnBack(() -> {
                 refreshOrderList();

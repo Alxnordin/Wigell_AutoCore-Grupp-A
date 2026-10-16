@@ -15,4 +15,8 @@ public interface InvoiceService {
 
     Invoice updatePaidInvoice(Invoice invoice);
 
+    //Alexander
+    //kunden som fakturan gäller, används för att visa vem aviseringen skickades till
+    Customer findCustomerForInvoice(Invoice invoice);
+
 }
