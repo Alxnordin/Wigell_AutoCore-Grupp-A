@@ -14,6 +14,7 @@ import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.service.interf.WorkOrderService;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.order.CreateWorkOrderView;
 import com.wac.autocore.view.order.OrderDetailsView;
 import com.wac.autocore.view.order.OrderListView;
@@ -222,19 +223,17 @@ public class OrderController {
                 detailsView.updateStatus();
             });
 
-
+            //Alexander
+            //createInvoice kastar exception om fakturan inte kan skapas t.ex. redan fakturerad
+            //felet visas då via ErrorHandler
             detailsView.setOnCreateInvoice(workOrderToInvoice -> {
-
-                Invoice invoice = invoiceService.createInvoice(
-                        workOrderToInvoice.getId(),
-                        null
-                );
-
-                if (invoice != null) {
+                try {
+                    invoiceService.createInvoice(workOrderToInvoice.getId(), null);
                     detailsView.showInvoiceCreatedPopup();
+                } catch (Exception e) {
+                    ErrorHandler.show(e);
                 }
             });
-
 
             detailsView.setOnBack(() -> {
                 refreshOrderList();

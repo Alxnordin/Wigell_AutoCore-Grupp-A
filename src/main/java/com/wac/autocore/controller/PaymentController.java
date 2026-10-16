@@ -4,11 +4,15 @@ import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.service.interf.PaymentService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Payment;
+import com.wac.autocore.validation.Validator;
+import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.payment.PaymentView;
 import javafx.scene.Parent;
 
 
 public class PaymentController {
+
+    private static final String[] PAYMENT_TYPE_CODES = {"CARD", "SWISH", "CASH"};
 
     private final PaymentService paymentService;
 
@@ -31,30 +35,33 @@ public class PaymentController {
 
     private void wireEvents() {
 
+        //Alexander
+        //servicen kontrollerar betalningstyp och faktura, fel visas via ErrorHandler
         paymentView.getProcessPaymentButton().setOnAction(actionEvent -> {
-            String paymentType = paymentView.getPaymentTypeComboBox().getValue();
-
-            if (paymentType == null) {
-                System.out.println("Du måste välja en betalningstyp.");
-                return;
-            }
-
             try {
-                int invoiceId = Integer.parseInt(paymentView.getInvoiceIdField().getText());
+                int invoiceId = Validator.requireInteger(
+                        paymentView.getInvoiceIdField().getText(), "invalidInvoiceIdError");
 
-                Payment payment = paymentService.processPayment(invoiceId, paymentType);
+                paymentService.processPayment(invoiceId, selectedPaymentTypeCode());
 
-                if (payment != null) {
-                    refreshLists();
-                    paymentView.getInvoiceIdField().clear();
-                    paymentView.getPaymentTypeComboBox().setValue(null);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Ogiltigt faktura-ID — måste vara ett heltal.");
+                refreshLists();
+                paymentView.getInvoiceIdField().clear();
+                paymentView.getPaymentTypeComboBox().setValue(null);
+            } catch (Exception e) {
+                ErrorHandler.show(e);
             }
         });
 
         paymentView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+    }
+
+    //null om ingen betalningstyp är vald, annars koden (CARD, SWISH eller CASH)
+    private String selectedPaymentTypeCode() {
+        int index = paymentView.getPaymentTypeComboBox().getSelectionModel().getSelectedIndex();
+        if (index < 0 || index >= PAYMENT_TYPE_CODES.length) {
+            return null;
+        }
+        return PAYMENT_TYPE_CODES[index];
     }
 
     private void refreshLists() {

@@ -1,5 +1,8 @@
 package com.wac.autocore.service.impl;
 
+import com.wac.autocore.exception.BusinessRuleException;
+import com.wac.autocore.exception.ValidationException;
+import com.wac.autocore.exception.NotFoundException;
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.model.Payment;
 import com.wac.autocore.service.interf.InvoiceService;
@@ -24,17 +27,25 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentRepository.findAll();
     }
 
+
+    //Alexander
+    //kontrollerar betalningstyp och faktura först och kastar exception vid fel
+    //paymentType är en kod: CARD, SWISH eller CASH inte den översatta texten i rullistan
     public Payment processPayment(int invoiceId, String paymentType) {
+        if (paymentType == null || paymentType.trim().isEmpty()) {
+            throw new ValidationException("missingPaymentTypeError");
+        }
+        if (!isKnownPaymentType(paymentType)) {
+            throw new ValidationException("unknownPaymentTypeError", paymentType);
+        }
         Invoice invoice = invoiceService.findInvoice(invoiceId);
 
         if (invoice == null) {
-            System.out.println("Invoice with ID " + invoiceId + " does not exist.");
-            return null;
+            throw new NotFoundException("invoiceNotFoundError", String.valueOf(invoiceId));
         }
 
         if (invoice.isPaid()) {
-            System.out.println("Invoice has already been paid.");
-            return null;
+            throw new BusinessRuleException("invoiceAlredyPaidError", String.valueOf(invoiceId));
         }
 
         Payment payment = new Payment(
@@ -62,9 +73,6 @@ public class PaymentServiceImpl implements PaymentService {
             System.out.println("Registering cash payment...");
             successful = true;
 
-        } else {
-
-            System.out.println("Unknown payment type.");
         }
 
         payment.setSuccessful(successful);
@@ -77,11 +85,15 @@ public class PaymentServiceImpl implements PaymentService {
             System.out.println("Payment completed successfully.");
             System.out.println("Sending payment confirmation to customer...");
             System.out.println("Confirmation sent.");
-        } else {
-            System.out.println("Payment failed.");
         }
-
         return payment;
+    }
+
+    //Alexander
+    //dom betalningstyper som systemet kan hantera
+    private boolean isKnownPaymentType(String paymentType) {
+        return paymentType.equalsIgnoreCase("CARD") || paymentType.equalsIgnoreCase("SWISH")
+                || paymentType.equalsIgnoreCase("CASH");
     }
 
 }

@@ -4,6 +4,8 @@ import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.*;
 import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.interf.*;
+import com.wac.autocore.validation.Validator;
+import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.invoice.InvoiceDetailsView;
 import com.wac.autocore.view.invoice.InvoiceListView;
 import com.wac.autocore.view.invoice.InvoiceView;
@@ -45,20 +47,24 @@ public class InvoiceController {
     }
 
     private void wireEvents() {
+
+        //Alexander
+        //ID-fältet tolkas med den gemensamma Validator-regeln, och servicen kontrollerar resten.
+        //alla fel visas via ErrorHandler (tidigare skrevs de bara ut i konsolen)
         invoiceView.getCreateInvoiceButton().setOnAction(actionEvent -> {
             try {
-                int workOrderId = Integer.parseInt(invoiceView.getWorkOrderIdField().getText());
+                int workOrderId = Validator.requireInteger(invoiceView.getWorkOrderIdField().getText(),
+                        "invalidWorkOrderId");
                 String discountCode = invoiceView.getDiscountCodeComboBox().getValue();
 
                 Invoice invoice = invoiceService.createInvoice(workOrderId, discountCode);
 
-                if (invoice != null) {
                     refreshLists();
                     invoiceView.getWorkOrderIdField().clear();
                     invoiceView.getDiscountCodeComboBox().setValue(null);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Ogiltigt arbetsorder-ID — måste vara ett heltal.");
+
+            } catch (Exception e) {
+                ErrorHandler.show(e);
             }
         });
 
@@ -67,7 +73,9 @@ public class InvoiceController {
 
         invoiceListView.setOnViewInvoice(invoice -> {
 
-            WorkOrder workOrder = workOrderService.findWorkOrder(invoice.getId());
+
+
+            WorkOrder workOrder = workOrderService.findWorkOrder(invoice.getWorkOrderId());
             if (workOrder == null) {
                 return;
             }

@@ -83,7 +83,8 @@ public class PaymentView {
 
         paymentLabel.setText(languageManager.getString("paymentLabel"));
 
-        invoiceIdField.setText(languageManager.getString("invoiceIdField"));
+        //Alexander: setPromptText (inte setText), annars skrivs ledtexten in som värde i fältet vid språkbyte
+        invoiceIdField.setPromptText(languageManager.getString("invoiceIdField"));
 
         paymentTypeComboBox.getItems().setAll(
                 languageManager.getString("paymentTypeCard"),

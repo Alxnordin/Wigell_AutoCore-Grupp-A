@@ -1,5 +1,8 @@
 package com.wac.autocore.service.impl;
 
+import com.wac.autocore.exception.BusinessRuleException;
+import com.wac.autocore.exception.NotFoundException;
+import com.wac.autocore.exception.ValidationException;
 import com.wac.autocore.model.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.repository.InvoiceLineRepository;
@@ -49,20 +52,26 @@ public class InvoiceServiceImpl implements InvoiceService {
         return invoiceRepository.findAll();
     }
 
+
+    //Alexander
+    //kontrollerar arbetsordern & rabattkoden först och kastar exception vi fel
     public Invoice createInvoice(int workOrderId, String discountCode) {
 
         WorkOrder workOrder = workOrderService.findWorkOrder(workOrderId);
-        System.out.println("Service IDs: " + workOrder.getServiceItemIds());
-        System.out.println("Service prices: " + workOrder.getServiceItemPrices());
 
         if (workOrder == null) {
-            System.out.println("Work order with ID " + workOrderId + " does not exist.");
-            return null;
+          throw new NotFoundException("workOrderNotFoundError",String.valueOf(workOrderId));
         }
 
-        if (!workOrder.getStatus().equals("COMPLETED")) {
-            System.out.println("Invoice can only be created for a completed work order.");
-            return null;
+        if (!"COMPLETED".equals(workOrder.getStatus())){
+            throw new BusinessRuleException("invoiceRequiresCompletedOrderError");
+        }
+
+        //en arbetsorder ska bara faktureras en gång
+        for (Invoice existing : invoiceRepository.findAll()) {
+            if (existing.getWorkOrderId() == workOrderId) {
+                throw new BusinessRuleException("invoiceAlreadyExistsError", String.valueOf(workOrderId));
+            }
         }
 
         double amount = 0.0;
@@ -91,7 +100,6 @@ public class InvoiceServiceImpl implements InvoiceService {
 
                 if (customer != null && customer.isVip()) {
                     discountPercentage += 0.10;
-                    System.out.println("VIP discount applied: 10%");
                 }
             }
         }
@@ -101,16 +109,14 @@ public class InvoiceServiceImpl implements InvoiceService {
             if (discountCode.equalsIgnoreCase("WELCOME10")) {
 
                 discountPercentage += 0.10;
-                System.out.println("Discount code WELCOME10 applied.");
 
             } else if (discountCode.equalsIgnoreCase("SERVICE200")) {
 
                 fixedDiscount = 200.0;
-                System.out.println("Discount code SERVICE200 applied.");
 
             } else {
-
-                System.out.println("Unknown discount code. No code discount applied.");
+                //Alexander  okänd rabattkod ger ett fel
+                throw new ValidationException("unknownDiscountCodeError", discountCode.trim());
             }
         }
 
@@ -185,16 +191,19 @@ public class InvoiceServiceImpl implements InvoiceService {
             }
         }
 
-        System.out.println("Invoice created successfully.");
-        System.out.println(invoice);
         System.out.println("Sending invoice notification to customer...");
         System.out.println("Notification sent.");
 
         return invoice;
     }
 
+
+    //Alexander
+    //uppdaterar betald-status på den befintliga fakturan (UPDATE).
+    //tidigare anropades save (INSERT), så varje betalning skapade en ny kopia av fakturan
+    //medan originalet förblev obetalt
     public Invoice updatePaidInvoice(Invoice invoice) {
-        invoiceRepository.save(invoice);
+        invoiceRepository.updatePaid(invoice);
         return invoice;
     }
 
