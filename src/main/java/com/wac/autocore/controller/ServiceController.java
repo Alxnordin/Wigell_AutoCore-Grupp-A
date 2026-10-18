@@ -50,39 +50,22 @@ public class ServiceController {
                 serviceItemView.getServiceItemTableView().getItems().add(item);
         }
 
-        mechanicView.getMechanicListView().getItems().clear();
-
-        for (Mechanic mechanic : mechanicService.getMechanics())   {
-                String bookedYesOrNo;
-
-                if (mechanic.isAvailable()) {
-                    bookedYesOrNo = languageManager.getString("availableYes");
-                } else {
-                    bookedYesOrNo = languageManager.getString("availableNo");
-                }
-
-                String mechanicInfo =
-                        mechanic.getId() + " | "
-                                + languageManager.getString("mechanicName")
-                                + ": " + mechanic.getName() + " | "
-                                + languageManager.getString("mechanicPhone")
-                                + ": " + mechanic.getPhone() + " | "
-                                + languageManager.getString("mechanicSpecialization")
-                                + ": " + mechanic.getSpecialization() + " | "
-                                + languageManager.getString("available")
-                                + ": " + bookedYesOrNo + " | ";
-
-                mechanicView.getMechanicListView().getItems().add(mechanicInfo);
-
-
-        }
+        // Fyller tabellen med mekanikerobjekt i stället för formaterade textrader.
+        mechanicView.getMechanicListView().getItems().setAll(
+                mechanicService.getMechanics()
+        );
 
         mechanicView.getMechanicWorkListView().getItems().clear();
     }
 
     private void wireEvents() {
-        mechanicView.getMechanicListView().getSelectionModel().selectedIndexProperty()
-                .addListener((observable, oldIndex, newIndex) -> showMechanicWork(newIndex.intValue()));
+        // Hämtar den valda mekanikern direkt från tabellen.
+        mechanicView.getMechanicListView()
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldMechanic, selectedMechanic) ->
+                        showMechanicWork(selectedMechanic)
+                );
 
         serviceItemView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
         mechanicView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
@@ -108,14 +91,13 @@ public class ServiceController {
         });
     }
 
-    private void showMechanicWork(int selectedIndex) {
+    private void showMechanicWork(Mechanic selectedMechanic) {
         mechanicView.getMechanicWorkListView().getItems().clear();
 
-        if (selectedIndex < 0 || selectedIndex >= mechanicService.getMechanics().size()) {
+        // Avslutar om ingen mekaniker är vald.
+        if (selectedMechanic == null) {
             return;
         }
-
-        Mechanic selectedMechanic = mechanicService.getMechanics().get(selectedIndex);
 
         for (WorkOrder workOrder : workOrderService.findAllWorkOrders()) {
             if (workOrder.getMechanicId() == selectedMechanic.getId()) {

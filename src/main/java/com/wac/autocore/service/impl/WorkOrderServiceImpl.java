@@ -50,8 +50,21 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         return null;
     }
 
-    public void updateMechanic(WorkOrder workOrder, int mechanicId) {
 
+    public void updateMechanic(WorkOrder workOrder, int mechanicId) {
+        // Kontrollerar att arbetsordern finns.
+        if (workOrder == null) {
+            System.out.println("Work order does not exist.");
+            return;
+        }
+
+        // Mekanikern får bara ändras innan ordern har skapats.
+        if (!"DRAFT".equals(workOrder.getStatus())) {
+            System.out.println("Mechanic cannot be changed after work order creation.");
+            return;
+        }
+
+        // Kontrollerar att den nya mekanikern finns.
         Mechanic mechanic = mechanicService.findMechanic(mechanicId);
 
         if (mechanic == null) {
@@ -59,9 +72,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
             return;
         }
 
+        // Sparar den nya mekanikern på utkastet.
         workOrder.setMechanicId(mechanicId);
         workOrderRepository.update(workOrder);
     }
+
 
     //true om bokningen redan har en arbetsorder (en bokning kan bara ha en)
     public boolean hasWorkOrder(int bookingId) {
@@ -130,11 +145,18 @@ public class WorkOrderServiceImpl implements WorkOrderService {
                 .mechanicId(mechanicId)
                 .description(booking.getDescription());
 
+        // Hämtar fordonet som är kopplat till bokningen.
         Vehicle vehicle = vehicleService.findVehicle(booking.getVehicleId());
-        if (vehicle != null) {
-            builder.vehicleId(vehicle.getId())
-                    .customerId(vehicle.getCustomerId());
+
+        // Avbryter om fordonet saknas, så att en ofullständig arbetsorder inte skapas.
+        if (vehicle == null) {
+            System.out.println("Vehicle for booking does not exist.");
+            return null;
         }
+
+        // Kopplar fordon och kund till arbetsordern.
+        builder.vehicleId(vehicle.getId())
+                .customerId(vehicle.getCustomerId());
 
         for (int serviceItemId : serviceItemIds) {
             ServiceItem serviceItem = serviceItemService.findServiceItem(serviceItemId);
@@ -154,15 +176,25 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         return workOrder;
     }
 
-    public void removeServiceItemFromWorkOrder(WorkOrder workOrder, int serviceItemId){
-
+    public void removeServiceItemFromWorkOrder(WorkOrder workOrder, int serviceItemId) {
+        // Kontrollerar att arbetsordern finns.
         if (workOrder == null) {
             return;
         }
+
+        // Tjänster får bara tas bort innan arbetet har påbörjats.
+        String status = workOrder.getStatus();
+        if (!"DRAFT".equals(status) && !"CREATED".equals(status)) {
+            System.out.println("Services cannot be removed after work has started.");
+            return;
+        }
+
+        // Tar bort tjänsten från arbetsordern och databasen.
         workOrder.removeServiceItem(serviceItemId);
         workOrderRepository.removeServiceItem(workOrder.getId(), serviceItemId);
 
-        System.out.println("ServiceItem " + serviceItemId + " removed from workOrder " + workOrder.getId());
+        System.out.println("ServiceItem " + serviceItemId
+                + " removed from workOrder " + workOrder.getId());
     }
 
     //Det här fungerar inte eftersom vi ju inte sparar datum för workorder.
@@ -301,7 +333,20 @@ public class WorkOrderServiceImpl implements WorkOrderService {
             return;
         }
 
+        // Hämtar mekanikern som är kopplad till arbetsordern.
         Mechanic mechanic = mechanicService.findMechanic(workOrder.getMechanicId());
+
+        // Avbryter om mekanikern saknas.
+        if (mechanic == null) {
+            System.out.println("Mechanic does not exist for this work order.");
+            return;
+        }
+
+        // Kontrollerar att mekanikern är tillgänglig innan arbetet startar.
+        if (!mechanic.isAvailable()) {
+            System.out.println("Mechanic is not available.");
+            return;
+        }
 
         System.out.println("Mechanic: " + mechanic.getName());
 
@@ -380,10 +425,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
             //return null;
         }
 
-        if(!original.getStatus().equals("COMPLETED")){
-            System.out.println("A complaint can only be created for a completed work order");
+        // Kontrollerar att originalordern är slutförd.
+        if (!"COMPLETED".equals(original.getStatus())) {
             throw new BusinessRuleException("complaintMusHaveStatusCompleted");
         }
+
         WorkOrder complaint = original.clone();
 
         complaint.setId(0);
@@ -435,6 +481,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         if (!mechanic.isAvailable()) {
             System.out.println("Mechanic " + mechanic.getName() + " is not available.");
+            return null;
+        }
+
+        // Kontrollerar att drop-in-arbetsordern innehåller minst en tjänst.
+        if (serviceItemIds == null || serviceItemIds.length == 0) {
+            System.out.println("A drop-in work order must contain at least one service.");
             return null;
         }
 
