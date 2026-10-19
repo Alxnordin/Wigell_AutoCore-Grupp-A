@@ -1,11 +1,14 @@
 package com.wac.autocore;
 
-
 import com.wac.autocore.controller.*;
+import com.wac.autocore.dao.*;
 import com.wac.autocore.model.Booking;
+import com.wac.autocore.repository.*;
+import com.wac.autocore.service.impl.*;
+import com.wac.autocore.service.impl.PaymentServiceImpl;
+import com.wac.autocore.service.interf.*;
 import com.wac.autocore.view.service.ServicePackageView;
 import com.wac.autocore.data.DatabaseConnection;
-import com.wac.autocore.service.*;
 import com.wac.autocore.view.vehicle.VehicleListView;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.*;
@@ -39,25 +42,40 @@ import org.kordamp.ikonli.javafx.FontIcon;
 //JavaFX startpunkt, bygger upp scenen/fönstret, skapar vyer och kontroller, och styr växling mellan de olika vyerna
 public class AutoCoreApplication extends Application {
 
-    private final InvoiceLineService invoiceLineService = new InvoiceLineService();
-    private final MechanicService mechanicService = new MechanicService();
-    private final CustomerService customerService = new CustomerService();
-    private final VehicleService vehicleService = new VehicleService(customerService);
-    private final ServiceItemService serviceItemService = new ServiceItemService();
-    private final ServicePackageService servicePackageService = new ServicePackageService(serviceItemService);
+    private final WorkOrderRepository workOrderRepository = new WorkOrderDAO();
+    private final CustomerRepository customerRepository = new CustomerDAO();
+    private final InvoiceRepository invoiceRepository = new InvoiceDAO();
+    private final InvoiceLineRepository invoiceLineRepository = new InvoiceLineDAO();
+    private final PaymentRepository paymentRepository = new PaymentDAO();
+    private final ServiceItemRepository serviceItemRepository = new ServiceItemDAO();
+    private final ServicePackageRepository servicePackageRepository = new ServicePackageDAO();
+    private final BookingRepository bookingRepository = new BookingDAO();
+    private final MechanicRepository mechanicRepository = new MechanicDAO();
+    private final VehicleRepository vehicleRepository = new VehicleDAO();
+
+    private final InvoiceLineService invoiceLineService = new InvoiceLineServiceImpl(invoiceLineRepository);
+    private final MechanicService mechanicService = new MechanicServiceImpl(mechanicRepository);
+    private final CustomerService customerService = new CustomerServiceImpl(customerRepository);
+    private final VehicleService vehicleService = new VehicleServiceImpl(vehicleRepository, customerService);
+    private final ServiceItemService serviceItemService = new ServiceItemServiceImpl(serviceItemRepository);
+    private final ServicePackageService servicePackageService =
+            new ServicePackageServiceImpl(servicePackageRepository, serviceItemService);
 
     private final BookingService bookingService =
-            new BookingService(vehicleService, serviceItemService);
+            new BookingServiceImpl(bookingRepository, vehicleService,  serviceItemService);
 
-    private final WorkOrderService workOrderService = new WorkOrderService(
-            bookingService, mechanicService, serviceItemService,
-            customerService, vehicleService);
+    private final WorkOrderService workOrderService =
+            new WorkOrderServiceImpl(workOrderRepository, bookingService,
+                    mechanicService, serviceItemService,
+                    customerService, vehicleService);
 
-    private final InvoiceService invoiceService = new InvoiceService(
-            workOrderService, bookingService, vehicleService,
-            customerService, serviceItemService);
+    private final InvoiceService invoiceService =
+            new InvoiceServiceImpl(invoiceRepository, invoiceLineRepository, workOrderService, bookingService,
+                    vehicleService, customerService,
+                    serviceItemService);
 
-    private final PaymentService paymentService = new PaymentService(invoiceService);
+    private final PaymentService paymentService =
+            new PaymentServiceImpl(paymentRepository, invoiceService);
 
     private BorderPane borderPane;
     private Stage stage;
@@ -72,7 +90,7 @@ public class AutoCoreApplication extends Application {
 
         borderPane = new BorderPane();
 
-        Label headerLabel = new Label("WAC AutoCore");
+
         LanguageManager languageManager = LanguageManager.getInstance();
 
         FontIcon globeIcon = new FontIcon("fa-globe");
@@ -106,12 +124,11 @@ public class AutoCoreApplication extends Application {
         //logotyp
         Image logoImage = new Image(getClass().getResourceAsStream("/WAC_1.png"));
         ImageView logoView = new ImageView(logoImage);
-        logoView.setFitHeight(40);
+        logoView.setFitHeight(60);
         logoView.setPreserveRatio(true);
 
         StackPane header = new StackPane();
-        // WAC AutoCore i mitten
-        StackPane.setAlignment(headerLabel, Pos.CENTER);
+
         // Logotyp till vänster
         StackPane.setAlignment(logoView, Pos.CENTER_LEFT);
         StackPane.setMargin(logoView, new Insets(0, 0, 0, 15));
@@ -119,7 +136,7 @@ public class AutoCoreApplication extends Application {
         StackPane.setAlignment(languageButton, Pos.CENTER_RIGHT);
         StackPane.setMargin(languageButton, new Insets(0, 15, 0, 0));
 
-        header.getChildren().addAll(logoView, headerLabel, languageButton);
+        header.getChildren().addAll(logoView, languageButton);
 
         languageButton.setOnAction(e -> {
             languageManager.changeLanguage();
@@ -139,7 +156,7 @@ public class AutoCoreApplication extends Application {
 
         showMainMenu();
 
-        Scene scene = new Scene(borderPane, 1000, 700);
+        Scene scene = new Scene(borderPane, 1100, 900);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
@@ -170,6 +187,7 @@ public class AutoCoreApplication extends Application {
     public void showServiceItemView() {
         ServiceItemView serviceItemView = new ServiceItemView();
         ServiceController controller = new ServiceController(serviceItemService,
+                mechanicService, workOrderService,
                 this, serviceItemView, new MechanicView());
 
         //Alexander
@@ -182,8 +200,8 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showMechanicView() {
-        ServiceController controller = new ServiceController(serviceItemService,
-                this, new ServiceItemView(), new MechanicView());
+        ServiceController controller = new ServiceController(serviceItemService,  mechanicService,
+                workOrderService,this, new ServiceItemView(), new MechanicView());
         borderPane.setCenter(controller.getMechanicView());
     }
 
@@ -201,34 +219,17 @@ public class AutoCoreApplication extends Application {
         borderPane.setCenter(controller.getBookingListPane());
     }
 
-//    public void showOrderFormView() {
-//        OrderController controller = new OrderController(bookingService,
-//                workOrderService, mechanicService, serviceItemService, vehicleService,
-//                customerService,
-//                this, new OrderFormView(), new OrderListView());
-//        borderPane.setCenter(controller.getOrderFormView());
-//    }
-
-    //öppnar "Skapa order" med en bokning redan ifylld (från knappen i bokningslistan)
-//    public void showOrderFormView(Booking booking) {
-//        OrderController controller = new OrderController(bookingService,
-//                workOrderService, mechanicService, serviceItemService, vehicleService,
-//                customerService,
-//                this, new OrderFormView(), new OrderListView());
-//        controller.prefillFromBooking(booking);
-//        borderPane.setCenter(controller.getOrderFormView());
-//    }
-
     public void showCreateWorkOrderView(Booking booking) {
         OrderController controller = new OrderController(
                 bookingService,
                 workOrderService,
                 mechanicService,
                 serviceItemService,
+                servicePackageService,
                 vehicleService,
                 customerService,
+                invoiceService,
                 this,
-//                new OrderFormView(),
                 new OrderListView()
         );
         controller.openCreateWorkOrderView(booking);
@@ -236,10 +237,13 @@ public class AutoCoreApplication extends Application {
 
     public void showOrderListView() {
         OrderController controller = new OrderController(bookingService,
-                workOrderService, mechanicService, serviceItemService, vehicleService,
+                workOrderService, mechanicService, serviceItemService,servicePackageService, vehicleService,
                 customerService,
-//                this, new OrderFormView(), new OrderListView());
-                this, new OrderListView());
+                invoiceService,
+                this,
+                new OrderListView()
+        );
+
         borderPane.setCenter(controller.getOrderListPane());
     }
 

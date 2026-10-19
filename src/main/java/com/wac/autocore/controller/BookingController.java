@@ -2,8 +2,10 @@ package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.*;
-import com.wac.autocore.service.*;
+import com.wac.autocore.service.impl.*;
+import com.wac.autocore.service.interf.*;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.booking.BookingDetailsView;
 import com.wac.autocore.view.booking.BookingListView;
 import com.wac.autocore.view.booking.BookingView;
@@ -45,6 +47,9 @@ public class BookingController {
         this.app = app;
         this.bookingView = bookingView;
         this.bookingListView = bookingListView;
+        bookingView.getCustomerComboBox().getItems().setAll(customerService.getAllCustomers());
+        bookingView.getVehicleComboBox().getItems().setAll(vehicleService.getVehicles());
+
         wireEvents();
         refreshBookingList();
 
@@ -71,64 +76,52 @@ public class BookingController {
         bookingView.getServicesTable().getItems().addListener(
                 (ListChangeListener<ServiceItem>) change -> updateNewBookingSummary());
 
-        bookingView.getCreateBookingButton().setOnAction(actionEvent -> {
-            Vehicle selectedVehicle = bookingView.getVehicleComboBox().getValue();
-            LocalDate date = bookingView.getDate().getValue();
-            String description = bookingView.getDescriptionField().getText();
-            List<ServiceItem> selectedServices = bookingView.getServicesTable().getItems();
-
-            if (selectedVehicle == null) {
-                showWarning(languageManager.getString("missingVehicleWarning"));
-                return;
-            }
-
-            if (date == null) {
-                showWarning(languageManager.getString("missingDateWarning"));
-                return;
-            }
-
-            if (selectedServices.isEmpty()) {
-                showWarning(languageManager.getString("noServiceSelectedWarning"));
-                return;
-            }
-
-            try {
-                int vehicleId = selectedVehicle.getId();
-
-                int[] serviceItemIds = new int[selectedServices.size()];
-                for (int i = 0; i < selectedServices.size(); i++) {
-                    serviceItemIds[i] = selectedServices.get(i).getId();
-                }
-                //Vanlig booking använder createBooking, bokning skapad av tidigare bokning använder
-                //createBookingFromPreviousBooking. tjänsterna hämtas då från originalbokningen.
-
-                Booking booking;
-                if(originalBookingForCopy != null){
-                    booking = bookingService.createBookingFromPreviousBooking(originalBookingForCopy.getId(), date);
-                }else {
-                    booking = bookingService.createBooking(vehicleId, date, description, serviceItemIds);
-                }
-
-                if (booking != null) {
-                    refreshBookingList();
-                    bookingView.getVehicleComboBox().setValue(null);
-                    bookingView.getDate().setValue(null);
-                    bookingView.getDescriptionField().clear();
-                    bookingView.getServiceComboBox().setValue(null);
-                    bookingView.getServicesTable().getItems().clear();
-                    showBookingConfirmationMessage("Bokning skapad. Det här är en tillfällig lösning " +
-                    "på bekräftelse :)");
-                }
-            } catch (NumberFormatException e) {
-                showWarning(languageManager.getString("invalidVehicleIdWarning"));
-            }
-        });
+        bookingView.getCreateBookingButton().setOnAction(actionEvent -> createBooking());
 
         bookingListView.setOnCreateWorkOrder(booking -> openCreateWorkOrder(booking));
         bookingListView.setOnViewBooking(booking -> openBookingDetails(booking));
-
-        bookingView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
         bookingListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+        bookingListView.setGetRegistrationNumber(vehicleId -> getRegistrationNumber(vehicleId));
+        bookingView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+    }
+
+    //Alexander
+    //läser formuläret och låter servicen validera. Vid fel kastar servicen en exception
+    //som visas via ErrorHandler - samma mönster som Customer och Vehicle.
+    private void createBooking() {
+        Vehicle selectedVehicle = bookingView.getVehicleComboBox().getValue();
+        LocalDate date = bookingView.getDate().getValue();
+        String description = bookingView.getDescriptionField().getText();
+        List<ServiceItem> selectedServices = bookingView.getServicesTable().getItems();
+
+        //null om inget fordon är valt, servicen ger då rätt felmeddelande
+        Integer vehicleId = selectedVehicle == null ? null : selectedVehicle.getId();
+
+        int[] serviceItemIds = new int[selectedServices.size()];
+        for (int i = 0; i < selectedServices.size(); i++) {
+            serviceItemIds[i] = selectedServices.get(i).getId();
+        }
+
+        try {
+            //Vanlig booking använder createBooking, bokning skapad av tidigare bokning använder
+            //createBookingFromPreviousBooking. tjänsterna hämtas då från originalbokningen.
+            if (originalBookingForCopy != null) {
+                bookingService.createBookingFromPreviousBooking(originalBookingForCopy.getId(), date);
+            } else {
+                bookingService.createBooking(vehicleId, date, description, serviceItemIds);
+            }
+
+            refreshBookingList();
+            bookingView.getVehicleComboBox().setValue(null);
+            bookingView.getDate().setValue(null);
+            bookingView.getDescriptionField().clear();
+            bookingView.getServiceComboBox().setValue(null);
+            bookingView.getServicesTable().getItems().clear();
+            showBookingConfirmationMessage("Bokning skapad. Det här är en tillfällig lösning " +
+                    "på bekräftelse :)");
+        } catch (Exception e) {
+            ErrorHandler.show(e);
+        }
     }
 
     //Alexander
@@ -162,51 +155,20 @@ public class BookingController {
         return false;
     }
 
-
     private void updateNewBookingSummary() {
         List<ServiceItem> selectedServices = bookingView.getServicesTable().getItems();
 
         bookingView.showSummary(formatTotalTime(selectedServices), formatTotalPrice(selectedServices));
     }
 
-    private boolean addServiceToBooking(Booking booking, ServiceItem service) {
-        if (service == null) {
-            showWarning(languageManager.getString("selectServiceToAddWarning"));
-            return false;
+    private String getRegistrationNumber(int vehicleId) {
+        Vehicle vehicle = vehicleService.findVehicle(vehicleId);
+
+        if (vehicle != null) {
+            return vehicle.getRegistrationNumber();
         }
 
-        if (booking.containsServiceItem(service.getId())) {
-            showWarning(languageManager.getString("serviceAlreadyInBookingWarning"));
-            return false;
-        }
-
-        if (!bookingService.addServiceToBooking(booking.getId(), service.getId())) {
-            showWarning(languageManager.getString("serviceAlreadyInBookingWarning"));
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean removeServiceFromBooking(Booking booking, ServiceItem service) {
-        if (service == null) {
-            showWarning(languageManager.getString("selectServiceToRemoveWarning"));
-            return false;
-        }
-
-        List<ServiceItem> services = bookingService.getServicesForBooking(booking.getId());
-
-        if (services.size() <= 1) {
-            showWarning(languageManager.getString("lastServiceWarning"));
-            return false;
-        }
-
-        if (!bookingService.removeServiceFromBooking(booking.getId(), service.getId())) {
-            showWarning(languageManager.getString("serviceChangeFailedWarning"));
-            return false;
-        }
-
-        return true;
+        return "";
     }
 
     private void openCreateWorkOrder(Booking booking) {
@@ -310,8 +272,8 @@ public class BookingController {
                     }
                 }
 
-                } else if ("createFromExisting".equals(action)) {
-                    openCreateBookingView(booking);
+            } else if ("createFromExisting".equals(action)) {
+                openCreateBookingView(booking);
             }
         });
 
@@ -373,29 +335,36 @@ public class BookingController {
 
             List<ServiceItem> editedServices = detailsView.getServicesTable().getItems();
 
-            //Lägg till nya tjänster
-            for (ServiceItem service : editedServices) {
-                boolean exists = originalServices.stream()
-                        .anyMatch(item -> item.getId() == service.getId());
+            //Alexander
+            //servicen kastar exception om en ändring inte är tillåten (t.ex. arbetet har påbörjats).
+            //Då visas felet och bekräftelsen visas inte.
+            try {
+                //Lägg till nya tjänster
+                for (ServiceItem service : editedServices) {
+                    boolean exists = originalServices.stream()
+                            .anyMatch(item -> item.getId() == service.getId());
 
-                if (!exists) {
-                    addServiceToBooking(booking, service);
+                    if (!exists) {
+                        bookingService.addServiceToBooking(booking.getId(), service.getId());
+                    }
                 }
-            }
 
-            //Ta bort borttagna tjänster
-            for (ServiceItem service : originalServices) {
-                boolean exists = editedServices.stream()
-                        .anyMatch(item -> item.getId() == service.getId());
+                //Ta bort borttagna tjänster
+                for (ServiceItem service : originalServices) {
+                    boolean exists = editedServices.stream()
+                            .anyMatch(item -> item.getId() == service.getId());
 
-                if (!exists) {
-                    removeServiceFromBooking(booking, service);
+                    if (!exists) {
+                        bookingService.removeServiceFromBooking(booking.getId(), service.getId());
+                    }
                 }
-            }
 
-            showChangesConfirmationMessage("Ändringarna är sparade. Det här är en tillfällig lösning " +
-                    "på bekräftelse :)");
-            detailsView.showBookingDetails();
+                showChangesConfirmationMessage("Ändringarna är sparade. Det här är en tillfällig lösning " +
+                        "på bekräftelse :)");
+                detailsView.showBookingDetails();
+            } catch (Exception e) {
+                ErrorHandler.show(e);
+            }
         });
 
         app.showView(detailsView.getView());
@@ -429,8 +398,6 @@ public class BookingController {
                 }
             }
         }
-
-        //showServicesForSelectedBooking();
     }
 
     private void showWarning(String message) {

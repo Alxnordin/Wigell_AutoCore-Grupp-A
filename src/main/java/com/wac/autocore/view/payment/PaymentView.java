@@ -33,7 +33,7 @@ public class PaymentView {
     LanguageManager languageManager = LanguageManager.getInstance();
 
     public PaymentView() {
-      VBox box = UIComponents.createVBoxForViews();
+        VBox box = UIComponents.createVBoxForViews();
 
         title = new Label(languageManager.getString("paymentTitle"));
         HBox titleBox = UIComponents.createPageTitle(title, "fa-credit-card");
@@ -59,7 +59,7 @@ public class PaymentView {
         backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
 
         box.getChildren().addAll(titleBox, subtitle,
-                     paymentLabel, invoiceIdField, paymentTypeComboBox, processPaymentButton,
+                paymentLabel, invoiceIdField, paymentTypeComboBox, processPaymentButton,
                 paymentListLabel, paymentListView, backButton
         );
 
@@ -83,7 +83,8 @@ public class PaymentView {
 
         paymentLabel.setText(languageManager.getString("paymentLabel"));
 
-        invoiceIdField.setText(languageManager.getString("invoiceIdField"));
+        //Alexander: setPromptText (inte setText), annars skrivs ledtexten in som värde i fältet vid språkbyte
+        invoiceIdField.setPromptText(languageManager.getString("invoiceIdField"));
 
         paymentTypeComboBox.getItems().setAll(
                 languageManager.getString("paymentTypeCard"),

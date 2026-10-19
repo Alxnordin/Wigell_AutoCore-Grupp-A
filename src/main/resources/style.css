@@ -730,4 +730,31 @@ ListView .list-cell:filled:selected {
     -fx-text-fill: #563C78;
 }
 
+/*pop up som visar att händelsen gått igenom*/
+.success-popup {
+    -fx-background-color: #6FAE72;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 18px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(0,0,0,0.25),
+            10,
+            0,
+            0,
+            3
+    );
+}
 
+/* Vit pennikon på Continue-knappen för utkast */
+.continue-draft-icon {
+    -fx-icon-color: white;
+}
+
+/* Lila statusmarkering för sparade utkast */
+.status-draft {
+    -fx-background-color: #E8DDF5;
+    -fx-text-fill: #563C78;
+}

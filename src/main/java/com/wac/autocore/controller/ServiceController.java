@@ -1,13 +1,14 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
-import com.wac.autocore.dao.MechanicDAO;
-import com.wac.autocore.dao.WorkOrderDAO;
-import com.wac.autocore.service.ServiceItemService;
+import com.wac.autocore.service.interf.MechanicService;
+import com.wac.autocore.service.interf.ServiceItemService;
+import com.wac.autocore.service.interf.WorkOrderService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.WorkOrder;
+import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.mechanic.MechanicView;
 import com.wac.autocore.view.service.ServiceItemView;
 import javafx.scene.Parent;
@@ -16,18 +17,20 @@ import javafx.scene.control.TextInputDialog;
 public class ServiceController {
 
     private final ServiceItemService serviceItemService;
+    private final MechanicService mechanicService;
+    private final WorkOrderService workOrderService;
 
     private final AutoCoreApplication app;
-    private final MechanicDAO mechanicDAO = new MechanicDAO();
-    private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
     private final ServiceItemView serviceItemView;
     private final MechanicView mechanicView;
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
-    public ServiceController(ServiceItemService serviceItemService, AutoCoreApplication app,
+    public ServiceController(ServiceItemService serviceItemService, MechanicService mechanicService, WorkOrderService workOrderService, AutoCoreApplication app,
                              ServiceItemView serviceItemView, MechanicView mechanicView) {
         this.serviceItemService = serviceItemService;
+        this.mechanicService = mechanicService;
+        this.workOrderService = workOrderService;
         this.app = app;
         this.serviceItemView = serviceItemView;
         this.mechanicView = mechanicView;
@@ -47,39 +50,22 @@ public class ServiceController {
                 serviceItemView.getServiceItemTableView().getItems().add(item);
         }
 
-        mechanicView.getMechanicListView().getItems().clear();
-
-        for (Mechanic mechanic : mechanicDAO.findAll()) {
-
-            String bookedYesOrNo;
-
-            if (mechanic.isAvailable()) {
-                bookedYesOrNo = languageManager.getString("availableYes");
-            } else {
-                bookedYesOrNo = languageManager.getString("availableNo");
-            }
-
-            String mechanicInfo =
-                    mechanic.getId() + " | "
-                            + languageManager.getString("mechanicName")
-                            + ": " + mechanic.getName() + " | "
-                            + languageManager.getString("mechanicPhone")
-                            + ": " + mechanic.getPhone() + " | "
-                            + languageManager.getString("mechanicSpecialization")
-                            + ": " + mechanic.getSpecialization() + " | "
-                            + languageManager.getString("available")
-                            + ": " + bookedYesOrNo + " | ";
-
-            mechanicView.getMechanicListView().getItems().add(mechanicInfo);
-
-        }
+        // Fyller tabellen med mekanikerobjekt i stället för formaterade textrader.
+        mechanicView.getMechanicListView().getItems().setAll(
+                mechanicService.getMechanics()
+        );
 
         mechanicView.getMechanicWorkListView().getItems().clear();
     }
 
     private void wireEvents() {
-        mechanicView.getMechanicListView().getSelectionModel().selectedIndexProperty()
-                .addListener((observable, oldIndex, newIndex) -> showMechanicWork(newIndex.intValue()));
+        // Hämtar den valda mekanikern direkt från tabellen.
+        mechanicView.getMechanicListView()
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldMechanic, selectedMechanic) ->
+                        showMechanicWork(selectedMechanic)
+                );
 
         serviceItemView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
         mechanicView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
@@ -91,30 +77,29 @@ public class ServiceController {
             dialog.setHeaderText(serviceItem.getName());
             dialog.setContentText(languageManager.getString("newPrice"));
 
+            //Alexander
+            //servicen tolkar och kontrollerar priset. Vid fel visas orsaken via ErrorHandler
+            //(tidigare skrevs felet bara ut i konsolen och användaren såg ingenting)
             dialog.showAndWait().ifPresent(input -> {
-                        try {
-                            double newPrice = Double.parseDouble(input);
-                            serviceItemService.changeServicePrice(serviceItem.getId(), newPrice);
-                            refreshLists();
-                        }catch(NumberFormatException e) {
-                            System.out.println("Invalid price: " + input);
-                        }
-                    }
-
-            );
+                try {
+                    serviceItemService.changeServicePrice(serviceItem.getId(), input);
+                    refreshLists();
+                } catch (Exception e) {
+                    ErrorHandler.show(e);
+                }
+            });
         });
     }
 
-    private void showMechanicWork(int selectedIndex) {
+    private void showMechanicWork(Mechanic selectedMechanic) {
         mechanicView.getMechanicWorkListView().getItems().clear();
 
-        if (selectedIndex < 0 || selectedIndex >= mechanicDAO.findAll().size()) {
+        // Avslutar om ingen mekaniker är vald.
+        if (selectedMechanic == null) {
             return;
         }
 
-        Mechanic selectedMechanic = mechanicDAO.findAll().get(selectedIndex);
-
-        for (WorkOrder workOrder : workOrderDAO.findAll()) {
+        for (WorkOrder workOrder : workOrderService.findAllWorkOrders()) {
             if (workOrder.getMechanicId() == selectedMechanic.getId()) {
 
                 String workOrderStatus;

@@ -1,14 +1,23 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
-import com.wac.autocore.service.PaymentService;
+import com.wac.autocore.service.interf.PaymentService;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.model.Customer;
 import com.wac.autocore.model.Payment;
+import com.wac.autocore.validation.Validator;
+import com.wac.autocore.view.ErrorHandler;
+import com.wac.autocore.view.InfoDialog;
 import com.wac.autocore.view.payment.PaymentView;
 import javafx.scene.Parent;
 
 
 public class PaymentController {
+
+    //Alexander
+    //koderna som servicen förstår, i samma ordning som i rullistan.
+    //rullistan visar översatt text (t.ex. KORT/KONTANTER), så valet översätts till kod via positionen
+    private static final String[] PAYMENT_TYPE_CODES = {"CARD", "SWISH", "CASH"};
 
     private final PaymentService paymentService;
 
@@ -31,30 +40,52 @@ public class PaymentController {
 
     private void wireEvents() {
 
+        //Alexander
+        //servicen kontrollerar betalningstyp och faktura, fel visas via ErrorHandler
         paymentView.getProcessPaymentButton().setOnAction(actionEvent -> {
-            String paymentType = paymentView.getPaymentTypeComboBox().getValue();
-
-            if (paymentType == null) {
-                System.out.println("Du måste välja en betalningstyp.");
-                return;
-            }
-
             try {
-                int invoiceId = Integer.parseInt(paymentView.getInvoiceIdField().getText());
+                int invoiceId = Validator.requireInteger(
+                        paymentView.getInvoiceIdField().getText(), "invalidInvoiceIdError");
 
-                Payment payment = paymentService.processPayment(invoiceId, paymentType);
+                //betalningstypen som den visas i rullistan (översatt), används i bekräftelsen
+                String paymentTypeText = paymentView.getPaymentTypeComboBox().getValue();
 
-                if (payment != null) {
-                    refreshLists();
-                    paymentView.getInvoiceIdField().clear();
-                    paymentView.getPaymentTypeComboBox().setValue(null);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Ogiltigt faktura-ID — måste vara ett heltal.");
+                Payment payment = paymentService.processPayment(invoiceId, selectedPaymentTypeCode());
+
+                refreshLists();
+                paymentView.getInvoiceIdField().clear();
+                paymentView.getPaymentTypeComboBox().setValue(null);
+                showPaymentConfirmation(payment, paymentTypeText);
+            } catch (Exception e) {
+                ErrorHandler.show(e);
             }
         });
 
         paymentView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+    }
+
+    //Alexander
+    //bekräftelse till användaren: betalningen är registrerad och vem bekräftelsen skickades till
+    private void showPaymentConfirmation(Payment payment, String paymentTypeText) {
+        String amount = String.format("%.2f", payment.getAmount());
+        Customer customer = paymentService.findCustomerForPayment(payment);
+
+        if (customer != null) {
+            InfoDialog.show("paymentConfirmation", String.valueOf(payment.getInvoiceId()), amount,
+                    paymentTypeText, customer.getName(), customer.getEmail());
+        } else {
+            InfoDialog.show("paymentConfirmationNoCustomer", String.valueOf(payment.getInvoiceId()), amount,
+                    paymentTypeText);
+        }
+    }
+
+    //null om ingen betalningstyp är vald, annars koden (CARD, SWISH eller CASH)
+    private String selectedPaymentTypeCode() {
+        int index = paymentView.getPaymentTypeComboBox().getSelectionModel().getSelectedIndex();
+        if (index < 0 || index >= PAYMENT_TYPE_CODES.length) {
+            return null;
+        }
+        return PAYMENT_TYPE_CODES[index];
     }
 
     private void refreshLists() {

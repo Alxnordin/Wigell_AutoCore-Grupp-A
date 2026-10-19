@@ -1,16 +1,22 @@
-package com.wac.autocore.service;
+package com.wac.autocore.service.impl;
 
-import com.wac.autocore.dao.InvoiceDAO;
-import com.wac.autocore.dao.InvoiceLineDAO;
+import com.wac.autocore.exception.BusinessRuleException;
+import com.wac.autocore.exception.NotFoundException;
+import com.wac.autocore.exception.ValidationException;
 import com.wac.autocore.model.*;
+import com.wac.autocore.service.interf.*;
+import com.wac.autocore.repository.InvoiceLineRepository;
+import com.wac.autocore.repository.InvoiceRepository;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public class InvoiceService {
+public class InvoiceServiceImpl implements InvoiceService {
 
-    private final InvoiceDAO invoiceDAO = new InvoiceDAO();
-    private final InvoiceLineDAO invoiceLineDAO = new InvoiceLineDAO();
+    //private final InvoiceDAO invoiceDAO = new InvoiceDAO();
+    private final InvoiceRepository invoiceRepository;
+    //private final InvoiceLineDAO invoiceLineDAO = new InvoiceLineDAO();
+    private final InvoiceLineRepository invoiceLineRepository;
 
     private final WorkOrderService workOrderService;
     private final BookingService bookingService;
@@ -18,7 +24,13 @@ public class InvoiceService {
     private final CustomerService customerService;
     private final ServiceItemService serviceItemService;
 
-    public InvoiceService(WorkOrderService workOrderService, BookingService bookingService, VehicleService vehicleService, CustomerService customerService, ServiceItemService serviceItemService) {
+    public InvoiceServiceImpl(InvoiceRepository invoiceRepository,
+                              InvoiceLineRepository invoiceLineRepository,
+                              WorkOrderService workOrderService, BookingService bookingService,
+                              VehicleService vehicleService, CustomerService customerService,
+                              ServiceItemService serviceItemService) {
+        this.invoiceRepository = invoiceRepository;
+        this.invoiceLineRepository = invoiceLineRepository;
         this.workOrderService = workOrderService;
         this.bookingService = bookingService;
         this.vehicleService = vehicleService;
@@ -26,8 +38,8 @@ public class InvoiceService {
         this.serviceItemService = serviceItemService;
     }
 
-     public Invoice findInvoice(int id) {
-        for (Invoice invoice : invoiceDAO.findAll()) {
+    public Invoice findInvoice(int id) {
+        for (Invoice invoice : invoiceRepository.findAll()) {
             if (invoice.getId() == id) {
                 return invoice;
             }
@@ -37,23 +49,29 @@ public class InvoiceService {
     }
 
     public List<Invoice> findAll() {
-        return invoiceDAO.findAll();
+        return invoiceRepository.findAll();
     }
 
+
+    //Alexander
+    //kontrollerar arbetsordern & rabattkoden först och kastar exception vi fel
     public Invoice createInvoice(int workOrderId, String discountCode) {
 
         WorkOrder workOrder = workOrderService.findWorkOrder(workOrderId);
-        System.out.println("Service IDs: " + workOrder.getServiceItemIds());
-        System.out.println("Service prices: " + workOrder.getServiceItemPrices());
 
         if (workOrder == null) {
-            System.out.println("Work order with ID " + workOrderId + " does not exist.");
-            return null;
+          throw new NotFoundException("workOrderNotFoundError",String.valueOf(workOrderId));
         }
 
-        if (!workOrder.getStatus().equals("COMPLETED")) {
-            System.out.println("Invoice can only be created for a completed work order.");
-            return null;
+        if (!"COMPLETED".equals(workOrder.getStatus())){
+            throw new BusinessRuleException("invoiceRequiresCompletedOrderError");
+        }
+
+        //en arbetsorder ska bara faktureras en gång
+        for (Invoice existing : invoiceRepository.findAll()) {
+            if (existing.getWorkOrderId() == workOrderId) {
+                throw new BusinessRuleException("invoiceAlreadyExistsError", String.valueOf(workOrderId));
+            }
         }
 
         double amount = 0.0;
@@ -82,7 +100,6 @@ public class InvoiceService {
 
                 if (customer != null && customer.isVip()) {
                     discountPercentage += 0.10;
-                    System.out.println("VIP discount applied: 10%");
                 }
             }
         }
@@ -92,16 +109,14 @@ public class InvoiceService {
             if (discountCode.equalsIgnoreCase("WELCOME10")) {
 
                 discountPercentage += 0.10;
-                System.out.println("Discount code WELCOME10 applied.");
 
             } else if (discountCode.equalsIgnoreCase("SERVICE200")) {
 
                 fixedDiscount = 200.0;
-                System.out.println("Discount code SERVICE200 applied.");
 
             } else {
-
-                System.out.println("Unknown discount code. No code discount applied.");
+                //Alexander  okänd rabattkod ger ett fel
+                throw new ValidationException("unknownDiscountCodeError", discountCode.trim());
             }
         }
 
@@ -139,7 +154,7 @@ public class InvoiceService {
 
         invoice.setDiscount(totalDiscount);
 
-        invoiceDAO.save(invoice);
+        invoiceRepository.save(invoice);
 
         for (Integer serviceItemId : workOrder.getServiceItemIds()) {
 
@@ -172,21 +187,52 @@ public class InvoiceService {
                         finalPrice
                 );
 
-                invoiceLineDAO.save(invoiceLine);
+                invoiceLineRepository.save(invoiceLine);
             }
         }
 
-        System.out.println("Invoice created successfully.");
-        System.out.println(invoice);
         System.out.println("Sending invoice notification to customer...");
         System.out.println("Notification sent.");
 
         return invoice;
     }
 
+
+    //Alexander
+    //uppdaterar betald-status på den befintliga fakturan (UPDATE).
+    //tidigare anropades save (INSERT), så varje betalning skapade en ny kopia av fakturan
+    //medan originalet förblev obetalt
     public Invoice updatePaidInvoice(Invoice invoice) {
-        invoiceDAO.save(invoice);
+        invoiceRepository.updatePaid(invoice);
         return invoice;
+    }
+
+    //Alexander
+    //kunden hämtas via arbetsordern. Finns ingen kund direkt på arbetsordern
+    //används bokningens fordon som tidigare. Ger null om kunden inte hittas.
+    public Customer findCustomerForInvoice(Invoice invoice) {
+        WorkOrder workOrder = workOrderService.findWorkOrder(invoice.getWorkOrderId());
+        if (workOrder == null) {
+            return null;
+        }
+
+        if (workOrder.getCustomerId() > 0) {
+            Customer customer = customerService.findCustomer(workOrder.getCustomerId());
+            if (customer != null) {
+                return customer;
+            }
+        }
+
+        if (workOrder.getBookingId() != null) {
+            Booking booking = bookingService.findBooking(workOrder.getBookingId());
+            if (booking != null) {
+                Vehicle vehicle = vehicleService.findVehicle(booking.getVehicleId());
+                if (vehicle != null) {
+                    return customerService.findCustomer(vehicle.getCustomerId());
+                }
+            }
+        }
+        return null;
     }
 
 }

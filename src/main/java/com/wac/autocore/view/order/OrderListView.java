@@ -1,10 +1,7 @@
 package com.wac.autocore.view.order;
 
-import com.wac.autocore.dao.ServiceItemDAO;
-import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.WorkOrder;
-import com.wac.autocore.service.MechanicService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,14 +9,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 //UI-vy som visar arbetsorder listan samt kontroller för att starta och slutföra en arbetsorder
 public class OrderListView {
@@ -35,6 +29,7 @@ public class OrderListView {
     private final TableColumn<WorkOrder, Void> actionColumn;
 
     private Consumer<WorkOrder> onViewOrder;
+    private Consumer<WorkOrder> onContinueDraft;
 
     private final Label title;
     private final Label subtitle;
@@ -53,15 +48,15 @@ public class OrderListView {
     private final Label warrantyOrderTitle;
     private final Label warrantyOrderDescription;
 
-    private final ServiceItemDAO serviceItemDAO;
-    private final MechanicService mechanicService;
+    private Function<Integer, String> getMechanicName;
+    private Function<Integer, ServiceItem> getServiceItem;
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
 
     public OrderListView() {
-        serviceItemDAO = new ServiceItemDAO();
-        mechanicService = new MechanicService();
+        //serviceItemDAO = new ServiceItemDAO();
+        //mechanicService = new MechanicService();
 
         //Huvudlayout
         VBox box = new VBox(12);
@@ -183,52 +178,27 @@ public class OrderListView {
         );
 
         // Visar mekanikerns namn istället för mekaniker-ID
-        mechanicIdColumn.setCellValueFactory(
-                cellData -> {
-
-                    int mechanicId =
-                            cellData.getValue().getMechanicId();
-
-                    Mechanic mechanic =
-                            mechanicService.findMechanic(mechanicId);
-
-                    if (mechanic == null) {
-                        return new SimpleStringProperty("-");
-                    }
-
-                    return new SimpleStringProperty(
-                            mechanic.getName()
-                    );
-                }
+        mechanicIdColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(
+                        getMechanicName.apply(cellData.getValue().getMechanicId())
+                )
         );
 
         serviceColumn.setCellValueFactory(
                 cellData -> {
 
                     WorkOrder workOrder = cellData.getValue();
-                    List<ServiceItem> allServices = serviceItemDAO.findAll();
 
                     String serviceNames = workOrder.getServiceItemIds()
-                                    .stream()
-                                    .map(serviceId ->
-                                            allServices.stream()
-                                                    .filter(service ->
-                                                            service.getId() == serviceId)
-                                                    .findFirst()
-                                                    .orElse(null)
-                                    )
+                            .stream()
+                            .map(serviceId -> getServiceItem.apply(serviceId))
                             .filter(service -> service != null)
                             .map(service -> getTranslatedServiceName(service.getName()))
-                            .collect(
-                                    java.util.stream.Collectors.joining(", ")
-                            );
+                            .collect(java.util.stream.Collectors.joining(", "));
 
-                    return new SimpleStringProperty(
-                            serviceNames
-                    );
+                    return new SimpleStringProperty(serviceNames);
                 }
         );
-
 
         statusColumn.setCellValueFactory(
                 cellData -> {
@@ -261,6 +231,11 @@ public class OrderListView {
                                     );
                             break;
 
+                        case "DRAFT":
+                            // Hämtar statusens översättning från språkfilen.
+                            translatedStatus = languageManager.getString("statusDraft");
+                            break;
+
                         default:
                             translatedStatus = status;
                     }
@@ -291,16 +266,35 @@ public class OrderListView {
         );
 
 
+        // Anpassar åtgärdsknappen efter arbetsorderns status.
         actionColumn.setCellFactory(column -> new TableCell<WorkOrder, Void>() {
-            private final Button viewButton = UIComponents.createViewButton(
-                            languageManager.getString("viewOrder"));
+            private final Button actionButton = UIComponents.createViewButton("");
+
+            private final FontIcon pencilIcon = new FontIcon("fa-pencil");
+            // Konfigurerar pennikonen när tabellcellen skapas.
+            {
+                pencilIcon.getStyleClass().add("continue-draft-icon");
+            }
 
             {
-                viewButton.setOnAction(event -> {
-                    WorkOrder workOrder = getTableView().getItems().get(getIndex());
+                actionButton.setOnAction(event -> {
+                    WorkOrder workOrder = getTableView()
+                            .getItems()
+                            .get(getIndex());
 
-                    if (onViewOrder != null) {
-                        onViewOrder.accept(workOrder);
+                    if (workOrder == null) {
+                        return;
+                    }
+
+                    // Skickar utkast till redigeringsflödet och övriga order till detaljvyn.
+                    if ("DRAFT".equals(workOrder.getStatus())) {
+                        if (onContinueDraft != null) {
+                            onContinueDraft.accept(workOrder);
+                        }
+                    } else {
+                        if (onViewOrder != null) {
+                            onViewOrder.accept(workOrder);
+                        }
                     }
                 });
             }
@@ -309,11 +303,25 @@ public class OrderListView {
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
 
-                if (empty) {
+                if (empty || getIndex() < 0 ||
+                        getIndex() >= getTableView().getItems().size()) {
                     setGraphic(null);
-                } else {
-                    setGraphic(viewButton);
+                    return;
                 }
+
+                WorkOrder workOrder = getTableView().getItems().get(getIndex());
+
+                if ("DRAFT".equals(workOrder.getStatus())) {
+                    // Visar Continue med pennikon för utkast.
+                    actionButton.setText(languageManager.getString("continueDraft"));
+                    actionButton.setGraphic(pencilIcon);
+                } else {
+                    // Behåller View för övriga arbetsordrar.
+                    actionButton.setText(languageManager.getString("viewOrder"));
+                    actionButton.setGraphic(null);
+                }
+
+                setGraphic(actionButton);
             }
         });
 
@@ -356,8 +364,21 @@ public class OrderListView {
     public void setOnViewOrder(Consumer<WorkOrder> onViewOrder) {
         this.onViewOrder = onViewOrder;}
 
+    // Kopplar vyn till controllerns hantering av utkast.
+    public void setOnContinueDraft(Consumer<WorkOrder> onContinueDraft) {
+        this.onContinueDraft = onContinueDraft;
+    }
+
     public void setOnCreateOrderType(Consumer<String> onCreateOrderType) {
         this.onCreateOrderType = onCreateOrderType;
+    }
+
+    public void setGetMechanicName(Function<Integer, String> getMechanicName) {
+        this.getMechanicName = getMechanicName;
+    }
+
+    public void setGetServiceItem(Function<Integer, ServiceItem> getServiceItem) {
+         this.getServiceItem = getServiceItem;
     }
 
     // Översätter service-namn beroende på valt språk

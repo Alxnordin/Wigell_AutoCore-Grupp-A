@@ -3,6 +3,7 @@ package com.wac.autocore.dao;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.ServicePackage;
+import com.wac.autocore.repository.ServicePackageRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,9 +14,10 @@ import java.util.List;
 
 //Alexander
 //läser och sparar servicepaket (tabellerna service_package & service_package_item)
-public class ServicePackageDAO {
+public class ServicePackageDAO implements ServicePackageRepository {
 
     //hämtar alla paket med dess tjänster
+    @Override
     public List<ServicePackage> findAll(){
         List<ServicePackage> servicePackages = new ArrayList<>();
 
@@ -68,6 +70,7 @@ public class ServicePackageDAO {
     }
 
     //sparar ett nytt paket, tjänsterna läggs till efteråt med addServiceItem
+    @Override
     public ServicePackage save(ServicePackage servicePackage) {
         String sql = "INSERT INTO service_package (name) VALUES (?)";
 
@@ -90,6 +93,7 @@ public class ServicePackageDAO {
     }
 
     //lägger till en tjänst i paketet
+    @Override
     public void addServiceItem(int servicePackageId, int serviceItemId) {
         String sql = "INSERT INTO service_package_item" +
                 "(service_package_id, service_item_id) " +
@@ -108,6 +112,7 @@ public class ServicePackageDAO {
     }
 
     //tar bort en tjänst från ett paket
+    @Override
     public void removeServiceItem(int servicePackageId, int serviceItemId) {
         String sql = "DELETE FROM service_package_item " +
                 "WHERE service_package_id = ? AND service_item_id = ?";
