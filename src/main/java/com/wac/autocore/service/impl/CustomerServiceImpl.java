@@ -1,6 +1,5 @@
 package com.wac.autocore.service.impl;
 
-import com.wac.autocore.dao.CustomerDAO;
 import com.wac.autocore.exception.BusinessRuleException;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.repository.CustomerRepository;
@@ -22,6 +21,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     public Customer findCustomer(int id) {
+
+        System.out.println("Nu är jag i customerservice");
 
         for (Customer customer : customerRepository.findAll()) {
             if (customer.getId() == id) {

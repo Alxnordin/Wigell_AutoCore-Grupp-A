@@ -1,44 +1,82 @@
 
 
+import com.wac.autocore.dao.*;
+import com.wac.autocore.repository.*;
+import com.wac.autocore.service.impl.*;
+import com.wac.autocore.service.interf.*;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class Main {
 
-    //private static final Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
     //private static final GarageSystem garageSystem = new GarageSystem();
 
-//    public static void main(String[] args) {
-//
-//        boolean running = true;
-//
-//        printHeader();
-//
-//        while (running) {
-//
-//            printMenu();
-//
-//            int choice = readInt("Select option: ");
-//
-//            switch (choice) {
-//
-//                case 1:
-//                    //garageSystem.showCustomers();
-//                    break;
-//
-//                case 2:
-//                    //createCustomer();
-//                    break;
-//
-//                case 3:
-//                    //garageSystem.showVehicles();
-//                    break;
-//
-//                case 4:
-//                    //createVehicle();
-//                    break;
-//
+    public static void main(String[] args) {
+
+        WorkOrderRepository workOrderRepository = new WorkOrderDAO();
+        CustomerRepository customerRepository = new CustomerDAO();
+        InvoiceRepository invoiceRepository = new InvoiceDAO();
+        InvoiceLineRepository invoiceLineRepository = new InvoiceLineDAO();
+        PaymentRepository paymentRepository = new PaymentDAO();
+        ServiceItemRepository serviceItemRepository = new ServiceItemDAO();
+        ServicePackageRepository servicePackageRepository = new ServicePackageDAO();
+        BookingRepository bookingRepository = new BookingDAO();
+        MechanicRepository mechanicRepository = new MechanicDAO();
+        VehicleRepository vehicleRepository = new VehicleDAO();
+
+        InvoiceLineService invoiceLineService = new InvoiceLineServiceImpl(invoiceLineRepository);
+        MechanicService mechanicService = new MechanicServiceImpl(mechanicRepository);
+        CustomerService customerService = new CustomerServiceImpl(customerRepository);
+        VehicleService vehicleService = new VehicleServiceImpl(vehicleRepository, customerService);
+        ServiceItemService serviceItemService = new ServiceItemServiceImpl(serviceItemRepository);
+        ServicePackageService servicePackageService =
+                new ServicePackageServiceImpl(servicePackageRepository, serviceItemService);
+
+        BookingService bookingService =
+                new BookingServiceImpl(bookingRepository, vehicleService, serviceItemService);
+        WorkOrderService workOrderService =
+                new WorkOrderServiceImpl(workOrderRepository, bookingService,
+                        mechanicService, serviceItemService,
+                        customerService, vehicleService);
+        InvoiceService invoiceService =
+                new InvoiceServiceImpl(invoiceRepository, invoiceLineRepository, workOrderService, bookingService,
+                        vehicleService, customerService,
+                        serviceItemService);
+        PaymentService paymentService =
+                new PaymentServiceImpl(paymentRepository, invoiceService);
+
+        boolean running = true;
+
+        printHeader();
+
+        while (running) {
+
+            printMenu();
+
+            int choice = readInt("Select option: ");
+
+            switch (choice) {
+
+                case 1:
+                    //customerService.findCustomer(1);
+                    createCustomer();
+                    break;
+
+                case 2:
+                    //createCustomer();
+                    break;
+
+                case 3:
+                    //garageSystem.showVehicles();
+                    break;
+
+                case 4:
+                    //createVehicle();
+                    break;
+
 //                case 5:
 //                    garageSystem.showBookings();
 //                    break;
@@ -46,7 +84,7 @@ public class Main {
 //                case 6:
 //                    createBooking();
 //                    break;
-//
+
 //                case 7:
 //                    garageSystem.showServiceItems();
 //                    break;
@@ -86,72 +124,73 @@ public class Main {
 //                case 16:
 //                    processPayment();
 //                    break;
-//
-//                case 0:
-//                    running = false;
-//                    break;
-//
-//                default:
-//                    System.out.println("Unknown menu option.");
-//                    break;
-//            }
-//        }
-//
-//        System.out.println();
-//        System.out.println("Shutting down Wigell AutoCore...");
-//        System.out.println("Goodbye!");
-//
-//        scanner.close();
-//    }
-//
-//    private static void printHeader() {
-//        System.out.println("===========================================");
-//        System.out.println("            WIGELL AUTOCORE");
-//        System.out.println("         A Wigell Group Company");
-//        System.out.println("===========================================");
-//        System.out.println();
-//    }
-//
-//    private static void printMenu() {
-//        System.out.println();
-//        System.out.println("=============== MAIN MENU =================");
-//        System.out.println(" 1. Show customers");
-//        System.out.println(" 2. Create customer");
-//        System.out.println(" 3. Show vehicles");
-//        System.out.println(" 4. Create vehicle");
-//        System.out.println(" 5. Show bookings");
-//        System.out.println(" 6. Create booking");
-//        System.out.println(" 7. Show services");
-//        System.out.println(" 8. Show mechanics");
-//        System.out.println(" 9. Show work orders");
-//        System.out.println("10. Create work order");
-//        System.out.println("11. Start work order");
-//        System.out.println("12. Complete work order");
-//        System.out.println("13. Show invoices");
-//        System.out.println("14. Create invoice");
-//        System.out.println("15. Show payments");
-//        System.out.println("16. Process payment");
-//        System.out.println(" 0. Exit");
-//        System.out.println("===========================================");
-//    }
-//
-//    private static void createCustomer() {
-//
-//        System.out.println();
-//        System.out.println("=== CREATE CUSTOMER ===");
-//
-//        System.out.print("Name: ");
-//        String name = scanner.nextLine();
-//
-//        System.out.print("Phone: ");
-//        String phone = scanner.nextLine();
-//
-//       System.out.print("Email: ");
-//        String email = scanner.nextLine();
-//
-//        garageSystem.createCustomer(name, phone, email);
-//    }
-//
+
+                case 0:
+                    running = false;
+                    break;
+
+                default:
+                    System.out.println("Unknown menu option.");
+                    break;
+            }
+        }
+
+        System.out.println();
+        System.out.println("Shutting down Wigell AutoCore...");
+        System.out.println("Goodbye!");
+
+        scanner.close();
+    }
+
+    private static void printHeader() {
+        System.out.println("===========================================");
+        System.out.println("            WIGELL AUTOCORE");
+        System.out.println("         A Wigell Group Company");
+        System.out.println("===========================================");
+        System.out.println();
+    }
+
+    private static void printMenu() {
+        System.out.println();
+        System.out.println("=============== MAIN MENU =================");
+        System.out.println(" 1. Show customers");
+        System.out.println(" 2. Create customer");
+        System.out.println(" 3. Show vehicles");
+        System.out.println(" 4. Create vehicle");
+        System.out.println(" 5. Show bookings");
+        System.out.println(" 6. Create booking");
+        System.out.println(" 7. Show services");
+        System.out.println(" 8. Show mechanics");
+        System.out.println(" 9. Show work orders");
+        System.out.println("10. Create work order");
+        System.out.println("11. Start work order");
+        System.out.println("12. Complete work order");
+        System.out.println("13. Show invoices");
+        System.out.println("14. Create invoice");
+        System.out.println("15. Show payments");
+        System.out.println("16. Process payment");
+        System.out.println(" 0. Exit");
+        System.out.println("===========================================");
+    }
+
+    private static void createCustomer() {
+
+        System.out.println();
+        System.out.println("=== CREATE CUSTOMER ===");
+
+        System.out.print("Name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Phone: ");
+        String phone = scanner.nextLine();
+
+       System.out.print("Email: ");
+        String email = scanner.nextLine();
+
+        //customerService.createCustomer(name, phone, email);
+
+    }
+
 //    private static void createVehicle() {
 //
 //        System.out.println();
@@ -180,7 +219,7 @@ public class Main {
 //                customerId
 //        );
 //    }
-//
+
 //    private static void createBooking() {
 //
 //        System.out.println();
@@ -201,7 +240,7 @@ public class Main {
 //                description
 //        );
 //    }
-//
+
 //    private static void createWorkOrder() {
 //
 //        System.out.println();
@@ -241,7 +280,7 @@ public class Main {
 //            System.out.println("Invalid service ID.");
 //        }
 //    }
-//
+
 //    private static void startWorkOrder() {
 //
 //        System.out.println();
@@ -253,7 +292,7 @@ public class Main {
 //
 //        garageSystem.startWorkOrder(workOrderId);
 //    }
-//
+
 //    private static void completeWorkOrder() {
 //
 //        System.out.println();
@@ -265,7 +304,7 @@ public class Main {
 //
 //        garageSystem.completeWorkOrder(workOrderId);
 //    }
-//
+
 //    private static void createInvoice() {
 //
 //        System.out.println();
@@ -283,7 +322,7 @@ public class Main {
 //                discountCode
 //        );
 //    }
-//
+
 //    private static void processPayment() {
 //
 //        System.out.println();
@@ -307,24 +346,24 @@ public class Main {
 //                paymentType
 //        );
 //    }
-//
-//    private static int readInt(String message) {
-//
-//        while (true) {
-//
-//            System.out.print(message);
-//
-//            String input = scanner.nextLine();
-//
-//            try {
-//                return Integer.parseInt(input);
-//
-//            } catch (NumberFormatException e) {
-//                System.out.println("Please enter a valid number.");
-//            }
-//        }
-//    }
-//
+
+    private static int readInt(String message) {
+
+        while (true) {
+
+            System.out.print(message);
+
+            String input = scanner.nextLine();
+
+            try {
+                return Integer.parseInt(input);
+
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number.");
+            }
+        }
+    }
+
 //    private static LocalDate readDate(String message) {
 //
 //        while (true) {
