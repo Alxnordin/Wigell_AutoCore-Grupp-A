@@ -9,9 +9,11 @@ import com.wac.autocore.model.Payment;
 import com.wac.autocore.service.interf.InvoiceService;
 import com.wac.autocore.service.interf.PaymentService;
 import com.wac.autocore.repository.PaymentRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class PaymentServiceImpl implements PaymentService {
 
     //private final PaymentDAO paymentDAO = new PaymentDAO();

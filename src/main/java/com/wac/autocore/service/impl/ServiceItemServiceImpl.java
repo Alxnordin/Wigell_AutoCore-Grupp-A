@@ -5,9 +5,11 @@ import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.service.interf.ServiceItemService;
 import com.wac.autocore.repository.ServiceItemRepository;
 import com.wac.autocore.validation.Validator;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ServiceItemServiceImpl implements ServiceItemService {
 
     private final ServiceItemRepository serviceItemRepository;

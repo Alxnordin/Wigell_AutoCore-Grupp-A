@@ -3,9 +3,12 @@ package com.wac.autocore.service.impl;
 import com.wac.autocore.model.InvoiceLine;
 import com.wac.autocore.service.interf.InvoiceLineService;
 import com.wac.autocore.repository.InvoiceLineRepository;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class InvoiceLineServiceImpl implements InvoiceLineService {
 
      private final InvoiceLineRepository invoiceLineRepository;

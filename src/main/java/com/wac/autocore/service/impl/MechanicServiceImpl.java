@@ -1,15 +1,15 @@
 package com.wac.autocore.service.impl;
 
-import com.wac.autocore.dao.MechanicDAO;
 import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.service.interf.MechanicService;
 import com.wac.autocore.repository.MechanicRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class MechanicServiceImpl implements MechanicService {
 
-    //private final MechanicDAO mechanicDAO = new MechanicDAO();
     private final MechanicRepository mechanicRepository;
 
     public MechanicServiceImpl(MechanicRepository mechanicRepository) {

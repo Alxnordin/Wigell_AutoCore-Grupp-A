@@ -9,10 +9,12 @@ import com.wac.autocore.repository.VehicleRepository;
 import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.service.interf.VehicleService;
 import com.wac.autocore.validation.Validator;
+import org.springframework.stereotype.Service;
 
 import java.time.Year;
 import java.util.List;
 
+@Service
 public class VehicleServiceImpl implements VehicleService {
 
     private final VehicleRepository vehicleRepository;

@@ -3,6 +3,7 @@ package com.wac.autocore.dao;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.repository.MechanicRepository;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class MechanicDAO implements MechanicRepository {
     @Override
     public List<Mechanic> findAll() {

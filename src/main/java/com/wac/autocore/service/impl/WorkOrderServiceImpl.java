@@ -6,14 +6,16 @@ import com.wac.autocore.exception.ValidationException;
 import com.wac.autocore.model.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.repository.WorkOrderRepository;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@Service
 public class WorkOrderServiceImpl implements WorkOrderService {
 
-    //private final WorkOrderDAO workOrderDAO = new WorkOrderDAO();
     private final WorkOrderRepository workOrderRepository;
 
     private final BookingService bookingService;
