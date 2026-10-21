@@ -7,7 +7,11 @@ import com.wac.autocore.view.customer.CustomerListView;
 import com.wac.autocore.view.customer.CustomerView;
 import com.wac.autocore.view.ErrorHandler;
 import javafx.scene.Parent;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
+//@Component
+//@Controller
 public class CustomerController {
 
     private final CustomerService customerService;

@@ -38,8 +38,13 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 //JavaFX startpunkt, bygger upp scenen/fönstret, skapar vyer och kontroller, och styr växling mellan de olika vyerna
+@SpringBootApplication
 public class AutoCoreApplication extends Application {
 
     private final WorkOrderRepository workOrderRepository = new WorkOrderDAO();
@@ -58,6 +63,7 @@ public class AutoCoreApplication extends Application {
     private final CustomerService customerService = new CustomerServiceImpl(customerRepository);
     private final VehicleService vehicleService = new VehicleServiceImpl(vehicleRepository, customerService);
     private final ServiceItemService serviceItemService = new ServiceItemServiceImpl(serviceItemRepository);
+
     private final ServicePackageService servicePackageService =
             new ServicePackageServiceImpl(servicePackageRepository, serviceItemService);
 
@@ -81,6 +87,11 @@ public class AutoCoreApplication extends Application {
     private Stage stage;
 
     @Override
+    public void init()  {
+        SpringApplication.run(AutoCoreApplication.class);
+    }
+
+    @Override
     public void start(Stage primaryStage) {
 
         DatabaseConnection.initializeDatabase();
@@ -89,7 +100,6 @@ public class AutoCoreApplication extends Application {
         stage.setTitle("Wigell AutoCore");
 
         borderPane = new BorderPane();
-
 
         LanguageManager languageManager = LanguageManager.getInstance();
 
