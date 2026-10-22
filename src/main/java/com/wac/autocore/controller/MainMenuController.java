@@ -39,6 +39,7 @@ public class MainMenuController {
         view.getShowPaymentsButton().setOnAction(e -> app.showPaymentView());
         view.getAddPaymentButton().setOnAction(e -> app.showPaymentView());
 
+        view.getLogoutButton().setOnAction(e -> app.logout());
         view.getExitButton().setOnAction(actionEvent -> app.exitApplication());
     }
 }

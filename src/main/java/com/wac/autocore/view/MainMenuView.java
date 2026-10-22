@@ -31,6 +31,7 @@ public class MainMenuView {
     private Button ordersButton;
     private Button paymentsButton;
 
+    private Button logoutButton;
     private Button exitButton;
 
     LanguageManager languageManager = LanguageManager.getInstance();
@@ -73,11 +74,16 @@ public class MainMenuView {
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
+        logoutButton = new Button("Logga ut");
+        logoutButton.setMaxWidth(Double.MAX_VALUE);
+        logoutButton.getStyleClass().add("logout-button");
+
         exitButton = new Button(languageManager.getString("quit"));
         exitButton.getStyleClass().add("exit-button");
         exitButton.setMaxWidth(Double.MAX_VALUE);
 
         menu.getChildren().add(spacer);
+        menu.getChildren().add(logoutButton);
         menu.getChildren().add(exitButton);
 
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
@@ -161,5 +167,6 @@ public class MainMenuView {
     public Button getShowPaymentsButton() { return showPaymentsButton; }
     public Button getAddPaymentButton() { return addPaymentButton; }
 
+    public Button getLogoutButton(){return logoutButton;}
     public Button getExitButton() {return exitButton;}
 }
