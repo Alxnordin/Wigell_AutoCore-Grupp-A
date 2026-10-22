@@ -3,6 +3,7 @@ package com.wac.autocore.dao;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.repository.VehicleRepository;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +11,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class VehicleDAO implements VehicleRepository {
     @Override
     public List<Vehicle> findAll(){

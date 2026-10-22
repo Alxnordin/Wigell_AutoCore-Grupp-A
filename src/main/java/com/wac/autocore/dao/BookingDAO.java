@@ -3,6 +3,7 @@ package com.wac.autocore.dao;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Booking;
 import com.wac.autocore.repository.BookingRepository;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +11,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class BookingDAO implements BookingRepository {
     @Override
     public List<Booking> findAll() {

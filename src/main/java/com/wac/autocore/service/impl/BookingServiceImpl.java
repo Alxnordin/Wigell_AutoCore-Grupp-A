@@ -9,10 +9,13 @@ import com.wac.autocore.service.interf.ServiceItemService;
 import com.wac.autocore.service.interf.VehicleService;
 
 import com.wac.autocore.repository.BookingRepository;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;

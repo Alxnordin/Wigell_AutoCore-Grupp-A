@@ -3,6 +3,8 @@ package com.wac.autocore;
 import com.wac.autocore.controller.*;
 import com.wac.autocore.dao.*;
 import com.wac.autocore.model.Booking;
+import com.wac.autocore.model.InvoiceLine;
+import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.repository.*;
 import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.impl.PaymentServiceImpl;
@@ -38,58 +40,78 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 //JavaFX startpunkt, bygger upp scenen/fönstret, skapar vyer och kontroller, och styr växling mellan de olika vyerna
-@SpringBootApplication
 public class AutoCoreApplication extends Application {
 
-    private final WorkOrderRepository workOrderRepository = new WorkOrderDAO();
-    private final CustomerRepository customerRepository = new CustomerDAO();
-    private final InvoiceRepository invoiceRepository = new InvoiceDAO();
-    private final InvoiceLineRepository invoiceLineRepository = new InvoiceLineDAO();
-    private final PaymentRepository paymentRepository = new PaymentDAO();
-    private final ServiceItemRepository serviceItemRepository = new ServiceItemDAO();
-    private final ServicePackageRepository servicePackageRepository = new ServicePackageDAO();
-    private final BookingRepository bookingRepository = new BookingDAO();
-    private final MechanicRepository mechanicRepository = new MechanicDAO();
-    private final VehicleRepository vehicleRepository = new VehicleDAO();
-
-    private final InvoiceLineService invoiceLineService = new InvoiceLineServiceImpl(invoiceLineRepository);
-    private final MechanicService mechanicService = new MechanicServiceImpl(mechanicRepository);
-    private final CustomerService customerService = new CustomerServiceImpl(customerRepository);
-    private final VehicleService vehicleService = new VehicleServiceImpl(vehicleRepository, customerService);
-    private final ServiceItemService serviceItemService = new ServiceItemServiceImpl(serviceItemRepository);
-
-    private final ServicePackageService servicePackageService =
-            new ServicePackageServiceImpl(servicePackageRepository, serviceItemService);
-
-    private final BookingService bookingService =
-            new BookingServiceImpl(bookingRepository, vehicleService,  serviceItemService);
-
-    private final WorkOrderService workOrderService =
-            new WorkOrderServiceImpl(workOrderRepository, bookingService,
-                    mechanicService, serviceItemService,
-                    customerService, vehicleService);
-
-    private final InvoiceService invoiceService =
-            new InvoiceServiceImpl(invoiceRepository, invoiceLineRepository, workOrderService, bookingService,
-                    vehicleService, customerService,
-                    serviceItemService);
-
-    private final PaymentService paymentService =
-            new PaymentServiceImpl(paymentRepository, invoiceService);
+//    private final WorkOrderRepository workOrderRepository = new WorkOrderDAO();
+//    private final CustomerRepository customerRepository = new CustomerDAO();
+//    private final InvoiceRepository invoiceRepository = new InvoiceDAO();
+//    private final InvoiceLineRepository invoiceLineRepository = new InvoiceLineDAO();
+//    private final PaymentRepository paymentRepository = new PaymentDAO();
+//    private final ServiceItemRepository serviceItemRepository = new ServiceItemDAO();
+//    private final ServicePackageRepository servicePackageRepository = new ServicePackageDAO();
+//    private final BookingRepository bookingRepository = new BookingDAO();
+//    private final MechanicRepository mechanicRepository = new MechanicDAO();
+//    private final VehicleRepository vehicleRepository = new VehicleDAO();
+//    private final InvoiceLineService invoiceLineService = new InvoiceLineServiceImpl(invoiceLineRepository);
+//    private final MechanicService mechanicService = new MechanicServiceImpl(mechanicRepository);
+//    private final CustomerService customerService = new CustomerServiceImpl(customerRepository);
+//    private final VehicleService vehicleService = new VehicleServiceImpl(vehicleRepository, customerService);
+//    private final ServiceItemService serviceItemService = new ServiceItemServiceImpl(serviceItemRepository);
+//    private final ServicePackageService servicePackageService =
+//            new ServicePackageServiceImpl(servicePackageRepository, serviceItemService);
+//    private final BookingService bookingService =
+//            new BookingServiceImpl(bookingRepository, vehicleService,  serviceItemService);
+//    private final WorkOrderService workOrderService =
+//            new WorkOrderServiceImpl(workOrderRepository, bookingService,
+//                    mechanicService, serviceItemService,
+//                    customerService, vehicleService);
+//    private final InvoiceService invoiceService =
+//            new InvoiceServiceImpl(invoiceRepository, invoiceLineRepository, workOrderService, bookingService,
+//                    vehicleService, customerService,
+//                    serviceItemService);
+//    private final PaymentService paymentService =
+//            new PaymentServiceImpl(paymentRepository, invoiceService);
 
     private BorderPane borderPane;
     private Stage stage;
 
+    //***** SPRING *******
+    private CustomerService customerService;
+    private MechanicService mechanicService;
+    private ServiceItemService serviceItemService;
+    private VehicleService vehicleService;
+    private BookingService bookingService;
+    private InvoiceLineService invoiceLineService;
+    private InvoiceService invoiceService;
+    private PaymentService paymentService;
+    private ServicePackageService servicePackageService;
+    private WorkOrderService workOrderService;
+
+    private ConfigurableApplicationContext springContext;
+
+    //Startar Spring via klassen SpringBootStart och sparar referens
+    //till spring i variabeln springContext.
+    //Hämtar sedan alla service som spring skapat.
     @Override
     public void init()  {
-        SpringApplication.run(AutoCoreApplication.class);
+        springContext = SpringApplication.run(SpringBootStart.class);
+
+        customerService = springContext.getBean(CustomerService.class);
+        mechanicService = springContext.getBean(MechanicService.class);
+        serviceItemService = springContext.getBean(ServiceItemService.class);
+        vehicleService = springContext.getBean(VehicleService.class);
+        bookingService = springContext.getBean(BookingService.class);
+        invoiceLineService = springContext.getBean(InvoiceLineService.class);
+        invoiceService = springContext.getBean(InvoiceService.class);
+        paymentService = springContext.getBean(PaymentService.class);
+        servicePackageService = springContext.getBean(ServicePackageService.class);
+        workOrderService = springContext.getBean(WorkOrderService.class);
     }
+    //**** TILL HIT******
 
     @Override
     public void start(Stage primaryStage) {
@@ -196,6 +218,7 @@ public class AutoCoreApplication extends Application {
 
     public void showServiceItemView() {
         ServiceItemView serviceItemView = new ServiceItemView();
+
         ServiceController controller = new ServiceController(serviceItemService,
                 mechanicService, workOrderService,
                 this, serviceItemView, new MechanicView());
@@ -204,8 +227,8 @@ public class AutoCoreApplication extends Application {
         //servicepaketen visas i en egen sektion på samma sida
         ServicePackageController packageController = new ServicePackageController(
                 servicePackageService, serviceItemService, this, new ServicePackageView());
-        serviceItemView.addSection(packageController.getView());
 
+        serviceItemView.addSection(packageController.getView());
         borderPane.setCenter(controller.getServiceItemView());
     }
 

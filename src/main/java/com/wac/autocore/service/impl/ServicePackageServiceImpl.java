@@ -7,12 +7,14 @@ import com.wac.autocore.model.ServicePackage;
 import com.wac.autocore.service.interf.ServiceItemService;
 import com.wac.autocore.service.interf.ServicePackageService;
 import com.wac.autocore.repository.ServicePackageRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 //Alexander'
 //Servicepaket: hämtar, skapar och ändrar paket
 //paketet är en mall. Bokningar som redan skapats från ett paket påverkas inte när paketet ändras
+@Service
 public class ServicePackageServiceImpl implements ServicePackageService {
 
     //private final ServicePackageDAO servicePackageDAO = new ServicePackageDAO();

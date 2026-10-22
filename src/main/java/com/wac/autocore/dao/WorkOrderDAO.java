@@ -3,6 +3,7 @@ package com.wac.autocore.dao;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.WorkOrder;
 import com.wac.autocore.repository.WorkOrderRepository;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 //Har lagt till price så att detta kan lagras i en workOrder. på sätt sparas
 //priset på en service ifall priset på en service skulle uppdateras
+@Repository
 public class WorkOrderDAO implements WorkOrderRepository {
     @Override
     public List<WorkOrder> findAll() {
