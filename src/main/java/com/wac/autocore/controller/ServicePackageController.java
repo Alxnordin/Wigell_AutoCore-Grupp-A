@@ -134,7 +134,7 @@ public class ServicePackageController {
         ServicePackage selectedPackage = servicePackageView.getPackageTable()
                 .getSelectionModel().getSelectedItem();
 
-        servicePackageView.getPackageTable().getItems().setAll(servicePackageService.servicePackages());
+        servicePackageView.getPackageTable().getItems().setAll(servicePackageService.getServicePackages());
 
         if (selectedPackage != null) {
             selectPackage(selectedPackage.getId());

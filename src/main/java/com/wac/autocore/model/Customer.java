@@ -8,12 +8,12 @@ public class Customer {
     private String email;
     private boolean vip;
 
-    public Customer(int id, String name, String phone, String email) {
+    public Customer(int id, String name, String phone, String email, boolean vip) {
         this.id = id;
         this.name = name;
         this.phone = phone;
         this.email = email;
-        this.vip = false;
+        this.vip = vip;
     }
 
     public int getId() {

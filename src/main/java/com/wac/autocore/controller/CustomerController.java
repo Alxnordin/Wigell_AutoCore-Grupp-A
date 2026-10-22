@@ -3,21 +3,20 @@ package com.wac.autocore.controller;
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.model.Customer;
+import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.customer.CustomerListView;
 import com.wac.autocore.view.customer.CustomerView;
 import com.wac.autocore.view.ErrorHandler;
 import javafx.scene.Parent;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
-//@Component
-//@Controller
 public class CustomerController {
 
     private final CustomerService customerService;
     private final AutoCoreApplication app;
     private final CustomerView customerView;
     private final CustomerListView customerListView;
+
+    LanguageManager languageManager = LanguageManager.getInstance();
 
     public CustomerController(CustomerService customerService,
                               AutoCoreApplication app, CustomerView customerView,
@@ -40,9 +39,11 @@ public class CustomerController {
             String lastName = customerView.getLastNameField().getText();
             String phoneNumber = customerView.getPhoneField().getText();
             String email = customerView.getEmailField().getText();
+            String vipValue = customerView.getVipComboBox().getValue();
+            boolean vip = languageManager.getString("vipYes").equals(vipValue);
 
             try {
-                customerService.createCustomer(firstName, lastName, phoneNumber, email);
+                customerService.createCustomer(firstName, lastName, phoneNumber, email, vip);
 
                 refreshCustomerList();
 

@@ -2,7 +2,6 @@ package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.*;
-import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.ErrorHandler;
@@ -57,7 +56,7 @@ public class BookingController {
         //rullistan "Välj tjänst" i Skapa bokning: först de enskilda tjänsterna, sedan servicepaketen.
         //Ett paket utan tjänster visas inte, eftersom det inte finns något att lägga till.
         bookingView.getServiceComboBox().getItems().addAll(serviceItemService.getServiceItems());
-        for (ServicePackage servicePackage : servicePackageService.servicePackages()) {
+        for (ServicePackage servicePackage : servicePackageService.getServicePackages()) {
             if (servicePackage.getServiceCount() > 0) {
                 bookingView.getServiceComboBox().getItems().add(servicePackage);
             }
@@ -266,7 +265,7 @@ public class BookingController {
                 detailsView.showEditServices();
                 detailsView.getServiceComboBox().getItems().setAll(serviceItemService.getServiceItems());
 
-                for (ServicePackage servicePackage : servicePackageService.servicePackages()) {
+                for (ServicePackage servicePackage : servicePackageService.getServicePackages()) {
                     if (servicePackage.getServiceCount() > 0) {
                         detailsView.getServiceComboBox().getItems().add(servicePackage);
                     }

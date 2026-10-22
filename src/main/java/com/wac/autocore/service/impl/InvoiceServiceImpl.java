@@ -15,9 +15,7 @@ import java.util.List;
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
 
-    //private final InvoiceDAO invoiceDAO = new InvoiceDAO();
     private final InvoiceRepository invoiceRepository;
-    //private final InvoiceLineDAO invoiceLineDAO = new InvoiceLineDAO();
     private final InvoiceLineRepository invoiceLineRepository;
 
     private final WorkOrderService workOrderService;

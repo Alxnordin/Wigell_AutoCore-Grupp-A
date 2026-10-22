@@ -99,6 +99,8 @@ public class CustomerView {
     public TextField getEmailField() {return emailField;}
     public Label getEmailWrongInputLabel() {return emailWrongInputLabel;}
 
+    public ComboBox<String> getVipComboBox() {return vipComboBox;}
+
     public Label getConfirmationLabel() {return confirmationLabel;}
 
     public Button getCreateCustomerButton() {return createCustomerButton;}

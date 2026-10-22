@@ -29,10 +29,10 @@ public class CustomerDAO implements CustomerRepository {
                         resultSet.getInt("id"),
                         resultSet.getString("name"),
                         resultSet.getString("phone"),
-                        resultSet.getString("email")
-
+                        resultSet.getString("email"),
+                        resultSet.getBoolean("vip")
                 );
-                customer.setVip(resultSet.getBoolean("vip"));
+
                 customers.add(customer);
             }
         }catch(Exception e){

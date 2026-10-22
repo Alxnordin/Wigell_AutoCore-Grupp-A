@@ -24,8 +24,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     public Customer findCustomer(int id) {
 
-        System.out.println("Nu är jag i customerservice");
-
         for (Customer customer : customerRepository.findAll()) {
             if (customer.getId() == id) {
                 return customer;
@@ -38,7 +36,8 @@ public class CustomerServiceImpl implements CustomerService {
     //servicen avgör nu själv vad som är giltigt, inte controllern.
     //saknas en uppgift kastas ValidationException med en språknyckel som säger vad som saknas.
     //samma regler gäller oavsett om kunden skapas från appen, ett test eller ett annat system.
-    public Customer createCustomer(String firstName, String lastName, String phone, String email) {
+    public Customer createCustomer(String firstName, String lastName, String phone,
+                                   String email, boolean vip) {
 
         Validator.requireText(firstName, "customerFirstNameRequiredError");
         Validator.requireText(lastName, "customerLastNameRequiredError");
@@ -52,7 +51,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         String fullName = firstName.trim() + " " + lastName.trim();
-        Customer customer = new Customer(0, fullName, phone.trim(), email.trim());
+        Customer customer = new Customer(0, fullName, phone.trim(), email.trim(), vip);
 
         customerRepository.save(customer);
 

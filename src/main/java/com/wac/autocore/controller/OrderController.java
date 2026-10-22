@@ -10,7 +10,6 @@ import com.wac.autocore.model.WorkOrderType;
 
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.*;
-import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.service.interf.WorkOrderService;
 import com.wac.autocore.util.LanguageManager;
@@ -997,7 +996,7 @@ public class OrderController {
     private void fillServiceComboBox(CreateWorkOrderView view) {
         view.getServiceComboBox().getItems().addAll(serviceItemService.getServiceItems());
 
-        for (ServicePackage servicePackage : servicePackageService.servicePackages()) {
+        for (ServicePackage servicePackage : servicePackageService.getServicePackages()) {
             if (servicePackage.getServiceCount()> 0){
                 view.getServiceComboBox().getItems().add(servicePackage);
             }

@@ -3,11 +3,8 @@ package com.wac.autocore;
 import com.wac.autocore.controller.*;
 import com.wac.autocore.dao.*;
 import com.wac.autocore.model.Booking;
-import com.wac.autocore.model.InvoiceLine;
-import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.repository.*;
 import com.wac.autocore.service.impl.*;
-import com.wac.autocore.service.impl.PaymentServiceImpl;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.view.service.ServicePackageView;
 import com.wac.autocore.data.DatabaseConnection;
@@ -46,36 +43,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 //JavaFX startpunkt, bygger upp scenen/fönstret, skapar vyer och kontroller, och styr växling mellan de olika vyerna
 public class AutoCoreApplication extends Application {
 
-//    private final WorkOrderRepository workOrderRepository = new WorkOrderDAO();
-//    private final CustomerRepository customerRepository = new CustomerDAO();
-//    private final InvoiceRepository invoiceRepository = new InvoiceDAO();
-//    private final InvoiceLineRepository invoiceLineRepository = new InvoiceLineDAO();
-//    private final PaymentRepository paymentRepository = new PaymentDAO();
-//    private final ServiceItemRepository serviceItemRepository = new ServiceItemDAO();
-//    private final ServicePackageRepository servicePackageRepository = new ServicePackageDAO();
-//    private final BookingRepository bookingRepository = new BookingDAO();
-//    private final MechanicRepository mechanicRepository = new MechanicDAO();
-//    private final VehicleRepository vehicleRepository = new VehicleDAO();
-//    private final InvoiceLineService invoiceLineService = new InvoiceLineServiceImpl(invoiceLineRepository);
-//    private final MechanicService mechanicService = new MechanicServiceImpl(mechanicRepository);
-//    private final CustomerService customerService = new CustomerServiceImpl(customerRepository);
-//    private final VehicleService vehicleService = new VehicleServiceImpl(vehicleRepository, customerService);
-//    private final ServiceItemService serviceItemService = new ServiceItemServiceImpl(serviceItemRepository);
-//    private final ServicePackageService servicePackageService =
-//            new ServicePackageServiceImpl(servicePackageRepository, serviceItemService);
-//    private final BookingService bookingService =
-//            new BookingServiceImpl(bookingRepository, vehicleService,  serviceItemService);
-//    private final WorkOrderService workOrderService =
-//            new WorkOrderServiceImpl(workOrderRepository, bookingService,
-//                    mechanicService, serviceItemService,
-//                    customerService, vehicleService);
-//    private final InvoiceService invoiceService =
-//            new InvoiceServiceImpl(invoiceRepository, invoiceLineRepository, workOrderService, bookingService,
-//                    vehicleService, customerService,
-//                    serviceItemService);
-//    private final PaymentService paymentService =
-//            new PaymentServiceImpl(paymentRepository, invoiceService);
-
     private BorderPane borderPane;
     private Stage stage;
 
@@ -95,7 +62,9 @@ public class AutoCoreApplication extends Application {
 
     //Startar Spring via klassen SpringBootStart och sparar referens
     //till spring i variabeln springContext.
-    //Hämtar sedan alla service som spring skapat.
+    //Hämtar sedan alla service som spring skapat för att kunna använda dem
+    //vid skapandet av alla views. Spring skickar automatiskt in repository-klasserna
+    //till service-klasserna.
     @Override
     public void init()  {
         springContext = SpringApplication.run(SpringBootStart.class);
@@ -111,7 +80,6 @@ public class AutoCoreApplication extends Application {
         servicePackageService = springContext.getBean(ServicePackageService.class);
         workOrderService = springContext.getBean(WorkOrderService.class);
     }
-    //**** TILL HIT******
 
     @Override
     public void start(Stage primaryStage) {
@@ -307,6 +275,13 @@ public class AutoCoreApplication extends Application {
 
     public void exitApplication() {
         Platform.exit();
+    }
+
+    @Override
+    public void stop() {
+        if (springContext != null) {
+            springContext.close();
+        }
     }
 
     public static void main(String[] args) {

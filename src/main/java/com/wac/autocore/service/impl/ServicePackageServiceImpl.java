@@ -27,7 +27,7 @@ public class ServicePackageServiceImpl implements ServicePackageService {
         this.serviceItemService = serviceItemService;
     }
 
-    public List<ServicePackage> servicePackages() {
+    public List<ServicePackage> getServicePackages() {
         return servicePackageRepository.findAll();
     }
 

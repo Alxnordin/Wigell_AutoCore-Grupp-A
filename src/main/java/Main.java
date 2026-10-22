@@ -1,6 +1,11 @@
 
 
 import com.wac.autocore.dao.*;
+import com.wac.autocore.exception.BusinessRuleException;
+import com.wac.autocore.exception.NotFoundException;
+import com.wac.autocore.exception.ValidationException;
+import com.wac.autocore.model.Customer;
+import com.wac.autocore.model.WorkOrder;
 import com.wac.autocore.repository.*;
 import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.interf.*;
@@ -13,6 +18,8 @@ public class Main {
 
     private static final Scanner scanner = new Scanner(System.in);
     //private static final GarageSystem garageSystem = new GarageSystem();
+//    CustomerRepository customerRepository = new CustomerDAO();
+//    CustomerService customerService = new CustomerServiceImpl(customerRepository);
 
     public static void main(String[] args) {
 
@@ -61,21 +68,20 @@ public class Main {
             switch (choice) {
 
                 case 1:
-                    //customerService.findCustomer(1);
-                    createCustomer();
+                    createCustomer(customerService);
                     break;
 
                 case 2:
-                    //createCustomer();
+                    createWorkOrder(workOrderService);
                     break;
 
-                case 3:
-                    //garageSystem.showVehicles();
-                    break;
-
-                case 4:
-                    //createVehicle();
-                    break;
+//                case 3:
+//                    //garageSystem.showVehicles();
+//                    break;
+//
+//                case 4:
+//                    //createVehicle();
+//                    break;
 
 //                case 5:
 //                    garageSystem.showBookings();
@@ -153,43 +159,120 @@ public class Main {
     private static void printMenu() {
         System.out.println();
         System.out.println("=============== MAIN MENU =================");
-        System.out.println(" 1. Show customers");
-        System.out.println(" 2. Create customer");
-        System.out.println(" 3. Show vehicles");
-        System.out.println(" 4. Create vehicle");
-        System.out.println(" 5. Show bookings");
-        System.out.println(" 6. Create booking");
-        System.out.println(" 7. Show services");
-        System.out.println(" 8. Show mechanics");
-        System.out.println(" 9. Show work orders");
-        System.out.println("10. Create work order");
-        System.out.println("11. Start work order");
-        System.out.println("12. Complete work order");
-        System.out.println("13. Show invoices");
-        System.out.println("14. Create invoice");
-        System.out.println("15. Show payments");
-        System.out.println("16. Process payment");
+        System.out.println(" 1. Create customers");
+        System.out.println(" 2. Create work order");
+//        System.out.println(" 3. Show vehicles");
+//        System.out.println(" 4. Create vehicle");
+//        System.out.println(" 5. Show bookings");
+//        System.out.println(" 6. Create booking");
+//        System.out.println(" 7. Show services");
+//        System.out.println(" 8. Show mechanics");
+//        System.out.println(" 9. Show work orders");
+//        System.out.println("10. Create work order");
+//        System.out.println("11. Start work order");
+//        System.out.println("12. Complete work order");
+//        System.out.println("13. Show invoices");
+//        System.out.println("14. Create invoice");
+//        System.out.println("15. Show payments");
+//        System.out.println("16. Process payment");
         System.out.println(" 0. Exit");
         System.out.println("===========================================");
     }
 
-    private static void createCustomer() {
+    private static void createCustomer(CustomerService customerService) {
 
         System.out.println();
         System.out.println("=== CREATE CUSTOMER ===");
 
-        System.out.print("Name: ");
-        String name = scanner.nextLine();
+        System.out.print("First name: ");
+        String firstName = scanner.nextLine();
+
+        System.out.print("Last name: ");
+        String lastName = scanner.nextLine();
 
         System.out.print("Phone: ");
         String phone = scanner.nextLine();
 
        System.out.print("Email: ");
-        String email = scanner.nextLine();
+       String email = scanner.nextLine();
 
-        //customerService.createCustomer(name, phone, email);
+        System.out.println("VIP?");
+        boolean vip = true;     //BARA TEST, ej klar med detta
+
+        try {
+            Customer customer = customerService.createCustomer(firstName, lastName, phone, email, vip);
+            System.out.println("Den nya kunden:\n" + customer);
+
+        } catch (ValidationException e) {
+            System.out.println("Valideringsfel: " + e.getMessage());
+
+        } catch (BusinessRuleException e)   {
+            System.out.println("BusinessRulefel: " + e.getMessage());
+        }
+
+        //customerService.createCustomer(firstName, lastName, phone, email);
+    }
+
+    private static void createWorkOrder(WorkOrderService workOrderService) {
+
+        System.out.println();
+        System.out.println("=== CREATE WORK ORDER ===");
+
+        int bookingId = readInt("Booking ID: ");
+
+        int mechanicId = readInt("Mechanic ID: ");
+
+        System.out.println();
+        System.out.println("Enter service IDs separated by comma.");
+        System.out.println("Example: 1,3,4");
+        System.out.print("Services: ");
+
+        String input = scanner.nextLine();
+
+        String[] parts = input.split(",");
+        int[] serviceItemIds = new int[parts.length];
+
+        try {
+
+            for (int i = 0; i < parts.length; i++) {
+                serviceItemIds[i] = Integer.parseInt(parts[i].trim());
+            }
+
+//            garageSystem.createWorkOrder(bookingId, mechanicId, serviceItemIds);
+
+            WorkOrder workOrder = workOrderService.createWorkOrder(bookingId, mechanicId);
+            System.out.println("Workorder:\n" + workOrder);
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid service ID.");
+
+        } catch (BusinessRuleException e) {
+            System.out.println("BusinessRulefel: " + e.getMessage());
+
+        } catch (NotFoundException e)   {
+            System.out.println("Ska fånga om något id inte finns. ");
+        }
+
 
     }
+
+    private static int readInt(String message) {
+
+        while (true) {
+
+            System.out.print(message);
+
+            String input = scanner.nextLine();
+
+            try {
+                return Integer.parseInt(input);
+
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number.");
+            }
+        }
+    }
+
 
 //    private static void createVehicle() {
 //
@@ -241,45 +324,7 @@ public class Main {
 //        );
 //    }
 
-//    private static void createWorkOrder() {
-//
-//        System.out.println();
-//        System.out.println("=== CREATE WORK ORDER ===");
-//
-//        garageSystem.showBookings();
-//        int bookingId = readInt("Booking ID: ");
-//
-//        garageSystem.showMechanics();
-//        int mechanicId = readInt("Mechanic ID: ");
-//
-//        garageSystem.showServiceItems();
-//
-//        System.out.println();
-//        System.out.println("Enter service IDs separated by comma.");
-//        System.out.println("Example: 1,3,4");
-//        System.out.print("Services: ");
-//
-//        String input = scanner.nextLine();
-//
-//        String[] parts = input.split(",");
-//        int[] serviceItemIds = new int[parts.length];
-//
-//        try {
-//
-//            for (int i = 0; i < parts.length; i++) {
-//                serviceItemIds[i] = Integer.parseInt(parts[i].trim());
-//            }
-//
-//            garageSystem.createWorkOrder(
-//                    bookingId,
-//                    mechanicId,
-//                    serviceItemIds
-//            );
-//
-//        } catch (NumberFormatException e) {
-//            System.out.println("Invalid service ID.");
-//        }
-//    }
+
 
 //    private static void startWorkOrder() {
 //
@@ -347,7 +392,7 @@ public class Main {
 //        );
 //    }
 
-    private static int readInt(String message) {
+    private static LocalDate readDate(String message) {
 
         while (true) {
 
@@ -356,28 +401,11 @@ public class Main {
             String input = scanner.nextLine();
 
             try {
-                return Integer.parseInt(input);
+                return LocalDate.parse(input);
 
-            } catch (NumberFormatException e) {
-                System.out.println("Please enter a valid number.");
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date. Use format YYYY-MM-DD.");
             }
         }
     }
-
-//    private static LocalDate readDate(String message) {
-//
-//        while (true) {
-//
-//            System.out.print(message);
-//
-//            String input = scanner.nextLine();
-//
-//            try {
-//                return LocalDate.parse(input);
-//
-//            } catch (DateTimeParseException e) {
-//                System.out.println("Invalid date. Use format YYYY-MM-DD.");
-//            }
-//        }
-//    }
 }
