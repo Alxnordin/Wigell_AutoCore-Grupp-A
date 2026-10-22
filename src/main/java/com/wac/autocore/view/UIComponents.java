@@ -114,12 +114,43 @@ public class UIComponents {
 
     //Visa knapp i tabeller
     public static Button createViewButton(String text) {
-
         Button button = new Button(text);
-        button.getStyleClass().add("view-button");
+
+        button.getStyleClass().addAll("action-button", "view-button");
+        button.setGraphic(new FontIcon("fa-eye"));
 
         return button;
     }
+
+    // Skapar en knapp för att registrera en betalning.
+    public static Button createRegisterPaymentButton(String text) {
+        Button button = new Button(text);
+
+        button.getStyleClass().add("register-payment-button");
+
+        FontIcon icon = new FontIcon("fa-credit-card");
+        icon.setIconColor(javafx.scene.paint.Color.WHITE);
+        button.setGraphic(icon);
+
+        button.setStyle("-fx-font-weight: bold;");
+
+        return button;
+    }
+
+//    // Skapar en inaktiv knapp som visar att fakturan redan är betald.
+//    public static Button createPaidButton(String text) {
+//        Button button = new Button(text);
+//
+//        button.getStyleClass().add("paid-button");
+//
+//        FontIcon icon = new FontIcon("fa-check");
+//        icon.setIconColor(javafx.scene.paint.Color.web("#294A32"));
+//        button.setGraphic(icon);
+//
+//        button.setDisable(true);
+//
+//        return button;
+//    }
 
     //Skapa vBox som är grunden i alla viewklasser.
     public static VBox createVBoxForViews() {
@@ -233,6 +264,14 @@ public class UIComponents {
     public static Label createInvoiceStatusValueLabel(String text, boolean paid) {
         Label label = createStatusValueLabel(text);
 
+        // Centrerar texten och låter etiketten fylla tillgänglig bredd.
+        label.setAlignment(Pos.CENTER);
+        label.setMaxWidth(Double.MAX_VALUE);
+
+        // Befintlig logik för statusens färg behålls här.
+        label.getStyleClass().add("status-value");
+        label.getStyleClass().add(paid ? "status-paid" : "status-unpaid");
+
         if (paid) {
             label.getStyleClass().add("status-paid");
         } else {
@@ -331,6 +370,24 @@ public class UIComponents {
         createButton.getStyleClass().add("create-order-button");
 
         return createButton;
+    }
+
+    // Skapar en knapp för att öppna betalningshistoriken.
+    public static Button createPaymentHistoryButton(String text) {
+        Button button = new Button(text);
+
+        // Återanvänder grundstilen för gemensamma åtgärdsknappar.
+        button.getStyleClass().add("payment-history-button");
+
+        // Visar en historikikon i knappen.
+        FontIcon icon = new FontIcon("fa-history");
+        icon.setIconSize(14);
+        icon.setIconColor(javafx.scene.paint.Color.web("#2E7D32"));
+
+        button.setGraphic(icon);
+        button.setGraphicTextGap(8);
+
+        return button;
     }
 
     public static Label createPlaceholderLabel(String text) {

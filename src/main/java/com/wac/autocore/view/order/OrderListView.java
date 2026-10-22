@@ -318,7 +318,7 @@ public class OrderListView {
                 } else {
                     // Behåller View för övriga arbetsordrar.
                     actionButton.setText(languageManager.getString("viewOrder"));
-                    actionButton.setGraphic(null);
+                    actionButton.setGraphic(new FontIcon("fa-eye"));
                 }
 
                 setGraphic(actionButton);

@@ -22,7 +22,7 @@ public class MainMenuView {
     private Button showBookingsButton, addBookingButton;
     private Button showServicesButton, showMechanicsButton;
 
-    private Button showInvoicesButton, addInvoiceButton, showPaymentsButton, addPaymentButton;
+    private Button showInvoicesButton, addInvoiceButton;
 
     private Button customersButton;
     private Button vehiclesButton;
@@ -65,10 +65,9 @@ public class MainMenuView {
 
         showInvoicesButton = new Button(languageManager.getString("showInvoices"));
         addInvoiceButton = new Button(languageManager.getString("addInvoice"));
-        showPaymentsButton = new Button(languageManager.getString("showPayments"));
-        addPaymentButton = new Button(languageManager.getString("addPayment"));
+
         paymentsButton = UIComponents.createMenuButton(languageManager.getString("paymentsButton"), "fa-credit-card");
-        menu.getChildren().add(buildSection(paymentsButton, showInvoicesButton, addInvoiceButton, showPaymentsButton, addPaymentButton));
+        menu.getChildren().add(buildSection(paymentsButton, showInvoicesButton, addInvoiceButton));
 
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
@@ -107,8 +106,6 @@ public class MainMenuView {
         paymentsButton.setText(languageManager.getString("paymentsButton"));
         showInvoicesButton.setText(languageManager.getString("showInvoices"));
         addInvoiceButton.setText(languageManager.getString("addInvoice"));
-        showPaymentsButton.setText(languageManager.getString("showPayments"));
-        addPaymentButton.setText(languageManager.getString("addPayment"));
 
         exitButton.setText(languageManager.getString("quit"));
     }
@@ -158,8 +155,6 @@ public class MainMenuView {
     public Button getOrdersButton() { return ordersButton; }
     public Button getShowInvoicesButton() { return showInvoicesButton; }
     public Button getAddInvoiceButton() { return addInvoiceButton; }
-    public Button getShowPaymentsButton() { return showPaymentsButton; }
-    public Button getAddPaymentButton() { return addPaymentButton; }
 
     public Button getExitButton() {return exitButton;}
 }

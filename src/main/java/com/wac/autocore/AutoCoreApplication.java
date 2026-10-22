@@ -188,7 +188,7 @@ public class AutoCoreApplication extends Application {
 
         showMainMenu();
 
-        Scene scene = new Scene(borderPane, 1100, 900);
+        Scene scene = new Scene(borderPane, 1300, 780);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
@@ -293,7 +293,7 @@ public class AutoCoreApplication extends Application {
         InvoiceController invoiceController = new InvoiceController(invoiceService,
             workOrderService, bookingService, vehicleService, customerService,
                 mechanicService, invoiceLineService,
-                this, new InvoiceListView(), new InvoiceView());
+                this, new InvoiceListView(), new InvoiceView(), paymentService);
         borderPane.setCenter(invoiceController.getInvoiceListView());
     }
 
@@ -301,7 +301,7 @@ public class AutoCoreApplication extends Application {
         InvoiceController invoiceController = new InvoiceController(invoiceService,
                 workOrderService, bookingService, vehicleService, customerService,
                 mechanicService, invoiceLineService,
-                this, new InvoiceListView(), new InvoiceView());
+                this, new InvoiceListView(), new InvoiceView(), paymentService);
         borderPane.setCenter(invoiceController.getInvoiceView());
     }
 
