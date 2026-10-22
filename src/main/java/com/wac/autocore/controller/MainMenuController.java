@@ -36,9 +36,6 @@ public class MainMenuController {
         view.getShowInvoicesButton().setOnAction(e -> app.showInvoiceListView());
         view.getAddInvoiceButton().setOnAction(e -> app.showInvoiceView());
 
-        view.getShowPaymentsButton().setOnAction(e -> app.showPaymentView());
-        view.getAddPaymentButton().setOnAction(e -> app.showPaymentView());
-
         view.getExitButton().setOnAction(actionEvent -> app.exitApplication());
     }
 }

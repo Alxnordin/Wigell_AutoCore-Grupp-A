@@ -10,6 +10,7 @@ import com.wac.autocore.view.InfoDialog;
 import com.wac.autocore.view.invoice.InvoiceDetailsView;
 import com.wac.autocore.view.invoice.InvoiceListView;
 import com.wac.autocore.view.invoice.InvoiceView;
+import com.wac.autocore.view.payment.RegisterPaymentDialog;
 import javafx.scene.Parent;
 
 import java.util.List;
@@ -28,11 +29,13 @@ public class InvoiceController {
     private final InvoiceListView invoiceListView;
     private final InvoiceView invoiceView;
 
+    private final PaymentService paymentService;
+
     public InvoiceController(InvoiceService invoiceService, WorkOrderService workOrderService,
                              BookingService bookingService, VehicleService vehicleService,
                              CustomerService customerService, MechanicService mechanicService,
                              InvoiceLineService invoiceLineService, AutoCoreApplication app,
-                             InvoiceListView invoiceListView, InvoiceView invoiceView) {
+                             InvoiceListView invoiceListView, InvoiceView invoiceView,  PaymentService paymentService) {
         this.invoiceService = invoiceService;
         this.workOrderService = workOrderService;
         this.bookingService = bookingService;
@@ -43,6 +46,7 @@ public class InvoiceController {
         this.app = app;
         this.invoiceListView = invoiceListView;
         this.invoiceView = invoiceView;
+        this.paymentService = paymentService;
         wireEvents();
         refreshLists();
     }
@@ -110,6 +114,82 @@ public class InvoiceController {
             app.showView(detailsView.getView());
 
         });
+
+        // Öppnar dialogrutan och registrerar betalningen via den befintliga tjänsten.
+        invoiceListView.setOnRegisterPayment(invoice -> {
+            // Betalda fakturor ska inte kunna betalas igen.
+            if (invoice.isPaid()) {
+                return;
+            }
+
+            RegisterPaymentDialog dialog = new RegisterPaymentDialog(
+                    invoice.getId(),
+                    invoice.getTotalAmount()
+            );
+
+            dialog.showAndWait().ifPresent(details -> {
+                try {
+                    // Använder dialogens valda betalningstyp.
+                    Payment payment = paymentService.processPayment(
+                            details.getInvoiceId(),
+                            details.getPaymentType()
+                    );
+
+                    // Hämtar fakturorna på nytt så att statusen uppdateras.
+                    refreshLists();
+
+                    // Visar bekräftelse när betalningen har registrerats.
+                    showPaymentConfirmation(payment, details.getPaymentType());
+
+                } catch (Exception e) {
+                    ErrorHandler.show(e);
+                }
+            });
+        });
+    }
+
+    // Visar en bekräftelse efter att betalningen har registrerats.
+    private void showPaymentConfirmation(Payment payment, String paymentTypeCode) {
+        String amount = String.format("%.2f", payment.getAmount());
+
+        String paymentTypeText;
+
+        switch (paymentTypeCode) {
+            case "CARD":
+                paymentTypeText = com.wac.autocore.util.LanguageManager
+                        .getInstance().getString("paymentTypeCard");
+                break;
+            case "SWISH":
+                paymentTypeText = com.wac.autocore.util.LanguageManager
+                        .getInstance().getString("paymentTypeSwish");
+                break;
+            case "CASH":
+                paymentTypeText = com.wac.autocore.util.LanguageManager
+                        .getInstance().getString("paymentTypeCash");
+                break;
+            default:
+                paymentTypeText = paymentTypeCode;
+        }
+
+        Customer customer = paymentService.findCustomerForPayment(payment);
+
+        if (customer != null) {
+            InfoDialog.show(
+                    "paymentConfirmation",
+                    String.valueOf(payment.getInvoiceId()),
+                    amount,
+                    paymentTypeText,
+                    customer.getName(),
+                    customer.getEmail()
+            );
+        } else {
+            InfoDialog.show(
+                    "paymentConfirmationNoCustomer",
+                    String.valueOf(payment.getInvoiceId()),
+                    amount,
+                    paymentTypeText
+            );
+        }
     }
 
     //Alexander

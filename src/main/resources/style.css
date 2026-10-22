@@ -758,3 +758,238 @@ ListView .list-cell:filled:selected {
     -fx-background-color: #E8DDF5;
     -fx-text-fill: #563C78;
 }
+
+
+/* Själva dialogrutans bakgrund och kant. */
+.payment-dialog {
+    -fx-background-color: #F5F7F4;
+    -fx-border-color: #CFE0D6;
+    -fx-border-width: 1px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+/* Dialogens rubrikpanel. */
+.payment-dialog > .header-panel {
+    -fx-background-color: #E8F0EB;
+    -fx-padding: 16px 20px;
+}
+
+/* Rubriken i dialogen. */
+.payment-dialog-title {
+    -fx-text-fill: #10182B;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* Innehållsområdet, inklusive formuläret. */
+.payment-dialog > .content {
+    -fx-background-color: #F5F7F4;
+    -fx-padding: 20px;
+}
+
+/* Grön knapp för att genomföra betalningen. */
+.payment-dialog .payment-confirm-button {
+    -fx-background-color: #2E7D32;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-border-color: transparent;
+    -fx-padding: 10px 18px;
+    -fx-cursor: hand;
+}
+
+/* Mörkare grön när muspekaren ligger över Pay. */
+.payment-dialog .payment-confirm-button:hover {
+    -fx-background-color: #256628;
+}
+
+/* Tydlig men diskret avbrytknapp. */
+.payment-dialog .cancel-editing-button {
+    -fx-background-color: #E8F0EB;
+    -fx-text-fill: #263238;
+    -fx-border-color: #CFE0D6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 18px;
+}
+
+/* Samma ljusa gröna ton vid hovring. */
+.payment-dialog .cancel-editing-button:hover {
+    -fx-background-color: #DCE9DF;
+}
+
+/* Skrivskyddat belopp med en diskret grön markering. */
+.payment-dialog .payment-amount-field {
+    -fx-background-color: #EAF2EA;
+    -fx-text-fill: #294A32;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-border-color: #C8D8C8;
+    -fx-border-radius: 8px;
+}
+
+
+/* Ljusgrön ruta som framhäver beloppet som ska betalas. */
+.payment-amount-card {
+    -fx-background-color: #E7F0E8;
+    -fx-background-radius: 10px;
+    -fx-padding: 14px 16px;
+    -fx-spacing: 4px;
+    -fx-border-color: #D3E3D5;
+    -fx-border-radius: 10px;
+}
+
+/* Beskrivning ovanför beloppet. */
+.payment-amount-title {
+    -fx-text-fill: #526957;
+    -fx-font-size: 13px;
+}
+
+/* Själva summan är den tydligaste delen av rutan. */
+.payment-amount-value {
+    -fx-text-fill: #2E7D32;
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+}
+
+/* Förklarande text under beloppet. */
+.payment-amount-description {
+    -fx-text-fill: #526957;
+    -fx-font-size: 11px;
+}
+
+
+/* Gemensam layout för fakturornas statusetiketter. */
+.status-paid,
+.status-unpaid {
+    -fx-padding: 6px 14px;
+    -fx-background-radius: 8px;
+    -fx-font-weight: bold;
+}
+
+/* Dov grön visar att fakturan är betald. */
+.status-paid {
+    -fx-background-color: #C8E1C4;
+    -fx-text-fill: #28512A;
+}
+
+/* Dov gul visar att fakturan fortfarande är obetald. */
+.status-unpaid {
+    -fx-background-color: #F9E7A8;
+    -fx-text-fill: #5F4B00;
+}
+
+/* Grön knapp för redan betalda fakturor. */
+.paid-button {
+    -fx-background-color: #B8CDB8;
+    -fx-text-fill: #294A32;
+    -fx-background-radius: 6px;
+    -fx-cursor: default;
+}
+
+/* Gemensam form för fakturornas statusetiketter. */
+.status-value {
+    -fx-text-alignment: center;
+    -fx-padding: 8px 18px;
+    -fx-background-radius: 10px;
+    -fx-font-weight: bold;
+}
+
+/* Betald faktura – samma typ av dov grön som Completed. */
+.status-value.status-paid {
+    -fx-background-color: #C8E1C4;
+    -fx-text-fill: #28512A;
+}
+
+/* Obetald faktura – samma typ av dov gul som Created. */
+.status-value.status-unpaid {
+    -fx-background-color: #F9E7A8;
+    -fx-text-fill: #5F4B00;
+}
+
+/* Gemensam stil för åtgärdsknappar i tabeller. */
+.action-button {
+    -fx-background-color: #DF8A36;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 7px;
+    -fx-padding: 8px 14px;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* Mörkare orange vid hovring. */
+.action-button:hover {
+    -fx-background-color: #C87525;
+}
+
+/* Gör ikonerna vita på de orange åtgärdsknapparna. */
+.action-button .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+/* Dov grön knapp för redan betalda fakturor. */
+.paid-button {
+    -fx-background-color: #DDEADD;
+    -fx-text-fill: #66816A;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: none;
+    -fx-cursor: default;
+    -fx-opacity: 1.0;
+}
+
+/* Behåller grön färg även när Paid-knappen är inaktiv. */
+.paid-button:disabled {
+    -fx-opacity: 1;
+}
+
+.paid-button .ikonli-font-icon {
+    -fx-icon-color: #66816A;
+}
+
+/* Grön knapp för att registrera en ny betalning. */
+.register-payment-button {
+    -fx-background-color: #2E7D32;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: none;
+    -fx-cursor: hand;
+}
+
+/* Mörkare grön när användaren hovrar över knappen. */
+.register-payment-button:hover {
+    -fx-background-color: #256628;
+}
+
+/* Säkerställer att betalkortsikonen är vit. */
+.register-payment-button .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+/* Knapp för att öppna betalningshistoriken. */
+.payment-history-button {
+    -fx-background-color: #E7F0E8;
+    -fx-text-fill: #2E7D32;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8px;
+    -fx-border-color: #C8DCCB;
+    -fx-border-radius: 8px;
+    -fx-padding: 10px 16px;
+    -fx-cursor: hand;
+}
+
+/* Ger knappen en något mörkare bakgrund vid hovring. */
+.payment-history-button:hover {
+    -fx-background-color: #D6E7D8;
+}
