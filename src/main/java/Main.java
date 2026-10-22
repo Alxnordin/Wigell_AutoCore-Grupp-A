@@ -210,7 +210,6 @@ public class Main {
             System.out.println("BusinessRulefel: " + e.getMessage());
         }
 
-        //customerService.createCustomer(firstName, lastName, phone, email);
     }
 
     private static void createWorkOrder(WorkOrderService workOrderService) {

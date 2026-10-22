@@ -1,5 +1,7 @@
 package com.wac.autocore;
 
+import com.wac.autocore.security.LoginController;
+import org.springframework.security.core.context.SecurityContextHolder;
 import com.wac.autocore.controller.*;
 import com.wac.autocore.dao.*;
 import com.wac.autocore.model.Booking;
@@ -151,40 +153,113 @@ public class AutoCoreApplication extends Application {
         footer.getStyleClass().add("footer");
         borderPane.setBottom(footer);
 
-        new MainMenuController(this, borderPane);
-        showMainMenu();
+        //new MainMenuController(this, borderPane);
+        //showMainMenu();
 
-        showMainMenu();
+        //showMainMenu();
+
+        showLoginView();
 
         Scene scene = new Scene(borderPane, 1300, 780);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
     }
+    //Den första viewn när man startar programmet. Om man loggar in så visas sen showMainMenu
+    public void showLoginView(){
+        borderPane.setLeft(null);
+        LoginController loginController = springContext.getBean(LoginController.class);
+
+        LoginView loginView = new LoginView();
+
+        loginView.getLoginButton().setOnAction(event -> {
+            loginView.clearError();
+
+        String username = loginView.getUsername();
+        String password = loginView.getPassword();
+
+        if (loginController.login(username, password)){
+            new MainMenuController(this, borderPane);
+            showMainMenu();
+        }else{
+            loginView.showError("Felaktigt användarnamn eller lösenord.");
+            }
+        });
+        borderPane.setCenter(loginView.getView());
+    }
+
+    public void logout(){
+        LoginController loginController = springContext.getBean(LoginController.class);
+
+        loginController.logout();
+        showLoginView();
+    }
+
+    //kontrollerar att användaren är inloggad
+    private Boolean isUserLoggedIn(){
+        return SecurityContextHolder.getContext()
+                .getAuthentication() != null && SecurityContextHolder.getContext()
+                .getAuthentication().isAuthenticated() && !"anonymousUser".equals(
+                        SecurityContextHolder.getContext()
+                                .getAuthentication()
+                                .getPrincipal()
+        );
+    }
 
     public void showMainMenu() {
+       if(!isUserLoggedIn()){
+           showLoginView();
+           return;
+       }
+
         borderPane.setCenter(new StartView().getView());
+
+    }
+    //Hjälpmetod som kontrollerar användarens inloggningsstatus. används i varje navigering
+    private boolean requireLogin(){
+        if(!isUserLoggedIn()) {
+            showLoginView();
+            return false;
+        }
+        return true;
     }
 
     public void showCustomerListView() {
+
+        if(!requireLogin()) {
+            return;
+        }
+
         CustomerController customerController = new CustomerController(customerService,
                 this, new CustomerView(), new CustomerListView());
         borderPane.setCenter(customerController.getCustomerListView());
     }
 
     public void showVehicleView() {
+
+        if(!requireLogin()) {
+            return;
+        }
         VehicleController controller = new VehicleController(vehicleService, customerService,
                 this, new VehicleView(), new VehicleListView());
         borderPane.setCenter(controller.getVehicleFormView());
     }
 
     public void showVehicleListView() {
+
+        if(!requireLogin()) {
+            return;
+        }
         VehicleController controller = new VehicleController(vehicleService, customerService,
                 this, new VehicleView(), new VehicleListView());
         borderPane.setCenter(controller.getVehicleListPane());
     }
 
     public void showServiceItemView() {
+
+        if(!requireLogin()) {
+            return;
+        }
         ServiceItemView serviceItemView = new ServiceItemView();
 
         ServiceController controller = new ServiceController(serviceItemService,
@@ -201,12 +276,19 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showMechanicView() {
+
+        if(!requireLogin()) {
+            return;
+        }
         ServiceController controller = new ServiceController(serviceItemService,  mechanicService,
                 workOrderService,this, new ServiceItemView(), new MechanicView());
         borderPane.setCenter(controller.getMechanicView());
     }
 
     public void showBookingView() {
+        if(!requireLogin()) {
+            return;
+        }
         BookingController controller = new BookingController(serviceItemService, servicePackageService,
                 bookingService, workOrderService, vehicleService, customerService,
                 this, new BookingView(), new BookingListView());
@@ -214,6 +296,9 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showBookingListView() {
+        if(!requireLogin()) {
+            return;
+        }
         BookingController controller = new BookingController(serviceItemService, servicePackageService,
                 bookingService, workOrderService, vehicleService, customerService,
                 this, new BookingView(), new BookingListView());
@@ -221,6 +306,9 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showCreateWorkOrderView(Booking booking) {
+        if(!requireLogin()) {
+            return;
+        }
         OrderController controller = new OrderController(
                 bookingService,
                 workOrderService,
@@ -237,6 +325,10 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showOrderListView() {
+
+        if(!requireLogin()) {
+            return;
+        }
         OrderController controller = new OrderController(bookingService,
                 workOrderService, mechanicService, serviceItemService,servicePackageService, vehicleService,
                 customerService,
@@ -249,15 +341,25 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showView(Parent view) {
+
+        if(!requireLogin()) {
+            return;
+        }
         borderPane.setCenter(view);
     }
 
     public void showPaymentView() {
+        if(!requireLogin()) {
+            return;
+        }
         borderPane.setCenter(new PaymentController(paymentService,
                 this, new PaymentView()).getView());
     }
 
     public void showInvoiceListView() {
+        if(!requireLogin()) {
+            return;
+        }
         InvoiceController invoiceController = new InvoiceController(invoiceService,
             workOrderService, bookingService, vehicleService, customerService,
                 mechanicService, invoiceLineService,
@@ -266,6 +368,9 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showInvoiceView() {
+        if(!requireLogin()) {
+            return;
+        }
         InvoiceController invoiceController = new InvoiceController(invoiceService,
                 workOrderService, bookingService, vehicleService, customerService,
                 mechanicService, invoiceLineService,
