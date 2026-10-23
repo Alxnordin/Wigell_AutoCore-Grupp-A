@@ -96,10 +96,33 @@ public class PaymentView {
                         cell.getValue().getPaymentDate()
                                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
 
-        statusColumn = new TableColumn<>(
-                languageManager.getString("statusColumn"));
-        statusColumn.setCellValueFactory(
-                cell -> new javafx.beans.property.SimpleStringProperty(
+        // Skapar statuskolumnen med samma färgade badges som i övriga systemet.
+        statusColumn = new TableColumn<>(languageManager.getString("statusColumn"));
+
+        // Centrerar statusbadgarna i betalningshistoriken.
+        UIComponents.centerTableColumn(statusColumn);
+
+        statusColumn.setCellFactory(column -> new TableCell<Payment, String>() {
+            @Override
+            protected void updateItem(String status, boolean empty) {
+                super.updateItem(status, empty);
+
+                if (empty || status == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    // Återanvänder den gemensamma statusdesignen från UIComponents.
+                    Label statusBadge = UIComponents.createStatusBadge(status);
+                    setGraphic(statusBadge);
+                    setText(null);
+                    setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                }
+            }
+        });
+
+        // Hämtar statusen från betalningen och översätter den till valt språk.
+        statusColumn.setCellValueFactory(cell ->
+                new javafx.beans.property.SimpleStringProperty(
                         cell.getValue().isSuccessful()
                                 ? languageManager.getString("completedStatus")
                                 : languageManager.getString("failedStatus")));

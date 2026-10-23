@@ -57,14 +57,24 @@ public class InvoiceController {
         //alla fel visas via ErrorHandler (tidigare skrevs de bara ut i konsolen)
         invoiceView.getCreateInvoiceButton().setOnAction(actionEvent -> {
             try {
-                int workOrderId = Validator.requireInteger(
-                        invoiceView.getWorkOrderIdField().getText(), "invalidWorkOrderId");
+                // Hämtar arbetsordern som användaren valt i rullistan.
+                WorkOrder selectedWorkOrder =
+                        invoiceView.getWorkOrderComboBox().getValue();
+
+                if (selectedWorkOrder == null) {
+                    ErrorHandler.show(
+                            new IllegalArgumentException(
+                                    "Välj en arbetsorder först."));
+                    return;
+                }
+
+                int workOrderId = selectedWorkOrder.getId();
                 String discountCode = invoiceView.getDiscountCodeComboBox().getValue();
 
                 Invoice invoice = invoiceService.createInvoice(workOrderId, discountCode);
 
                 refreshLists();
-                invoiceView.getWorkOrderIdField().clear();
+                invoiceView.getWorkOrderComboBox().setValue(null);
                 invoiceView.getDiscountCodeComboBox().setValue(null);
                 showInvoiceConfirmation(invoice);
             } catch (Exception e) {
@@ -72,7 +82,12 @@ public class InvoiceController {
             }
         });
 
-        invoiceView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+        // Öppnar formuläret för att skapa en faktura.
+        invoiceListView.getCreateInvoiceButton().setOnAction(event ->
+                app.showInvoiceView());
+
+        invoiceView.getBackButton().setOnAction(actionEvent -> app.showInvoiceListView());
+        invoiceListView.getPaymentHistoryButton().setOnAction(event -> app.showPaymentView());
         invoiceListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
 
         invoiceListView.setOnViewInvoice(invoice -> {
@@ -148,6 +163,29 @@ public class InvoiceController {
         });
     }
 
+    // Hämtar färdigställda arbetsordrar som saknar faktura.
+    private List<WorkOrder> getAvailableWorkOrdersForInvoice() {
+        List<WorkOrder> availableWorkOrders = new java.util.ArrayList<>();
+
+        for (WorkOrder workOrder : workOrderService.findAllWorkOrders()) {
+            // Endast slutförda arbetsordrar får faktureras.
+            if (!"COMPLETED".equals(workOrder.getStatus())) {
+                continue;
+            }
+
+            // Hoppar över arbetsordrar som redan har en faktura.
+            boolean alreadyInvoiced = invoiceService.findAll().stream()
+                    .anyMatch(invoice ->
+                            invoice.getWorkOrderId() == workOrder.getId());
+
+            if (!alreadyInvoiced) {
+                availableWorkOrders.add(workOrder);
+            }
+        }
+
+        return availableWorkOrders;
+    }
+
     // Visar en bekräftelse efter att betalningen har registrerats.
     private void showPaymentConfirmation(Payment payment, String paymentTypeCode) {
         String amount = String.format("%.2f", payment.getAmount());
@@ -207,7 +245,13 @@ public class InvoiceController {
     }
 
     private void refreshLists() {
-        invoiceListView.getInvoiceTable().getItems().setAll(invoiceService.findAll());
+        // Uppdaterar översikten med befintliga fakturor.
+        invoiceListView.getInvoiceTable().getItems()
+                .setAll(invoiceService.findAll());
+
+        // Visar bara arbetsordrar som är färdigställda och ännu inte fakturerade.
+        invoiceView.getWorkOrderComboBox().getItems()
+                .setAll(getAvailableWorkOrdersForInvoice());
     }
 
     public Parent getInvoiceListView() {

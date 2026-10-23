@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
@@ -97,15 +98,36 @@ public class InvoiceDetailsView {
 
         statusValue = UIComponents.createInvoiceStatusValueLabel(statusText, invoice.isPaid());
 
+        // Samlar statusetiketten och statusbadgen i en egen sektion.
         VBox statusBox = UIComponents.createVBoxWithSpacing6();
-        VBox.setMargin(statusBox, new Insets(15, 0, 0, 0));
         statusBox.getChildren().addAll(statusLabel, statusValue);
 
-        HBox informationRow = new HBox(45);
-        informationRow.getChildren().addAll(invoiceDateBox, customerNameBox, customerPhoneBox,
-                vehicleBox, mechanicBox);
+        // Gör statussektionen kompakt och placerar den till höger.
+        statusBox.setMinWidth(180);
+        statusBox.setPrefWidth(200);
+        statusBox.setMaxWidth(220);
 
-        invoiceInfoBox.getChildren().addAll(informationRow, statusBox);
+        // Låter informationsraden använda hela tillgängliga bredden.
+        HBox informationRow = new HBox(30);
+        informationRow.setAlignment(Pos.CENTER_LEFT);
+
+        // Lägger informationsfälten till vänster och statusen till höger.
+        informationRow.getChildren().addAll(
+                invoiceDateBox,
+                customerNameBox,
+                customerPhoneBox,
+                vehicleBox,
+                mechanicBox
+        );
+
+        // Skapar ett mellanrum som skjuter statusen till höger.
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+
+        informationRow.getChildren().addAll(spacer, statusBox);
+
+        // Lägger till den kompletta informationsraden i kortet.
+        invoiceInfoBox.getChildren().add(informationRow);
 
         VBox invoiceLinesBox = UIComponents.createSectionBox();
 
@@ -144,7 +166,14 @@ public class InvoiceDetailsView {
         invoiceTableView.getColumns().addAll(serviceColumn, priceColumn, discountColumn, totalAmount);
 
         invoiceTableView.getItems().addAll(invoiceLines);
-        invoiceTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        invoiceTableView.setColumnResizePolicy(
+                TableView.CONSTRAINED_RESIZE_POLICY);
+
+        // Ger plats för fler servicerader i fakturan.
+        invoiceTableView.setPrefHeight(260);
+        invoiceTableView.setMinHeight(180);
+        invoiceTableView.setMaxHeight(360);
+
         invoiceLinesBox.getChildren().addAll(invoiceTableView, totalBox);
 
         Label companyNameLabel = UIComponents.createCompanyNameLabel("Wigell AutoCore");

@@ -197,8 +197,12 @@ public class OrderListView {
                             .collect(java.util.stream.Collectors.joining(", "));
 
                     return new SimpleStringProperty(serviceNames);
+
                 }
         );
+
+        // Centrerar statusen i arbetsorderlistan.
+        UIComponents.centerTableColumn(statusColumn);
 
         statusColumn.setCellValueFactory(
                 cellData -> {

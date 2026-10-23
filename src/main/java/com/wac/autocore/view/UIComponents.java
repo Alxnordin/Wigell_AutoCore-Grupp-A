@@ -5,11 +5,9 @@ import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -302,8 +300,12 @@ public class UIComponents {
         FontIcon menuIcon = new FontIcon(icon);
         menuIcon.setIconSize(18);
 
-        button.setGraphic(menuIcon);
+        // Ger utloggningsikonen en egen CSS-klass.
+        if ("fa-sign-out".equals(icon)) {
+            menuIcon.getStyleClass().add("logout-icon");
+        }
 
+        button.setGraphic(menuIcon);
         button.setGraphicTextGap(10);
 
         return button;
@@ -660,5 +662,63 @@ public class UIComponents {
         );
 
         sequence.play();
+    }
+
+    // Centrerar statusbadgen i tabellens kolumn.
+    public static <S> void centerTableColumn(
+            TableColumn<S, ?> column) {
+
+        column.setStyle("-fx-alignment: CENTER;");
+    }
+
+    // Skapar en formulärrad med en befintlig etikett och ett fält.
+    public static HBox createFormRow(Label label, Node control) {
+        HBox row = new HBox(20);
+        row.setAlignment(Pos.CENTER_LEFT);
+
+        // Gör etiketten fetstil för tydligare läsbarhet.
+        label.setStyle("-fx-font-size: 15px; -fx-font-weight: bold;");
+
+        label.setMinWidth(230);
+        label.setPrefWidth(230);
+        label.setWrapText(true);
+
+        row.getChildren().addAll(label, control);
+
+        // Låter fältet använda tillgängligt utrymme.
+        if (control instanceof Region) {
+            Region region = (Region) control;
+            HBox.setHgrow(region, Priority.ALWAYS);
+            region.setMaxWidth(Double.MAX_VALUE);
+        }
+
+        return row;
+    }
+
+    // Lägger en ikon till vänster i en ComboBox utan att ändra dess grundstil.
+    public static StackPane createComboBoxWithIcon(
+            ComboBox<?> comboBox, String iconLiteral) {
+
+        FontIcon icon = new FontIcon(iconLiteral);
+        icon.setIconSize(18);
+        icon.setIconColor(javafx.scene.paint.Color.web("#287A35"));
+        icon.setMouseTransparent(true);
+
+        // Låter ComboBoxen fylla hela den tillgängliga bredden.
+        comboBox.setMaxWidth(Double.MAX_VALUE);
+
+        StackPane container = new StackPane();
+        container.setAlignment(Pos.CENTER_LEFT);
+        container.setMaxWidth(Double.MAX_VALUE);
+
+        // Ikonen placeras ovanpå ComboBoxen, till vänster.
+        container.getChildren().addAll(comboBox, icon);
+        StackPane.setAlignment(icon, Pos.CENTER_LEFT);
+        StackPane.setMargin(icon, new Insets(0, 0, 0, 12));
+
+        // Markerar ComboBoxen så att textens placering kan justeras separat.
+        comboBox.getStyleClass().add("combo-box-with-icon");
+
+        return container;
     }
 }
