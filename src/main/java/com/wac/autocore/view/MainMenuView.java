@@ -22,8 +22,6 @@ public class MainMenuView {
     private Button showBookingsButton, addBookingButton;
     private Button showServicesButton, showMechanicsButton;
 
-    private Button showInvoicesButton, addInvoiceButton;
-
     private Button customersButton;
     private Button vehiclesButton;
     private Button bookingsButton;
@@ -64,16 +62,19 @@ public class MainMenuView {
 
         menu.getChildren().add(buildSection(ordersButton));
 
-        showInvoicesButton = new Button(languageManager.getString("showInvoices"));
-        addInvoiceButton = new Button(languageManager.getString("addInvoice"));
-
+        //skapar payment-knappen utan en undermeny
         paymentsButton = UIComponents.createMenuButton(languageManager.getString("paymentsButton"), "fa-credit-card");
-        menu.getChildren().add(buildSection(paymentsButton, showInvoicesButton, addInvoiceButton));
+        menu.getChildren().add(buildSection(paymentsButton));
 
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        logoutButton = new Button("Logga ut");
+        // Skapar en utloggningsknapp med ikon framför texten.
+        logoutButton = UIComponents.createMenuButton(
+                languageManager.getString("logoutButton"),
+                "fa-sign-out"
+        );
+
         logoutButton.setMaxWidth(Double.MAX_VALUE);
         logoutButton.getStyleClass().add("logout-button");
 
@@ -110,9 +111,8 @@ public class MainMenuView {
         ordersButton.setText(languageManager.getString("ordersButton"));
 
         paymentsButton.setText(languageManager.getString("paymentsButton"));
-        showInvoicesButton.setText(languageManager.getString("showInvoices"));
-        addInvoiceButton.setText(languageManager.getString("addInvoice"));
 
+        logoutButton.setText(languageManager.getString("logoutButton"));
         exitButton.setText(languageManager.getString("quit"));
     }
 
@@ -131,7 +131,10 @@ public class MainMenuView {
             sub.setMaxWidth(Double.MAX_VALUE);
         }
 
-        mainButton.setOnAction(e -> toggleSubMenu(subMenu));
+        // Öppnar undermenyn endast om sektionen faktiskt har undermenyknappar.
+        if (subButtons.length > 0) {
+            mainButton.setOnAction(e -> toggleSubMenu(subMenu));
+        }
 
         VBox section = new VBox(mainButton, subMenu);
         return section;
@@ -159,8 +162,7 @@ public class MainMenuView {
     public Button getShowServicesButton() { return showServicesButton; }
     public Button getShowMechanicsButton() { return showMechanicsButton; }
     public Button getOrdersButton() { return ordersButton; }
-    public Button getShowInvoicesButton() { return showInvoicesButton; }
-    public Button getAddInvoiceButton() { return addInvoiceButton; }
+    public Button getPaymentsButton() {return paymentsButton;}
 
     public Button getLogoutButton(){return logoutButton;}
     public Button getExitButton() {return exitButton;}

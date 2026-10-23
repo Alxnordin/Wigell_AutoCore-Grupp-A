@@ -35,7 +35,7 @@ public class PaymentController {
     private void wireEvents() {
         // Kopplar tillbaka-knappen till huvudmenyn.
         paymentView.getBackButton().setOnAction(
-                event -> app.showMainMenu()
+                event -> app.showInvoiceListView()
         );
     }
 

@@ -33,8 +33,7 @@ public class MainMenuController {
 
         view.getOrdersButton().setOnAction(e -> app.showOrderListView());
 
-        view.getShowInvoicesButton().setOnAction(e -> app.showInvoiceListView());
-        view.getAddInvoiceButton().setOnAction(e -> app.showInvoiceView());
+        view.getPaymentsButton().setOnAction(event -> app.showInvoiceListView());
 
 //        view.getShowPaymentsButton().setOnAction(e -> app.showPaymentView());
 //        view.getAddPaymentButton().setOnAction(e -> app.showPaymentView());

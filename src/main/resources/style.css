@@ -993,3 +993,119 @@ ListView .list-cell:filled:selected {
 .payment-history-button:hover {
     -fx-background-color: #D6E7D8;
 }
+
+/* Ger texten plats bredvid ikonen utan att ändra fältets yttre form. */
+.combo-box-with-icon {
+    -fx-padding: 6px 6px 6px 34px;
+}
+
+
+/* Bakgrund för loginvyn. */
+.login-root {
+    -fx-background-color: #E8F1EC;
+    -fx-padding: 30px;
+}
+
+/* Vitt inloggningskort med diskret grön kant. */
+.login-card {
+    -fx-background-color: #F8FAF8;
+    -fx-border-color: #C9DCCF;
+    -fx-border-width: 2px;
+    -fx-border-radius: 16px;
+    -fx-background-radius: 16px;
+    -fx-padding: 34px;
+    -fx-spacing: 18px;
+    -fx-effect: dropshadow(gaussian, rgba(25, 60, 40, 0.12), 18, 0.15, 0, 5);
+}
+
+/* Logotypens text. */
+.login-logo {
+    -fx-font-size: 23px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #267A35;
+}
+
+/* Rubrik och underrubrik. */
+.login-title {
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #102B46;
+}
+
+.login-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748B;
+}
+
+/* Etiketter ovanför inmatningsfälten. */
+.login-field-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #102B46;
+}
+
+/* Inmatningsfält med samma färgtema som resten av systemet. */
+.login-input {
+    -fx-pref-height: 46px;
+    -fx-font-size: 14px;
+    -fx-background-color: white;
+    -fx-border-color: #C9DCCF;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 9px;
+    -fx-background-radius: 9px;
+    -fx-padding: 0 12px;
+}
+
+.login-input:focused {
+    -fx-border-color: #287D38;
+    -fx-border-width: 2px;
+}
+
+/* Grön knapp för inloggning. */
+.login-submit {
+    -fx-pref-height: 48px;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #287D38;
+    -fx-background-radius: 9px;
+    -fx-cursor: hand;
+}
+
+.login-submit:hover {
+    -fx-background-color: #21682F;
+}
+
+/* Felmeddelande vid misslyckad inloggning. */
+.login-error {
+    -fx-text-fill: #B42318;
+    -fx-font-size: 13px;
+}
+
+/* Ger utloggningen en diskret stil som skiljer sig från huvudmenyn. */
+.logout-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #287D38;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent;
+    -fx-background-radius: 9px;
+    -fx-border-radius: 9px;
+    -fx-padding: 12px 16px;
+    -fx-cursor: hand;
+}
+
+/* Visar en svagt grön bakgrund när användaren håller över knappen. */
+.logout-button:hover {
+    -fx-background-color: #DCEAE0;
+}
+
+/* Ger en tydlig markering när knappen får tangentbordsfokus. */
+.logout-button:focused {
+    -fx-border-color: #A8BDA2;
+}
+
+/* Ger utloggningsikonen samma gröna färg som texten. */
+.logout-icon {
+    -fx-icon-color: #287D38;
+}

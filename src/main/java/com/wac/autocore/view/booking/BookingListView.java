@@ -110,6 +110,9 @@ public class BookingListView {
 
         statusColumn = new TableColumn<>(languageManager.getString("statusInTable"));
 
+        // Centrerar statusbadgarna i betalningshistoriken.
+        UIComponents.centerTableColumn(statusColumn);
+
         statusColumn.setCellValueFactory(cellData ->
             new SimpleStringProperty(cellData.getValue().getStatus())
         );

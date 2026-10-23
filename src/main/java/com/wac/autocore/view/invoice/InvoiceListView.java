@@ -281,6 +281,16 @@ public class InvoiceListView {
         this.onRegisterPayment = onRegisterPayment;
     }
 
+    // Gör betalningshistorikens knapp tillgänglig för controllern.
+    public Button getPaymentHistoryButton() {
+        return paymentHistoryButton;
+    }
+
+    // Gör skapa-faktura-knappen tillgänglig för controllern.
+    public Button getCreateInvoiceButton() {
+        return createInvoiceButton;
+    }
+
     public void changeTextAllComponents() {
         title.setText(languageManager.getString("invoicesTitle"));
         subtitle.setText(languageManager.getString("invoiceListSubtitle"));
@@ -294,6 +304,7 @@ public class InvoiceListView {
         paidColumn.setText(languageManager.getString("statusLabel"));
         actionColumn.setText(languageManager.getString("actionInTable"));
         createInvoiceButton.setText(languageManager.getString("createInvoiceButton"));
+        paymentHistoryButton.setText(languageManager.getString("paymentHistoryButton"));
 
         backButton.setText(languageManager.getString("backButton"));
 
