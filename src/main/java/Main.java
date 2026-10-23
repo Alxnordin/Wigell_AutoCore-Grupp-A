@@ -1,6 +1,5 @@
-
-
 import com.wac.autocore.dao.*;
+import com.wac.autocore.exception.AutoCoreException;
 import com.wac.autocore.exception.BusinessRuleException;
 import com.wac.autocore.exception.NotFoundException;
 import com.wac.autocore.exception.ValidationException;
@@ -9,7 +8,9 @@ import com.wac.autocore.model.WorkOrder;
 import com.wac.autocore.repository.*;
 import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.interf.*;
+import com.wac.autocore.util.LanguageManager;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
@@ -17,24 +18,19 @@ import java.util.Scanner;
 public class Main {
 
     private static final Scanner scanner = new Scanner(System.in);
+    private static final LanguageManager languageManager = LanguageManager.getInstance();
     //private static final GarageSystem garageSystem = new GarageSystem();
-//    CustomerRepository customerRepository = new CustomerDAO();
-//    CustomerService customerService = new CustomerServiceImpl(customerRepository);
 
     public static void main(String[] args) {
 
         WorkOrderRepository workOrderRepository = new WorkOrderDAO();
         CustomerRepository customerRepository = new CustomerDAO();
-        InvoiceRepository invoiceRepository = new InvoiceDAO();
-        InvoiceLineRepository invoiceLineRepository = new InvoiceLineDAO();
-        PaymentRepository paymentRepository = new PaymentDAO();
         ServiceItemRepository serviceItemRepository = new ServiceItemDAO();
         ServicePackageRepository servicePackageRepository = new ServicePackageDAO();
         BookingRepository bookingRepository = new BookingDAO();
         MechanicRepository mechanicRepository = new MechanicDAO();
         VehicleRepository vehicleRepository = new VehicleDAO();
 
-        InvoiceLineService invoiceLineService = new InvoiceLineServiceImpl(invoiceLineRepository);
         MechanicService mechanicService = new MechanicServiceImpl(mechanicRepository);
         CustomerService customerService = new CustomerServiceImpl(customerRepository);
         VehicleService vehicleService = new VehicleServiceImpl(vehicleRepository, customerService);
@@ -48,12 +44,6 @@ public class Main {
                 new WorkOrderServiceImpl(workOrderRepository, bookingService,
                         mechanicService, serviceItemService,
                         customerService, vehicleService);
-        InvoiceService invoiceService =
-                new InvoiceServiceImpl(invoiceRepository, invoiceLineRepository, workOrderService, bookingService,
-                        vehicleService, customerService,
-                        serviceItemService);
-        PaymentService paymentService =
-                new PaymentServiceImpl(paymentRepository, invoiceService);
 
         boolean running = true;
 
@@ -75,61 +65,9 @@ public class Main {
                     createWorkOrder(workOrderService);
                     break;
 
-//                case 3:
-//                    //garageSystem.showVehicles();
-//                    break;
-//
-//                case 4:
-//                    //createVehicle();
-//                    break;
-
-//                case 5:
-//                    garageSystem.showBookings();
-//                    break;
-//
-//                case 6:
-//                    createBooking();
-//                    break;
-
-//                case 7:
-//                    garageSystem.showServiceItems();
-//                    break;
-//
-//                case 8:
-//                    garageSystem.showMechanics();
-//                    break;
-//
-//                case 9:
-//                    garageSystem.showWorkOrders();
-//                    break;
-//
-//                case 10:
-//                    createWorkOrder();
-//                    break;
-//
-//                case 11:
-//                    startWorkOrder();
-//                    break;
-//
-//                case 12:
-//                    completeWorkOrder();
-//                    break;
-//
-//                case 13:
-//                    garageSystem.showInvoices();
-//                    break;
-//
-//                case 14:
-//                    createInvoice();
-//                    break;
-//
-//                case 15:
-//                    garageSystem.showPayments();
-//                    break;
-//
-//                case 16:
-//                    processPayment();
-//                    break;
+                case 3:
+                    startWorkOrder(workOrderService);
+                    break;
 
                 case 0:
                     running = false;
@@ -141,8 +79,7 @@ public class Main {
             }
         }
 
-        System.out.println();
-        System.out.println("Shutting down Wigell AutoCore...");
+        System.out.println("\nShutting down Wigell AutoCore...");
         System.out.println("Goodbye!");
 
         scanner.close();
@@ -161,28 +98,14 @@ public class Main {
         System.out.println("=============== MAIN MENU =================");
         System.out.println(" 1. Create customers");
         System.out.println(" 2. Create work order");
-//        System.out.println(" 3. Show vehicles");
-//        System.out.println(" 4. Create vehicle");
-//        System.out.println(" 5. Show bookings");
-//        System.out.println(" 6. Create booking");
-//        System.out.println(" 7. Show services");
-//        System.out.println(" 8. Show mechanics");
-//        System.out.println(" 9. Show work orders");
-//        System.out.println("10. Create work order");
-//        System.out.println("11. Start work order");
-//        System.out.println("12. Complete work order");
-//        System.out.println("13. Show invoices");
-//        System.out.println("14. Create invoice");
-//        System.out.println("15. Show payments");
-//        System.out.println("16. Process payment");
+        System.out.println(" 3. Start work order");
         System.out.println(" 0. Exit");
         System.out.println("===========================================");
     }
 
     private static void createCustomer(CustomerService customerService) {
 
-        System.out.println();
-        System.out.println("=== CREATE CUSTOMER ===");
+        System.out.println("\n=== CREATE CUSTOMER ===");
 
         System.out.print("First name: ");
         String firstName = scanner.nextLine();
@@ -193,36 +116,86 @@ public class Main {
         System.out.print("Phone: ");
         String phone = scanner.nextLine();
 
-       System.out.print("Email: ");
-       String email = scanner.nextLine();
+        System.out.print("Email: ");
+        String email = scanner.nextLine();
 
-        System.out.println("VIP?");
-        boolean vip = true;     //BARA TEST, ej klar med detta
+        System.out.println("Skriv ja om kunden är vip eller nej om kunden inte är vip");
+        String vipInput = scanner.nextLine();
+        boolean vip;
+
+        if (vipInput.equalsIgnoreCase("ja")) {
+            vip = true;
+        } else {
+            vip = false;
+        }
 
         try {
             Customer customer = customerService.createCustomer(firstName, lastName, phone, email, vip);
-            System.out.println("Den nya kunden:\n" + customer);
+            System.out.println("Customer is now registered:\n" + customer);
 
-        } catch (ValidationException e) {
-            System.out.println("Valideringsfel: " + e.getMessage());
+        } catch (ValidationException validationError) {
+            getAndPrintErrorMessage(validationError);
+//            String validationError = validationMessage.getMessage();
+//            System.out.println(languageManager.getString(validationError));
 
-        } catch (BusinessRuleException e)   {
-            System.out.println("BusinessRulefel: " + e.getMessage());
+        } catch (BusinessRuleException businessRuleError) {
+            getAndPrintErrorMessage(businessRuleError);
+//            String businessRuleError = businessRuleMessage.getMessage();
+//            System.out.println(languageManager.getString(businessRuleError));
+        } catch (NotFoundException notFoundMessage){
+            getAndPrintErrorMessage(notFoundMessage);
         }
 
+        //boolean inCorrectInput = true;
+//        String firstName;
+//        String lastName;
+//        String phone;
+//        String email;
+//        String vipInput;
+//        boolean vip;
+
+//        while (inCorrectInput) {
+//
+//            System.out.print("First name: ");
+//            firstName = scanner.nextLine();
+//            System.out.print("Last name: ");
+//            lastName = scanner.nextLine();
+//            System.out.print("Phone: ");
+//            phone = scanner.nextLine();
+//            System.out.print("Email: ");
+//            email = scanner.nextLine();
+//            System.out.println("Skriv ja om kunden är vip eller nej om kunden inte är vip");
+//            vipInput = scanner.nextLine();
+//            if (vipInput.equalsIgnoreCase("ja")) {
+//                vip = true;
+//            }
+//            else {
+//                vip = false;
+//            }
+//            try {
+//                Customer customer = customerService.createCustomer(firstName, lastName, phone, email, vip);
+//                System.out.println("Customer is now registered:\n" + customer);
+//                inCorrectInput = false;
+//
+//            } catch (ValidationException validationMessage) {
+//                String validationError = validationMessage.getMessage();
+//                System.out.println(languageManager.getString(validationError));
+//
+//            } catch (BusinessRuleException businessRuleMessage) {
+//                String businessRuleError = businessRuleMessage.getMessage();
+//                System.out.println(languageManager.getString(businessRuleError));
+//            }
+        //}
     }
 
     private static void createWorkOrder(WorkOrderService workOrderService) {
 
-        System.out.println();
-        System.out.println("=== CREATE WORK ORDER ===");
+        System.out.println("\n=== CREATE WORK ORDER ===");
 
         int bookingId = readInt("Booking ID: ");
-
         int mechanicId = readInt("Mechanic ID: ");
 
-        System.out.println();
-        System.out.println("Enter service IDs separated by comma.");
+        System.out.println("\nEnter service IDs separated by comma.");
         System.out.println("Example: 1,3,4");
         System.out.print("Services: ");
 
@@ -237,22 +210,45 @@ public class Main {
                 serviceItemIds[i] = Integer.parseInt(parts[i].trim());
             }
 
-//            garageSystem.createWorkOrder(bookingId, mechanicId, serviceItemIds);
-
-            WorkOrder workOrder = workOrderService.createWorkOrder(bookingId, mechanicId);
+            WorkOrder workOrder = workOrderService.createWorkOrder(bookingId, mechanicId, serviceItemIds);
             System.out.println("Workorder:\n" + workOrder);
 
         } catch (NumberFormatException e) {
             System.out.println("Invalid service ID.");
 
-        } catch (BusinessRuleException e) {
-            System.out.println("BusinessRulefel: " + e.getMessage());
+        } catch (BusinessRuleException businessRuleError) {
+            getAndPrintErrorMessage(businessRuleError);
 
-        } catch (NotFoundException e)   {
-            System.out.println("Ska fånga om något id inte finns. ");
+        } catch (NotFoundException notFoundError)   {
+            getAndPrintErrorMessage(notFoundError);
+        }
+    }
+
+    private static void startWorkOrder(WorkOrderService workOrderService) {
+
+        System.out.println("\n=== START WORK ORDER ===");
+
+        int workOrderId = readInt("Work order ID: ");
+
+        try {
+            workOrderService.startWorkOrder(workOrderId);
+
+        } catch (NotFoundException notFoundError) {
+            getAndPrintErrorMessage(notFoundError);
+
+        } catch (BusinessRuleException businessRuleError) {
+            getAndPrintErrorMessage(businessRuleError);
         }
 
+    }
 
+    private static void getAndPrintErrorMessage(AutoCoreException exception) {
+        String exceptionMessage =
+                languageManager.getString(exception.getMessageKey());
+
+        exceptionMessage = MessageFormat.format(exceptionMessage, exception.getArgs());
+
+        System.out.println(exceptionMessage);
     }
 
     private static int readInt(String message) {
@@ -272,35 +268,6 @@ public class Main {
         }
     }
 
-
-//    private static void createVehicle() {
-//
-//        System.out.println();
-//       System.out.println("=== CREATE VEHICLE ===");
-//
-//        //garageSystem.showCustomers();
-//
-//        int customerId = readInt("Customer ID: ");
-//
-//        System.out.print("Registration number: ");
-//        String registrationNumber = scanner.nextLine();
-//
-//        System.out.print("Brand: ");
-//        String brand = scanner.nextLine();
-//
-//        System.out.print("Model: ");
-//        String model = scanner.nextLine();
-//
-//        int year = readInt("Year: ");
-//
-//        garageSystem.createVehicle(
-//               registrationNumber,
-//               brand,
-//               model,
-//                year,
-//                customerId
-//        );
-//    }
 
 //    private static void createBooking() {
 //
@@ -324,19 +291,6 @@ public class Main {
 //    }
 
 
-
-//    private static void startWorkOrder() {
-//
-//        System.out.println();
-//        System.out.println("=== START WORK ORDER ===");
-//
-//        garageSystem.showWorkOrders();
-//
-//        int workOrderId = readInt("Work order ID: ");
-//
-//        garageSystem.startWorkOrder(workOrderId);
-//    }
-
 //    private static void completeWorkOrder() {
 //
 //        System.out.println();
@@ -347,48 +301,6 @@ public class Main {
 //        int workOrderId = readInt("Work order ID: ");
 //
 //        garageSystem.completeWorkOrder(workOrderId);
-//    }
-
-//    private static void createInvoice() {
-//
-//        System.out.println();
-//        System.out.println("=== CREATE INVOICE ===");
-//
-//        garageSystem.showWorkOrders();
-//
-//        int workOrderId = readInt("Work order ID: ");
-//
-//        System.out.print("Discount code (leave empty for none): ");
-//        String discountCode = scanner.nextLine();
-//
-//        garageSystem.createInvoice(
-//                workOrderId,
-//                discountCode
-//        );
-//    }
-
-//    private static void processPayment() {
-//
-//        System.out.println();
-//        System.out.println("=== PROCESS PAYMENT ===");
-//
-//        garageSystem.showInvoices();
-//
-//        int invoiceId = readInt("Invoice ID: ");
-//
-//        System.out.println();
-//        System.out.println("Available payment types:");
-//        System.out.println("CARD");
-//        System.out.println("SWISH");
-//        System.out.println("CASH");
-//
-//        System.out.print("Payment type: ");
-//        String paymentType = scanner.nextLine();
-//
-//        garageSystem.processPayment(
-//                invoiceId,
-//                paymentType
-//        );
 //    }
 
     private static LocalDate readDate(String message) {

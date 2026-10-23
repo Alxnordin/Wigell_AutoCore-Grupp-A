@@ -97,13 +97,13 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         Booking booking = bookingService.findBooking(bookingId);
 
         if (booking == null) {
-            System.out.println("Booking with ID " + bookingId + " does not exist.");
+            //System.out.println("Booking with ID " + bookingId + " does not exist.");
             throw new NotFoundException("bookingNotFoundError", String.valueOf(bookingId));
         }
 
         //en bokning kan bara ha en arbetsorder
         if (hasWorkOrder(bookingId)) {
-            System.out.println("Booking " + bookingId + " already has a work order.");
+            //System.out.println("Booking " + bookingId + " already has a work order.");
             throw new BusinessRuleException("bookingAlreadyHasWorkOrder", String.valueOf(bookingId));
         }
 
@@ -112,8 +112,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         //mekanikern får inte redan ha en arbetsorder samma dag som bokningen
         if (isMechanicBookedOnDate(mechanicId, booking.getDate(), bookingId)) {
-            System.out.println("Mechanic " + mechanic.getName() +
-                    " is already booked on " + booking.getDate() + ".");
+            //System.out.println("Mechanic " + mechanic.getName() +
+             //       " is already booked on " + booking.getDate() + ".");
             throw new BusinessRuleException("mechanicAlreadyBookedError",
                     mechanic.getName(), booking.getDate());
         }
@@ -276,7 +276,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         return result;
     }
 
-
     // Kontrollerar om arbetsordern får övergå till den nya statusen.
     public boolean isAllowedStatusTransition(WorkOrder workOrder, String newStatus) {
         if (workOrder == null || newStatus == null) {
@@ -311,9 +310,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         // Kontrollerar statusövergången innan arbetet startar.
         if (!isAllowedStatusTransition(workOrder, "IN_PROGRESS")) {
-            System.out.println("Work order cannot be started.");
-            throw new BusinessRuleException("workOrderCannotBeStarted");
-            //return;
+            throw new BusinessRuleException("onlyWorkOrderWithStatusCreatedCanBeStarted");
         }
 
         // Hämtar mekanikern som är kopplad till arbetsordern.
@@ -353,9 +350,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         // Kontrollerar statusövergången innan arbetet slutförs.
         if (!isAllowedStatusTransition(workOrder, "COMPLETED")) {
-            System.out.println("Only work orders in progress can be completed.");
+            //System.out.println("Only work orders in progress can be completed.");
             throw new BusinessRuleException("onlyWorkOrderInProgressCanBeCompleted");
-            //return;
         }
 
         Mechanic mechanic = mechanicService.findMechanic(workOrder.getMechanicId());
@@ -699,7 +695,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
     private void workOrderIsFoundOrThrowException(WorkOrder workOrder, int workOrderId) {
         if (workOrder == null) {
-            System.out.println("work order with ID " + workOrderId+ " does not exist.");
             throw new NotFoundException("workOrderNotFoundError", String.valueOf(workOrderId));
         }
     }
