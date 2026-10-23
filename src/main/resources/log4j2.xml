@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Loggkonfiguration för Wigell AutoCore (Log4j 2).
+ Läses både av Spring Boot och av det fristående programmet utan Spring.
+ Körmiljön styrs med VM options. Utan VM options = utvecklingsläge.
+ Produktion: -Dautocore.log.level=INFO -Dautocore.console.level=OFF -->
+<Configuration status="WARN">
+    <Properties>
+        <Property name="LOG_DIR">${sys:autocore.log.dir:-logs}</Property>
+        <Property name="APP_LEVEL">${sys:autocore.log.level:-DEBUG}</Property>
+        <Property name="CONSOLE_LEVEL">${sys:autocore.console.level:-DEBUG}</Property>
+        <Property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss} %-5level [%c{1}] %notEmpty{user=%X{user} }- %msg%n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${PATTERN}"/>
+        </Console>
+        <!-- Hela applikationens logg. Ny fil varje dag eller vid 10 MB, max 10 gamla filer -->
+        <RollingFile name="AppFile"
+                     fileName="${LOG_DIR}/autocore.log"
+                     filePattern="${LOG_DIR}/autocore-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+        <!-- Säkerhetshändelser (inloggning, nekad åtkomst) i en egen fil -->
+        <RollingFile name="SecurityFile"
+                     fileName="${LOG_DIR}/security.log"
+                     filePattern="${LOG_DIR}/security-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <!-- Vår egen kod -->
+        <Logger name="com.wac.autocore" level="${APP_LEVEL}" additivity="false">
+            <AppenderRef ref="Console" level="${CONSOLE_LEVEL}"/>
+            <AppenderRef ref="AppFile"/>
+        </Logger>
+        <!-- Säkerhetsloggern: hamnar både i security.log och i den vanliga loggen -->
+        <Logger name="SECURITY" level="INFO" additivity="false">
+            <AppenderRef ref="Console" level="${CONSOLE_LEVEL}"/>
+            <AppenderRef ref="AppFile"/>
+            <AppenderRef ref="SecurityFile"/>
+        </Logger>
+        <!-- Allt annat (Spring, MySQL-drivern m.m.): bara varningar och fel -->
+        <Root level="WARN">
+            <AppenderRef ref="Console" level="${CONSOLE_LEVEL}"/>
+            <AppenderRef ref="AppFile"/>
+        </Root>
+    </Loggers>
+</Configuration>

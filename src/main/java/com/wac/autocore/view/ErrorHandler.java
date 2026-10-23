@@ -1,34 +1,28 @@
 package com.wac.autocore.view;
-
 import com.wac.autocore.exception.AutoCoreException;
-import com.wac.autocore.exception.DataAccessException;
+import com.wac.autocore.logging.ExceptionLogger;
 import com.wac.autocore.util.LanguageManager;
 import javafx.scene.control.Alert;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-
 //Alexander
 //Visar fel för användaren på ett enhetligt sätt i hela appen
 //Fel i indata eller regler visas som varning med ett begripligt meddelande
-//Tekniska fel visas som ett allmänt felmeddelande, och detaljerna loggas för felsökning
-
+//Tekniska fel visas som ett allmänt felmeddelande med en felkod. Detaljerna loggas via ExceptionLogger
 public class ErrorHandler {
-
-    private static final Logger LOGGER = Logger.getLogger(ErrorHandler.class.getName());
-
+    private static final Logger LOG = LoggerFactory.getLogger(ErrorHandler.class);
     private ErrorHandler() {
     }
-
     public static void show(Exception exception) {
         LanguageManager languageManager = LanguageManager.getInstance();
-
-        if (exception instanceof DataAccessException) {
-            LOGGER.log(Level.SEVERE, "Database error", exception);
-            showAlert(Alert.AlertType.ERROR, languageManager.getString("technicalErrorMessage"));
+        //loggningen sköts av ExceptionLogger, ErrorHandler ansvarar bara för att visa felet
+        String errorId = ExceptionLogger.log(exception);
+        if (errorId != null) {
+            //tekniskt fel: inga interna detaljer till användaren, bara felkoden som finns i loggen
+            showAlert(Alert.AlertType.ERROR, MessageFormat.format(
+                    languageManager.getString("technicalErrorWithReference"), errorId));
         } else if (exception instanceof AutoCoreException) {
             AutoCoreException autoCoreException = (AutoCoreException) exception;
             String message;
@@ -38,17 +32,12 @@ public class ErrorHandler {
                         autoCoreException.getArgs());
             } catch (MissingResourceException e) {
                 //saknad språknyckel ska inte krascha appen: visa nyckeln och logga så att den kan läggas till
-                LOGGER.log(Level.WARNING, "Missing language key: " + autoCoreException.getMessageKey());
+                LOG.warn("Saknad språknyckel: {}", autoCoreException.getMessageKey());
                 message = autoCoreException.getMessageKey();
             }
             showAlert(Alert.AlertType.WARNING, message);
-
-        } else {
-            LOGGER.log(Level.SEVERE, "Unexpected error", exception);
-            showAlert(Alert.AlertType.ERROR, languageManager.getString("technicalErrorMessage"));
         }
     }
-
     private static void showAlert(Alert.AlertType type, String message) {
         Alert alert = new Alert(type, message);
         alert.setHeaderText(null);

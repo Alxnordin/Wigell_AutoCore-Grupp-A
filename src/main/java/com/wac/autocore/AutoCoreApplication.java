@@ -86,6 +86,14 @@ public class AutoCoreApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
 
+        //Alexander
+        //fel som ingen har fångat på JavaFX-tråden loggas och visas via ErrorHandler
+        Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) ->
+                ErrorHandler.show(throwable instanceof Exception
+                        ? (Exception) throwable
+                        : new RuntimeException(throwable)));
+
+
         DatabaseConnection.initializeDatabase();
 
         this.stage = primaryStage;
