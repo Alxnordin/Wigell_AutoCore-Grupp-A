@@ -14,14 +14,15 @@ import java.util.UUID;
 //Fel i indata eller regler loggas som WARN utan stacktrace och utan args
 //(args kan innehålla personuppgifter, t.ex. e-postadress).
 
-public class ExceptionLogger {
+public final class ExceptionLogger {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExceptionLogger.class);
 
-    private ExceptionLogger () {
+    private ExceptionLogger() {
     }
+
     //loggar felet, returnerar en felkod för tekniska fel, annars null
-    public static String log (Exception exception) {
+    public static String log(Exception exception) {
         if (exception instanceof DataAccessException) {
             String errorId = newErrorId();
             LOG.error("Databasfel [felkod {}] i {}: {}",
@@ -49,15 +50,17 @@ public class ExceptionLogger {
     private static String origin(Throwable throwable) {
         StackTraceElement[] stackTrace = throwable.getStackTrace();
         for (StackTraceElement element : stackTrace) {
-            if (element.getClassName().startsWith("com.wac.autocore.servive")) {
+            if (element.getClassName().startsWith("com.wac.autocore.service")) {
+                return simpleName(element);
+            }
         }
-    }
         return stackTrace.length > 0 ? simpleName(stackTrace[0]) : "okänd";
-}
+    }
 
-private static String simpleName(StackTraceElement element) {
-    String className = element.getClassName();
-    String simpleClassName = className.substring(className.lastIndexOf('.' + 1));
-    return simpleClassName + "." + element.getMethodName();
+    //gör om t.ex. "com.wac.autocore.dao.CustomerDAO" + "findAll" till "CustomerDAO.findAll"
+    private static String simpleName(StackTraceElement element) {
+        String className = element.getClassName();
+        String simpleClassName = className.substring(className.lastIndexOf('.') + 1);
+        return simpleClassName + "." + element.getMethodName();
     }
 }

@@ -2,11 +2,11 @@ package com.wac.autocore.view;
 
 import com.wac.autocore.util.LanguageManager;
 import javafx.scene.control.Alert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 //Alexander
 //Visar bekräftelser för användaren på ett enhetligt sätt, motsvarigheten till ErrorHandler
@@ -26,6 +26,11 @@ public class InfoDialog {
         } catch (MissingResourceException e) {
             //saknad språknyckel ska inte krascha appen, visa nyckeln och logga så den kan läggas till
             LOG.warn("Saknad språknyckel: {}", messageKey);
+            message = messageKey;
         }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
+        alert.setHeaderText(null);
+        alert.showAndWait();
     }
 }
