@@ -4,6 +4,7 @@ import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.repository.InvoiceRepository;
 import org.springframework.stereotype.Repository;
+import com.wac.autocore.exception.DataAccessException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,7 +38,7 @@ public class InvoiceDAO implements InvoiceRepository {
         invoices.add(invoice);
             }
         } catch (Exception e){
-            throw new RuntimeException("Could not fetch invoices.", e);
+            throw new DataAccessException("Could not fetch invoices.", e);
         }
     return invoices;
     }
@@ -65,7 +66,7 @@ public class InvoiceDAO implements InvoiceRepository {
             }
 
         }catch (Exception e){
-        throw new RuntimeException("Could not save invoice.", e);
+        throw new DataAccessException("Could not save invoice.", e);
         }
         return invoice;
     }
@@ -80,7 +81,7 @@ public class InvoiceDAO implements InvoiceRepository {
 
             statement.executeUpdate();
         } catch(Exception e) {
-            throw new RuntimeException("Could not update invoice.", e);
+            throw new DataAccessException("Could not update invoice.", e);
         }
     }
     }

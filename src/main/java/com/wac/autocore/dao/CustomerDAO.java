@@ -4,6 +4,7 @@ import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.repository.CustomerRepository;
 import org.springframework.stereotype.Repository;
+import com.wac.autocore.exception.DataAccessException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,7 +37,7 @@ public class CustomerDAO implements CustomerRepository {
                 customers.add(customer);
             }
         }catch(Exception e){
-            throw new RuntimeException("Could not fetch customers.", e);
+            throw new DataAccessException("Could not fetch customers.", e);
         }
         return customers;
     }
@@ -62,7 +63,7 @@ public class CustomerDAO implements CustomerRepository {
             }
 
         }catch (Exception e){
-            throw new RuntimeException("Could not save customer.", e);
+            throw new DataAccessException("Could not save customer.", e);
         }
         return customer;
     }

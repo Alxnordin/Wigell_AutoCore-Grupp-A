@@ -4,6 +4,7 @@ import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.repository.ServiceItemRepository;
 import org.springframework.stereotype.Repository;
+import com.wac.autocore.exception.DataAccessException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,7 +35,7 @@ public class ServiceItemDAO implements ServiceItemRepository {
                 serviceItems.add(serviceItem);
             }
     }catch(Exception e) {
-        throw new RuntimeException("Could not fetch serviceItems.", e);
+        throw new DataAccessException("Could not fetch serviceItems.", e);
         }
         return serviceItems;
     }
@@ -59,7 +60,7 @@ public class ServiceItemDAO implements ServiceItemRepository {
                 }
             }
         }catch (Exception e){
-            throw new RuntimeException("Could not save serviceItem.", e);
+            throw new DataAccessException("Could not save serviceItem.", e);
         }
         return serviceItem;
     }
@@ -78,7 +79,7 @@ public class ServiceItemDAO implements ServiceItemRepository {
                     statement.executeUpdate();
 
         }catch (Exception e){
-            throw new RuntimeException("Could not update serviceItem price", e);
+            throw new DataAccessException("Could not update serviceItem price", e);
         }
     }
 

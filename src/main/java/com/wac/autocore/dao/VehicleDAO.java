@@ -4,6 +4,7 @@ import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.repository.VehicleRepository;
 import org.springframework.stereotype.Repository;
+import com.wac.autocore.exception.DataAccessException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,7 +37,7 @@ public class VehicleDAO implements VehicleRepository {
                 vehicles.add(vehicle);
             }
         }catch(Exception e) {
-            throw new RuntimeException("Could not fetch vehicles.", e);
+            throw new DataAccessException("Could not fetch vehicles.", e);
         }
         return vehicles;
     }
@@ -63,7 +64,7 @@ public class VehicleDAO implements VehicleRepository {
             }
 
         } catch(Exception e) {
-            throw new RuntimeException("Could not save vehicle.", e);
+            throw new DataAccessException("Could not save vehicle.", e);
         }
         return vehicle;
     }

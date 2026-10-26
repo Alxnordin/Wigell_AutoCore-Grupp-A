@@ -1,10 +1,10 @@
 package com.wac.autocore.dao;
 
 import com.wac.autocore.data.DatabaseConnection;
-import com.wac.autocore.model.Invoice;
 import com.wac.autocore.model.Payment;
 import com.wac.autocore.repository.PaymentRepository;
 import org.springframework.stereotype.Repository;
+import com.wac.autocore.exception.DataAccessException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,7 +39,7 @@ public class PaymentDAO implements PaymentRepository {
                 payments.add(payment);
             }
         } catch (Exception e){
-            throw new RuntimeException("Could not fetch payments.", e);
+            throw new DataAccessException("Could not fetch payments.", e);
         }
         return payments;
     }
@@ -65,7 +65,7 @@ public class PaymentDAO implements PaymentRepository {
                 }
             }
         } catch(Exception e) {
-            throw new RuntimeException("Could not save payment.", e);
+            throw new DataAccessException("Could not save payment.", e);
         }
         return payment;
     }

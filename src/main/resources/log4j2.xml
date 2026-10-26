@@ -12,13 +12,13 @@
     </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="${PATTERN}"/>
+            <PatternLayout pattern="${PATTERN}" charset="UTF-8"/>
         </Console>
         <!-- Hela applikationens logg. Ny fil varje dag eller vid 10 MB, max 10 gamla filer -->
         <RollingFile name="AppFile"
                      fileName="${LOG_DIR}/autocore.log"
                      filePattern="${LOG_DIR}/autocore-%d{yyyy-MM-dd}-%i.log">
-            <PatternLayout pattern="${PATTERN}"/>
+            <PatternLayout pattern="${PATTERN}" charset="UTF-8"/>
             <Policies>
                 <TimeBasedTriggeringPolicy/>
                 <SizeBasedTriggeringPolicy size="10 MB"/>
@@ -29,7 +29,7 @@
         <RollingFile name="SecurityFile"
                      fileName="${LOG_DIR}/security.log"
                      filePattern="${LOG_DIR}/security-%d{yyyy-MM-dd}-%i.log">
-            <PatternLayout pattern="${PATTERN}"/>
+            <PatternLayout pattern="${PATTERN}" charset="UTF-8"/>
             <Policies>
                 <TimeBasedTriggeringPolicy/>
                 <SizeBasedTriggeringPolicy size="10 MB"/>

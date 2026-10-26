@@ -339,7 +339,6 @@ public class OrderDetailsView {
         );
 
         servicesTable.getItems().addAll(orderServices);
-        System.out.println("Antal services i tabellen: " + servicesTable.getItems().size());
         servicesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         servicesBox.getChildren().addAll(servicesTitle, servicesTable);
 

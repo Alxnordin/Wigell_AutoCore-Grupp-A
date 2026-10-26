@@ -10,6 +10,8 @@ import com.wac.autocore.service.interf.VehicleService;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.wac.autocore.repository.BookingRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,6 +20,8 @@ import java.util.List;
 
 @Service
 public class BookingServiceImpl implements BookingService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BookingServiceImpl.class);
 
     private final BookingRepository bookingRepository;
 
@@ -84,6 +88,7 @@ public class BookingServiceImpl implements BookingService {
             }
         }
         bookingRepository.save(booking); //sparar bokning + tjänster i en transaktion (commit/rollback);
+        LOG.info("createBooking: bokning {} skapad (fordon {})", booking.getId(), vehicleId);
 
         return booking;
     }
@@ -108,7 +113,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         bookingRepository.addServiceItem(bookingId, serviceItemId);
-        System.out.println("Service item " + serviceItemId + " added to booking " + bookingId + ".");
+        LOG.info("addServiceToBooking: tjänst {} tillagd i bokning {}", serviceItemId, bookingId);
 
     }
 
@@ -127,7 +132,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         bookingRepository.removeServiceItem(bookingId, serviceItemId);
-        System.out.println("Service item " + serviceItemId + " removed from booking " + bookingId + ".");
+        LOG.info("removeServiceFromBooking: tjänst {} borttagen från bokning {}", serviceItemId, bookingId);
     }
 
     //gör om bokningens tjänste-ID:n till hela ServiceItem-objekt (namn, pris, tid)
@@ -201,6 +206,8 @@ public class BookingServiceImpl implements BookingService {
         newBooking.setOriginalBookingId(original.getId());
 
         bookingRepository.save(newBooking);
+        LOG.info("createBookingFromPreviousBooking: bokning {} skapad från bokning {}",
+                newBooking.getId(), original.getId());
 
         return newBooking;
     }

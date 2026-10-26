@@ -6,6 +6,8 @@ import com.wac.autocore.exception.ValidationException;
 import com.wac.autocore.model.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.repository.WorkOrderRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -14,9 +16,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
+
 @Service
 public class WorkOrderServiceImpl implements WorkOrderService {
 
+    //Alexander
+    //en logger per klass. Klassnamnet visas i loggen, så man ser vilken del av systemet som rapporterar
+    private static final Logger LOG = LoggerFactory.getLogger(WorkOrderServiceImpl.class);
     private final WorkOrderRepository workOrderRepository;
 
     private final BookingService bookingService;
@@ -61,7 +68,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         // Mekanikern får bara ändras innan ordern har skapats.
         if (!"DRAFT".equals(workOrder.getStatus())) {
-            System.out.println("Mechanic cannot be changed after work order creation.");
             throw new BusinessRuleException("mechanicCannotChangeAfterWorkOrderCreation");
             //return;
         }
@@ -73,6 +79,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         // Sparar den nya mekanikern på utkastet.
         workOrder.setMechanicId(mechanicId);
         workOrderRepository.update(workOrder);
+
+        LOG.info("updateMechanic: arbetsorder {} fick mekaniker {}", workOrder.getId(), mechanicId);
     }
 
     //true om bokningen redan har en arbetsorder (en bokning kan bara ha en)
@@ -125,7 +133,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         for (int serviceItemId : serviceItemIds) {
             if (serviceItemService.findServiceItem(serviceItemId) == null) {
-                System.out.println("Service item with ID " + serviceItemId + " does not exist.");
                 throw new NotFoundException("serviceItemNotFoundError", String.valueOf(serviceItemId));
             }
         }
@@ -158,8 +165,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         booking.setStatus("WORK_ORDER_CREATED");
         bookingService.updateStatus(booking);
 
-        System.out.println("Work order created successfully.");
-        System.out.println(workOrder);
+        LOG.info("createWorkOrder: arbetsorder {} skapad (booking {}, mekaniker {})",
+        workOrder.getId(), bookingId, mechanicId);
 
         return workOrder;
     }
@@ -173,7 +180,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         // Tjänster får bara tas bort innan arbetet har påbörjats.
         String status = workOrder.getStatus();
         if (!"DRAFT".equals(status) && !"CREATED".equals(status)) {
-            System.out.println("Services cannot be removed after work has started.");
             throw new BusinessRuleException("servicesCannotBeRemoved");
         }
 
@@ -181,8 +187,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         workOrder.removeServiceItem(serviceItemId);
         workOrderRepository.removeServiceItem(workOrder.getId(), serviceItemId);
 
-        System.out.println("ServiceItem " + serviceItemId
-                + " removed from workOrder " + workOrder.getId());
+        LOG.info("removeServiceItemFromWorkOrder: tjänst {} borttagen från arbetsorser {}",
+                serviceItemId, workOrder.getId());
     }
 
     //Det här fungerar inte eftersom vi ju inte sparar datum för workorder.
@@ -345,7 +351,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         workOrder.setStatus("IN_PROGRESS");
         workOrderRepository.updateStatus(workOrder);
 
-        System.out.println("Work order " + workOrderId + " has been started.");
+        LOG.info("startWorkOrder: arbetsorder {} påbörjad", workOrderId);
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public void completeWorkOrder(int workOrderId) {
@@ -379,7 +385,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
             bookingService.updateStatus(booking);
         }
 
-        System.out.println("Work order " + workOrderId + " has been completed.");
+        LOG.info("completeWorkOrder: arbetsOrder {} slutförd", workOrderId);
     }
 
     //skapa reklamation - prototype-mönster
@@ -415,8 +421,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         workOrderRepository.save(complaint);
 
-        System.out.println("Complaint created");
-        System.out.println(complaint);
+        LOG.info("createComplaint: reklamation {} skapad från arbetsorder {}",
+                complaint.getId(), original.getId());
+
         return complaint;
     }
 
@@ -443,8 +450,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         for (int serviceItemId : serviceItemIds) {
             if (serviceItemService.findServiceItem(serviceItemId) == null) {
-                System.out.println("Service item with ID " + serviceItemId +
-                        " does not exist.");
                 throw new NotFoundException("serviceItemNotFoundError", String.valueOf(serviceItemId));
             }
         }
@@ -462,8 +467,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         workOrderRepository.save(workOrder);
 
-        System.out.println("Drop-in work order created successfully.");
-        System.out.println(workOrder);
+        LOG.info("createDropInWorkOrder: drop-in-arbetsorder {} skapad (kund {}, fordon {}, mekaniker {})",
+                workOrder.getId(), customerId, vehicleId, mechanicId);
 
         return workOrder;
     }
@@ -491,7 +496,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         if (serviceItemIds != null) {
             for (int serviceItemId : serviceItemIds) {
                 if (serviceItemService.findServiceItem(serviceItemId) == null) {
-                    System.out.println("Service item does not exist: " + serviceItemId);
                     throw new NotFoundException("serviceItemNotFoundError", String.valueOf(serviceItemId));
                     //return null;
                 }
@@ -528,8 +532,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         // Sparar utkastet och låter databasen tilldela ett ID.
         workOrderRepository.save(draft);
 
-        System.out.println("Draft work order created successfully.");
-        System.out.println(draft);
+        LOG.info("createDraftWorkOrder: utkast {} skapat (kund {}, fordon {})",
+                draft.getId(), customerId, vehicleId);
 
         return draft;
     }
@@ -608,6 +612,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         // Sparar ändringarna med samma ID och status.
         workOrderRepository.update(draft);
 
+
+        LOG.info("updateDraftWorkOrder: utkast {} uppdaterat", workOrderId);
+
         return draft;
     }
 
@@ -621,19 +628,16 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         workOrderIsFoundOrThrowException(workOrder, workOrderId);
 
         if(!"DRAFT".equals(workOrder.getStatus())) {
-            System.out.println("work order with ID " + workOrderId + " is not a draft");
             throw new BusinessRuleException("workOrderNotADraftError", String.valueOf(workOrderId));
             //return null;
         }
 
         if(workOrder.getCustomerId() <=0){
-            System.out.println("Work order has no customer");
             throw new ValidationException("workOrderNoCustomerError");
             //return null;
         }
 
         if(workOrder.getVehicleId() <=0){
-            System.out.println("Work order has no vehicle");
             throw new ValidationException("workOrderNoVehicleError");
         }
 
@@ -645,7 +649,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         // Kontrollerar att utkastet får övergå till CREATED.
         if (!isAllowedStatusTransition(workOrder, "CREATED")) {
-            System.out.println("Draft work order cannot be completed.");
             throw new BusinessRuleException("draftWorkOrderCannotBeCompleted");
             //return null;
         }
@@ -668,8 +671,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         // Sparar den färdigställda arbetsordern.
         workOrderRepository.update(workOrder);
-        System.out.println("Draft workorder completed successfully");
-        System.out.println(workOrder);
+
+        LOG.info("completeDraftWorkOrder: utkast {} färdigställt med status CREATED (mekaniker {})",
+                workOrderId, mechanicId);
 
         return workOrder;
     }
@@ -677,28 +681,24 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     //Metoder som hanterar exceptions
     private void mechanicAvailableOrThrowException(Mechanic mechanic){
         if(!mechanic.isAvailable()){
-            System.out.println("Mechanic not available");
             throw new BusinessRuleException("mechanicNotAvailableError", mechanic.getName());
         }
     }
 
     private void vehicleBelongsToCustomerOrThrowException(Vehicle vehicle, Customer customer){
         if (vehicle.getCustomerId() != customer.getId()) {
-            System.out.println("Vehicle does not belong to customer" + customer.getName());
             throw new BusinessRuleException("vehicleDoesNotBelongToCustomerError", String.valueOf(customer.getName()));
         }
     }
 
     private void workOrderAtLeastOneServiceOrThrowException(int... serviceItemIds){
         if (serviceItemIds == null || serviceItemIds.length == 0) {
-            System.out.println("A work order must contain at least one service.");
             throw new BusinessRuleException("workOrderAtLeastOneServiceError");
         }
     }
 
     private void mechanicIsFoundOrThrowException(Mechanic mechanic, int mechanicId) {
         if (mechanic == null) {
-            System.out.println("Mechanic does not exist: " + mechanicId);
             throw new NotFoundException("mechanicNotFoundError", String.valueOf(mechanicId));
         }
     }
@@ -711,21 +711,18 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
     private void serviceItemIsFoundOrThrowException(ServiceItem serviceItem, int serviceItemId) {
         if (serviceItem == null) {
-            System.out.println("service item with ID " + serviceItemId + " does not exist.");
             throw new NotFoundException("serviceItemNotFoundError", String.valueOf(serviceItemId));
         }
     }
 
     private void customerIsFoundOrThrowException(Customer customer, int customerId) {
         if (customer == null) {
-            System.out.println("customer with ID " + customerId + " does not exist.");
             throw new NotFoundException("customerNotFoundError", String.valueOf(customerId));
         }
     }
 
     private void vehicleIsFoundOrThrowException(Vehicle vehicle, int vehicleId) {
         if (vehicle == null) {
-            System.out.println("vehicle with ID " + vehicleId + " does not exist.");
             throw new NotFoundException("vehicleNotFoundError", String.valueOf(vehicleId));
         }
     }

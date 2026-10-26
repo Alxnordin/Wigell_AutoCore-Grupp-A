@@ -4,6 +4,7 @@ import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.WorkOrder;
 import com.wac.autocore.repository.WorkOrderRepository;
 import org.springframework.stereotype.Repository;
+import com.wac.autocore.exception.DataAccessException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,7 +55,7 @@ public class WorkOrderDAO implements WorkOrderRepository {
                 workOrders.add(workOrder);
             }
         } catch (Exception e){
-            throw new RuntimeException("Could not fetch work orders.", e);
+            throw new DataAccessException("Could not fetch work orders.", e);
         }
         return workOrders;
     }
@@ -92,7 +93,7 @@ public class WorkOrderDAO implements WorkOrderRepository {
                 }
             }
         }catch (Exception e){
-            throw new RuntimeException("Could not find workOrder.", e);
+            throw new DataAccessException("Could not find workOrder.", e);
         }
         return null;
     }
@@ -137,7 +138,7 @@ public class WorkOrderDAO implements WorkOrderRepository {
             saveServiceItems(connection, workOrder);
 
         } catch (Exception e) {
-            throw new RuntimeException("Could not update workOrder.", e);
+            throw new DataAccessException("Could not update workOrder.", e);
         }
     }
 
@@ -206,7 +207,7 @@ public class WorkOrderDAO implements WorkOrderRepository {
             saveServiceItems(connection,workOrder);
 
         } catch(Exception e) {
-            throw new RuntimeException("Could not save workOrder.", e);
+            throw new DataAccessException("Could not save workOrder.", e);
         }
         return workOrder;
     }
@@ -236,7 +237,7 @@ public class WorkOrderDAO implements WorkOrderRepository {
 
             statement.executeUpdate();
         } catch(Exception e) {
-            throw new RuntimeException("Could not remove serviceItem from workOrder. ", e);
+            throw new DataAccessException("Could not remove serviceItem from workOrder. ", e);
         }
 
     }
@@ -252,7 +253,7 @@ public class WorkOrderDAO implements WorkOrderRepository {
                 statement.executeUpdate();
 
         } catch(Exception e){
-                 throw new RuntimeException("Could not update workOrder.", e);
+                 throw new DataAccessException("Could not update workOrder.", e);
         }
     }
 }
