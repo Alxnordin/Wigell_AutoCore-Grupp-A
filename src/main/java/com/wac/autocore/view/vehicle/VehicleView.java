@@ -73,6 +73,12 @@ public class VehicleView {
         modelField = createField();
         yearField = createField();
 
+        // lägger till placeholder text i fälten
+        registrationNumberField.setPromptText(languageManager.getString("registrationNumberPlaceholder"));
+        brandField.setPromptText(languageManager.getString("vehicleBrandPlaceholder"));
+        modelField.setPromptText(languageManager.getString("vehicleModelPlaceholder"));
+        yearField.setPromptText(languageManager.getString("vehicleYearPlaceholder"));
+
         customerLabel = new Label(languageManager.getString("customerLabel"));
         registrationNumberLabel = new Label(languageManager.getString("registrationNumber"));
         brandLabel = new Label(languageManager.getString("vehicleBrand"));
@@ -147,6 +153,11 @@ public class VehicleView {
         modelLabel.setText(languageManager.getString("vehicleModel"));
         yearLabel.setText(languageManager.getString("vehicleYear"));
         createVehicleButton.setText(languageManager.getString("createVehicleButton"));
+
+        registrationNumberField.setPromptText(languageManager.getString("registrationNumberPlaceholder"));
+        brandField.setPromptText(languageManager.getString("vehicleBrandPlaceholder"));
+        modelField.setPromptText(languageManager.getString("vehicleModelPlaceholder"));
+        yearField.setPromptText(languageManager.getString("vehicleYearPlaceholder"));
         backButton.setText(languageManager.getString("backButton"));
     }
 }

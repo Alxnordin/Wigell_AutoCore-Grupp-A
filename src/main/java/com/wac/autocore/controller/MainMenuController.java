@@ -22,11 +22,13 @@ public class MainMenuController {
     public void wireEvents() {
         view.getCustomersButton().setOnAction(event -> app.showCustomerListView());
 
-        view.getShowVehiclesButton().setOnAction(e -> app.showVehicleListView());
-        view.getAddVehicleButton().setOnAction(e -> app.showVehicleView());
+        view.getVehiclesButton().setOnAction(event -> app.showVehicleListView());
+//        view.getShowVehiclesButton().setOnAction(e -> app.showVehicleListView());
+//        view.getAddVehicleButton().setOnAction(e -> app.showVehicleView());
 
-        view.getShowBookingsButton().setOnAction(e -> app.showBookingListView());
-        view.getAddBookingButton().setOnAction(e -> app.showBookingView());
+        view.getBookingsButton().setOnAction(event -> app.showBookingListView());
+//        view.getShowBookingsButton().setOnAction(e -> app.showBookingListView());
+//        view.getAddBookingButton().setOnAction(e -> app.showBookingView());
 
         view.getShowServicesButton().setOnAction(e -> app.showServiceItemView());
         view.getShowMechanicsButton().setOnAction(e -> app.showMechanicView());

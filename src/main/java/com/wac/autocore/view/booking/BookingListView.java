@@ -8,9 +8,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.util.function.Consumer;
@@ -25,6 +27,8 @@ public class BookingListView {
 
     private final Label title;
     private final Label subtitle;
+
+    private Button addBookingButton;
 
     //Ej klar med sökfunktionen
     private TextField searchField;
@@ -48,8 +52,23 @@ public class BookingListView {
         VBox box = new VBox(12);
         box.setPadding(new Insets(20));
 
+        // Skapar rubriken med kalenderikon.
         title = new Label(languageManager.getString("bookingListTitle"));
         HBox titleBox = UIComponents.createPageTitle(title, "fa-calendar");
+
+        // Skapar den orangea knappen för att lägga till en bokning.
+        addBookingButton = UIComponents.createCreateButton(
+                languageManager.getString("addBookingButton"));
+
+        // Lägger rubrik och knapp på samma rad.
+        HBox headerBox = new HBox();
+        headerBox.setAlignment(Pos.CENTER_LEFT);
+
+        javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        headerBox.getChildren().addAll(titleBox, spacer, addBookingButton);
+
         subtitle = UIComponents.createSubtitle(languageManager.getString("bookingListSubtitle"));
 
         HBox searchBox = buildSearchSection();
@@ -57,7 +76,14 @@ public class BookingListView {
 
         backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
 
-        box.getChildren().addAll(titleBox, subtitle, searchBox, bookingTable, backButton);
+        // Visar rubrik och skapa-knapp överst i bokningslistan.
+        box.getChildren().addAll(
+                headerBox,
+                subtitle,
+                searchBox,
+                bookingTable,
+                backButton
+        );
         this.root = box;
 
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
@@ -67,6 +93,11 @@ public class BookingListView {
     }
 
     public Parent getView() {return root;}
+
+    // Gör knappen tillgänglig för BookingController.
+    public Button getAddBookingButton() {
+        return addBookingButton;
+    }
 
     //BookingController anger vad som ska hända när man trycker på "Skapa arbetsorder"
     public void setOnCreateWorkOrder(Consumer<Booking> action) {
@@ -256,12 +287,12 @@ public class BookingListView {
         dateColumn.setText(languageManager.getString("dateInTable"));
         descriptionColumn.setText(languageManager.getString("descriptionInTable"));
         statusColumn.setText(languageManager.getString("statusInTable"));
-
+        addBookingButton.setText(languageManager.getString("addBookingButton"));
         createOrderColumn.setText(languageManager.getString("createOrderColumn"));
         viewAndEditColumn.setText(languageManager.getString("actionColumn"));
         backButton.setText(languageManager.getString("backButton"));
         title.setText(languageManager.getString("bookingListTitle"));
         subtitle.setText(languageManager.getString("bookingListSubtitle"));
-        searchField.setText(languageManager.getString("searchTextField"));
+        searchField.setPromptText(languageManager.getString("searchTextField"));
     }
 }

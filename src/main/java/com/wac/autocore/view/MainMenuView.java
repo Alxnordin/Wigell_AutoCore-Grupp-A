@@ -18,8 +18,6 @@ public class MainMenuView {
     private final Parent root;
     private final List<VBox> allSubMenus = new ArrayList<>();
 
-    private Button showVehiclesButton, addVehicleButton;
-    private Button showBookingsButton, addBookingButton;
     private Button showServicesButton, showMechanicsButton;
 
     private Button customersButton;
@@ -42,15 +40,14 @@ public class MainMenuView {
         customersButton = UIComponents.createMenuButton(languageManager.getString("customersButton"), "fa-user");
         menu.getChildren().add(buildSection(customersButton));
 
-        showVehiclesButton = new Button(languageManager.getString("showVehicles"));
-        addVehicleButton = new Button(languageManager.getString("addVehicle"));
         vehiclesButton = UIComponents.createMenuButton(languageManager.getString("vehiclesButton"), "fa-car");
-        menu.getChildren().add(buildSection(vehiclesButton, showVehiclesButton, addVehicleButton));
+        menu.getChildren().add(buildSection(vehiclesButton));
 
-        showBookingsButton = new Button(languageManager.getString("showBookings"));
-        addBookingButton = new Button(languageManager.getString("addBooking"));
-        bookingsButton = UIComponents.createMenuButton(languageManager.getString("bookingsButton"), "fa-calendar");
-        menu.getChildren().add(buildSection(bookingsButton, showBookingsButton, addBookingButton));
+        // Skapar Booking-knappen utan undermeny.
+        bookingsButton = UIComponents.createMenuButton(
+                languageManager.getString("bookingsButton"),
+                "fa-calendar");
+        menu.getChildren().add(buildSection(bookingsButton));
 
         showServicesButton = new Button(languageManager.getString("showServices"));
         showMechanicsButton = new Button(languageManager.getString("showMechanicsButton"));
@@ -97,12 +94,12 @@ public class MainMenuView {
         customersButton.setText(languageManager.getString("customersButton"));
 
         vehiclesButton.setText(languageManager.getString("vehiclesButton"));
-        showVehiclesButton.setText(languageManager.getString("showVehicles"));
-        addVehicleButton.setText(languageManager.getString("addVehicle"));
+//        showVehiclesButton.setText(languageManager.getString("showVehicles"));
+//        addVehicleButton.setText(languageManager.getString("addVehicle"));
 
         bookingsButton.setText(languageManager.getString("bookingsButton"));
-        showBookingsButton.setText(languageManager.getString("showBookings"));
-        addBookingButton.setText(languageManager.getString("addBooking"));
+//        showBookingsButton.setText(languageManager.getString("showBookings"));
+//        addBookingButton.setText(languageManager.getString("addBooking"));
 
         servicesButton.setText(languageManager.getString("servicesButton"));
         showServicesButton.setText(languageManager.getString("showServices"));
@@ -155,10 +152,10 @@ public class MainMenuView {
     public Parent getView() { return root; }
 
     public Button getCustomersButton() { return customersButton; }
-    public Button getShowVehiclesButton() { return showVehiclesButton; }
-    public Button getAddVehicleButton() { return addVehicleButton; }
-    public Button getShowBookingsButton() { return showBookingsButton; }
-    public Button getAddBookingButton() { return addBookingButton; }
+    public Button getVehiclesButton() {return vehiclesButton;}
+
+    public Button getBookingsButton() {return bookingsButton;}
+
     public Button getShowServicesButton() { return showServicesButton; }
     public Button getShowMechanicsButton() { return showMechanicsButton; }
     public Button getOrdersButton() { return ordersButton; }
