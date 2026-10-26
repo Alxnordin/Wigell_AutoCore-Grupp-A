@@ -5,6 +5,7 @@ import com.wac.autocore.model.Customer;
 import com.wac.autocore.repository.CustomerRepository;
 import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.validation.Validator;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class CustomerServiceImpl implements CustomerService {
     //servicen avgör nu själv vad som är giltigt, inte controllern.
     //saknas en uppgift kastas ValidationException med en språknyckel som säger vad som saknas.
     //samma regler gäller oavsett om kunden skapas från appen, ett test eller ett annat system.
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public Customer createCustomer(String firstName, String lastName, String phone,
                                    String email, boolean vip) {
 

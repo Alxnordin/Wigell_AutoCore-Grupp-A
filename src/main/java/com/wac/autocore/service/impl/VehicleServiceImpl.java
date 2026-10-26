@@ -9,6 +9,7 @@ import com.wac.autocore.repository.VehicleRepository;
 import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.service.interf.VehicleService;
 import com.wac.autocore.validation.Validator;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.Year;
@@ -46,6 +47,7 @@ public class VehicleServiceImpl implements VehicleService {
     //Alexander
     //servicen avgör nu själv vad som är giltigt, inte controllern.
     //årsmodellen tas emot som text och tolkas här, så att samma regel gäller oavsett vem som anropar.
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public Vehicle createVehicle(String registrationNumber,
                                  String brand,
                                  String model,
