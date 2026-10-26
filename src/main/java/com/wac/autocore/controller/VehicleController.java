@@ -13,6 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 
 public class VehicleController {
@@ -43,8 +44,13 @@ public class VehicleController {
     private void wireEvents() {
         vehicleView.getCreateVehicleButton().setOnAction(actionEvent -> createVehicle());
 
-        vehicleView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+        vehicleView.getBackButton().setOnAction(actionEvent -> app.showVehicleListView());
         vehicleListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+
+        // Öppnar formuläret när användaren klickar på Lägg till fordon.
+        vehicleListView.getCreateVehicleButton().setOnAction(
+                actionEvent -> app.showVehicleView());
+
     }
 
     //Alexander
@@ -78,9 +84,11 @@ public class VehicleController {
         }
     }
 
+    // Hämtar fordonen och uppdaterar listan som sökningen filtrerar.
     private void refreshVehicleList() {
-        vehicleListView.getVehicleTable().getItems().setAll(vehicleService.getVehicles());
+        vehicleListView.setVehicles(vehicleService.getVehicles());
     }
+
 
     private void showInformation(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, message);

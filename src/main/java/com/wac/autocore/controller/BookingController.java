@@ -81,7 +81,8 @@ public class BookingController {
         bookingListView.setOnViewBooking(booking -> openBookingDetails(booking));
         bookingListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
         bookingListView.setGetRegistrationNumber(vehicleId -> getRegistrationNumber(vehicleId));
-        bookingView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+        bookingView.getBackButton().setOnAction(actionEvent -> app.showBookingListView());
+        bookingListView.getAddBookingButton().setOnAction(event -> app.showBookingView());
     }
 
     //Alexander

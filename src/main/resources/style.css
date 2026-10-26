@@ -1109,3 +1109,58 @@ ListView .list-cell:filled:selected {
 .logout-icon {
     -fx-icon-color: #287D38;
 }
+
+/* Ger startsidan en ljus bakgrund som matchar övriga vyer. */
+.start-view {
+    -fx-background-color: #F4F7F4;
+}
+
+/* Gör välkomstrubriken tydlig och lätt att läsa. */
+.start-title {
+    -fx-font-size: 34px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #17243A;
+}
+
+/* Ger underrubriken en diskret grön accent. */
+.start-subtitle {
+    -fx-font-size: 21px;
+    -fx-text-fill: #2D7D35;
+}
+
+/* Håller beskrivningen lugn och lättläst. */
+.start-instruction {
+    -fx-font-size: 16px;
+    -fx-text-fill: #68756D;
+}
+
+
+/* Sammanfattningskort på startsidan. */
+.start-summary-card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CFE0D6;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 18px;
+    -fx-spacing: 10px;
+    -fx-pref-height: 125px;
+}
+
+/* Rubriken i varje kort. */
+.start-summary-label {
+    -fx-text-fill: #68756D;
+    -fx-font-size: 13px;
+}
+
+/* Det viktigaste värdet i kortet. */
+.start-summary-value {
+    -fx-text-fill: #17243A;
+    -fx-font-size: 27px;
+    -fx-font-weight: bold;
+}
+
+/* Grön ikon som följer applikationens färgtema. */
+.start-summary-icon {
+    -fx-icon-color: #2E7D32;
+}

@@ -214,15 +214,26 @@ public class AutoCoreApplication extends Application {
         );
     }
 
+
     public void showMainMenu() {
-       if(!isUserLoggedIn()){
-           showLoginView();
-           return;
-       }
+        if (!isUserLoggedIn()) {
+            showLoginView();
+            return;
+        }
 
-        borderPane.setCenter(new StartView().getView());
+        // Skapar startsidan med de services som Spring redan har hämtat.
+        StartView startView = new StartView(
+                bookingService,
+                workOrderService,
+                vehicleService,
+                invoiceService,
+                customerService
+        );
 
+        borderPane.setCenter(startView.getView());
     }
+
+
     //Hjälpmetod som kontrollerar användarens inloggningsstatus. används i varje navigering
     private boolean requireLogin(){
         if(!isUserLoggedIn()) {
