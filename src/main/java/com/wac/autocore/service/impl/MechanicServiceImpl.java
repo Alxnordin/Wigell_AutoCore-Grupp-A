@@ -3,6 +3,7 @@ package com.wac.autocore.service.impl;
 import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.service.interf.MechanicService;
 import com.wac.autocore.repository.MechanicRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class MechanicServiceImpl implements MechanicService {
 
         return null;
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public void updateAvailable(Mechanic mechanic) {
         mechanicRepository.updateAvailable(mechanic);
     }

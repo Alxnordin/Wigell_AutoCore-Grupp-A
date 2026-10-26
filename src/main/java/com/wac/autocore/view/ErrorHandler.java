@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
+import org.springframework.security.access.AccessDeniedException;
+
 //Alexander
 //Visar fel för användaren på ett enhetligt sätt i hela appen
 //Fel i indata eller regler visas som varning med ett begripligt meddelande
@@ -17,6 +19,12 @@ public class ErrorHandler {
     }
     public static void show(Exception exception) {
         LanguageManager languageManager = LanguageManager.getInstance();
+        //Nekad behörighet
+        if (exception instanceof AccessDeniedException){
+            showAlert(Alert.AlertType.WARNING, "Behörighet saknas");
+            return;
+        }
+
         //loggningen sköts av ExceptionLogger, ErrorHandler ansvarar bara för att visa felet
         String errorId = ExceptionLogger.log(exception);
         if (errorId != null) {

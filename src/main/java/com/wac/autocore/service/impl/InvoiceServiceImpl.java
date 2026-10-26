@@ -7,6 +7,7 @@ import com.wac.autocore.model.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.repository.InvoiceLineRepository;
 import com.wac.autocore.repository.InvoiceRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -37,7 +38,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         this.customerService = customerService;
         this.serviceItemService = serviceItemService;
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'READ_ONLY')")
     public Invoice findInvoice(int id) {
         for (Invoice invoice : invoiceRepository.findAll()) {
             if (invoice.getId() == id) {
@@ -47,7 +48,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         return null;
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'READ_ONLY')")
     public List<Invoice> findAll() {
         return invoiceRepository.findAll();
     }
@@ -55,6 +56,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     //Alexander
     //kontrollerar arbetsordern & rabattkoden först och kastar exception vi fel
+    @PreAuthorize("hasRole('ADMIN')")
     public Invoice createInvoice(int workOrderId, String discountCode) {
 
         WorkOrder workOrder = workOrderService.findWorkOrder(workOrderId);
@@ -202,6 +204,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     //uppdaterar betald-status på den befintliga fakturan (UPDATE).
     //tidigare anropades save (INSERT), så varje betalning skapade en ny kopia av fakturan
     //medan originalet förblev obetalt
+    @PreAuthorize("hasRole('ADMIN')")
     public Invoice updatePaidInvoice(Invoice invoice) {
         invoiceRepository.updatePaid(invoice);
         return invoice;
@@ -210,6 +213,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     //Alexander
     //kunden hämtas via arbetsordern. Finns ingen kund direkt på arbetsordern
     //används bokningens fordon som tidigare. Ger null om kunden inte hittas.
+    @PreAuthorize("hasRole('ADMIN')")
     public Customer findCustomerForInvoice(Invoice invoice) {
         WorkOrder workOrder = workOrderService.findWorkOrder(invoice.getWorkOrderId());
         if (workOrder == null) {

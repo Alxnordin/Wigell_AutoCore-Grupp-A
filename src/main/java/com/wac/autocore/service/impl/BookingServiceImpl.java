@@ -7,6 +7,7 @@ import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.service.interf.BookingService;
 import com.wac.autocore.service.interf.ServiceItemService;
 import com.wac.autocore.service.interf.VehicleService;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.wac.autocore.repository.BookingRepository;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,7 @@ public class BookingServiceImpl implements BookingService {
     //Alexander
     //validerar bokningen och kastar exception vid fel, så att controllern bara visar felet via ErrorHandler.
     //ValidationException = något saknas i formuläret, NotFoundException = fordon/tjänst finns inte
+    @PreAuthorize("hasRole('ADMIN')")
     public Booking createBooking(Integer vehicleId,
                                  LocalDate date,
                                  String description,
@@ -88,6 +90,7 @@ public class BookingServiceImpl implements BookingService {
 
     //arbetet räknas som påbörjat när arbetsordern har startats
     // startWorkOrder/completeWorkOrder sparar då bokningens status som IN_PROGRESS/COMPLETED
+    @PreAuthorize("hasRole('ADMIN')")
     public boolean isWorkStarted(Booking booking) {
         return "IN_PROGRESS".equals(booking.getStatus())
                 || "COMPLETED".equals(booking.getStatus());
@@ -95,6 +98,7 @@ public class BookingServiceImpl implements BookingService {
 
     //lägg till en tjänst i en bokning, bara innan arbetet har påbörjats
     //Alexander: verksamhetsregler bryts -> BusinessRuleException
+    @PreAuthorize("hasRole('ADMIN')")
     public void addServiceToBooking(int bookingId, int serviceItemId) {
         Booking booking = requireEditableBooking(bookingId);
         requireServiceItem(serviceItemId);
@@ -110,6 +114,7 @@ public class BookingServiceImpl implements BookingService {
 
     //ta bort en tjänst från en bokning, bara innan arbetet har påbörjats
     //en bokning ska innehålla minst en tjänst, så den sista kan inte tas bort
+    @PreAuthorize("hasRole('ADMIN')")
     public void removeServiceFromBooking(int bookingId, int serviceItemId) {
         Booking booking = requireEditableBooking(bookingId);
 
@@ -126,6 +131,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     //gör om bokningens tjänste-ID:n till hela ServiceItem-objekt (namn, pris, tid)
+    @PreAuthorize("hasRole('ADMIN')")
     public List<ServiceItem> getServicesForBooking(int bookingId) {
         List<ServiceItem> result = new ArrayList<>();
         Booking booking = findBooking(bookingId);
@@ -144,6 +150,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     //total beräknad arbetstid i minuter för en lista av tjänster
+    @PreAuthorize("hasRole('ADMIN')")
     public int calculateTotalMinutes(List<ServiceItem> serviceItems) {
         int totalMinutes = 0;
 
@@ -154,6 +161,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     //totalt pris för en lista av tjänster
+    @PreAuthorize("hasRole('ADMIN')")
     public double calculateTotalPrice(List<ServiceItem> serviceItems) {
         double totalPrice = 0;
 
@@ -162,11 +170,12 @@ public class BookingServiceImpl implements BookingService {
         }
         return totalPrice;
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     public void updateStatus(Booking booking) {
         bookingRepository.updateStatus(booking);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Booking createBookingFromPreviousBooking(int originalBookingId, LocalDate newDate) {
 
         Booking original = findBooking(originalBookingId);

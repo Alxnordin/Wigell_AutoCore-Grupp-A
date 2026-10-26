@@ -9,6 +9,7 @@ import com.wac.autocore.model.Payment;
 import com.wac.autocore.service.interf.InvoiceService;
 import com.wac.autocore.service.interf.PaymentService;
 import com.wac.autocore.repository.PaymentRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class PaymentServiceImpl implements PaymentService {
         this.paymentRepository = paymentRepository;
         this.invoiceService = invoiceService;
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public List<Payment> findAll() {
         return paymentRepository.findAll();
     }
@@ -34,6 +35,7 @@ public class PaymentServiceImpl implements PaymentService {
     //Alexander
     //kontrollerar betalningstyp och faktura först och kastar exception vid fel
     //paymentType är en kod: CARD, SWISH eller CASH inte den översatta texten i rullistan
+    @PreAuthorize("hasRole('ADMIN')")
     public Payment processPayment(int invoiceId, String paymentType) {
         if (paymentType == null || paymentType.trim().isEmpty()) {
             throw new ValidationException("missingPaymentTypeError");
@@ -93,7 +95,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
     //Alexander
     //kunden hämtas via fakturan, ger null om fakturan eller kunde inte hittas
-
+    @PreAuthorize("hasRole('ADMIN')")
     public Customer findCustomerForPayment(Payment payment) {
         Invoice invoice = invoiceService.findInvoice(payment.getInvoiceId());
         if (invoice == null) {

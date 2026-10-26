@@ -7,6 +7,7 @@ import com.wac.autocore.model.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.repository.WorkOrderRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         return null;
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public void updateMechanic(WorkOrder workOrder, int mechanicId) {
         // Kontrollerar att arbetsordern finns.
         if (workOrder == null) {
@@ -75,6 +76,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     //true om bokningen redan har en arbetsorder (en bokning kan bara ha en)
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public boolean hasWorkOrder(int bookingId) {
         for (WorkOrder workOrder : workOrderRepository.findAll()) {
             //Alexander
@@ -90,6 +92,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     //Alexander
     //Planned order: arbetsorder från en befintlig bokning.
     //Tjänsternas priser låses i ordern när den skapas, så senare prisändringar påverkar inte ordern.
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public WorkOrder createWorkOrder(int bookingId,
                                      int mechanicId,
                                      int... serviceItemIds) {
@@ -160,7 +163,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         return workOrder;
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public void removeServiceItemFromWorkOrder(WorkOrder workOrder, int serviceItemId) {
         // Kontrollerar att arbetsordern finns.
         if (workOrder == null) {
@@ -194,6 +197,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     // Kontrollera mekaniker
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public boolean isMechanicBookedOnDate(int mechanicId,
                                           LocalDate date, int excludingBookingId) {
 
@@ -217,7 +221,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         }
         return false;
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public List<Mechanic> getAvailableMechanics(
         Booking currentBooking, WorkOrder currentWorkOrder) {
 
@@ -260,7 +264,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         return availableMechanics;
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public List<ServiceItem> getServicesForWorkOrder(WorkOrder workOrder) {
         List<ServiceItem> result = new ArrayList<>();
 
@@ -277,6 +281,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     // Kontrollerar om arbetsordern får övergå till den nya statusen.
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public boolean isAllowedStatusTransition(WorkOrder workOrder, String newStatus) {
         if (workOrder == null || newStatus == null) {
             return false;
@@ -302,7 +307,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         return false;
     }
 
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public void startWorkOrder(int workOrderId) {
         WorkOrder workOrder = findWorkOrder(workOrderId);
 
@@ -342,7 +347,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         System.out.println("Work order " + workOrderId + " has been started.");
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public void completeWorkOrder(int workOrderId) {
         WorkOrder workOrder = findWorkOrder(workOrderId);
 
@@ -378,12 +383,14 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     //skapa reklamation - prototype-mönster
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public WorkOrder createComplaint(int originalWorkOrderId){
         return createComplaint(originalWorkOrderId, null);
     }
 
     //Alexander
     //samma som ovan, men reklamationens egen beskrivning (vad som är fel) sparas på den nya ordern
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public WorkOrder createComplaint(int originalWorkOrderId, String complaintDescription){
         WorkOrder original = findWorkOrder(originalWorkOrderId);
 
@@ -414,6 +421,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     //DROP-IN workOrder
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public WorkOrder createDropInWorkOrder(int customerId,
                                            int vehicleId,
                                            int mechanicId,
@@ -461,6 +469,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     // Skapar ett utkast och sparar de tjänster som användaren har valt.
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public WorkOrder createDraftWorkOrder(
             int customerId,
             int vehicleId,
@@ -527,6 +536,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
 
     // Uppdaterar en befintlig draft utan att skapa en ny arbetsorder.
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public WorkOrder updateDraftWorkOrder(
             int workOrderId,
             int customerId,
@@ -601,7 +611,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         return draft;
     }
 
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public WorkOrder completeDraftWorkOrder(int workOrderId,
                                             int mechanicId,
                                             int... serviceItemsIds) {
