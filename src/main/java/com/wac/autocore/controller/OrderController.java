@@ -170,10 +170,7 @@ public class OrderController {
                     ));
                     return;
                 }
-                System.out.println(
-                        "Antal services före delete "
-                                + workOrder.getServiceItemIds().size()
-                );
+
 
                 if (workOrder.getServiceItemIds().size() <= 1) {
 
@@ -644,7 +641,6 @@ public class OrderController {
         // Färdigställer utkastet när användaren väljer Next.
         view.getNextButton().setOnAction(event -> {
             // Kontrollerar att klicket når händelsehanteraren.
-            System.out.println("COMPLETE DRAFT BUTTON CLICKED");
             Mechanic mechanic = view.getMechanicComboBox().getValue();
 
             if (mechanic == null) {

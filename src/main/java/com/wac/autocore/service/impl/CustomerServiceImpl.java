@@ -5,12 +5,16 @@ import com.wac.autocore.model.Customer;
 import com.wac.autocore.repository.CustomerRepository;
 import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.validation.Validator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CustomerServiceImpl.class);
 
     private final CustomerRepository customerRepository;
 
@@ -54,6 +58,8 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = new Customer(0, fullName, phone.trim(), email.trim(), vip);
 
         customerRepository.save(customer);
+        //bara id loggas, inte namn eller e-post (personuppgifter)
+        LOG.info("createCustomer: kund {} skapad", customer.getId());
 
         return customer;
 

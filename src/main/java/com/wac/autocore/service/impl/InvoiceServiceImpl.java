@@ -7,6 +7,8 @@ import com.wac.autocore.model.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.repository.InvoiceLineRepository;
 import com.wac.autocore.repository.InvoiceRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,6 +16,8 @@ import java.util.List;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(InvoiceServiceImpl.class);
 
     private final InvoiceRepository invoiceRepository;
     private final InvoiceLineRepository invoiceLineRepository;
@@ -191,8 +195,7 @@ public class InvoiceServiceImpl implements InvoiceService {
             }
         }
 
-        System.out.println("Sending invoice notification to customer...");
-        System.out.println("Notification sent.");
+        LOG.info("createInvoice: faktura {} skapad för arbetsorder {}", invoice.getId(), workOrderId);
 
         return invoice;
     }

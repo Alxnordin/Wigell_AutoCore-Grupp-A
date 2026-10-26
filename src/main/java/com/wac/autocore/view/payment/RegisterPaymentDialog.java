@@ -138,7 +138,6 @@ public class RegisterPaymentDialog {
                 getClass().getResource("/style.css");
 
         if (stylesheet != null) {
-            System.out.println("CSS hittades: " + stylesheet);
 
             dialog.getDialogPane().getStylesheets()
                     .add(stylesheet.toExternalForm());
