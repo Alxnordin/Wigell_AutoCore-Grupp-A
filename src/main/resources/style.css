@@ -861,7 +861,6 @@ ListView .list-cell:filled:selected {
     -fx-font-size: 11px;
 }
 
-
 /* Gemensam layout för fakturornas statusetiketter. */
 .status-paid,
 .status-unpaid {
@@ -1108,4 +1107,67 @@ ListView .list-cell:filled:selected {
 /* Ger utloggningsikonen samma gröna färg som texten. */
 .logout-icon {
     -fx-icon-color: #287D38;
+}
+
+/**** VARNINGSRUTA ****/
+/* Dialogrutans bakgrund och kant */
+.warning-dialog {
+    -fx-background-color: #F5F7F4;
+    -fx-border-color: #CFE0D6;
+    -fx-border-width: 1px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+/* Innehållet */
+.warning-dialog .warning-content {
+    -fx-padding: 18px 12px;
+    -fx-alignment: center-left;
+}
+
+/* Rund ikon med utropstecken */
+.warning-dialog .warning-icon {
+    -fx-background-color: #FBE9E7;
+    -fx-background-radius: 50%;
+    -fx-text-fill: #B84A4A;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-min-width: 44px;
+    -fx-min-height: 44px;
+    -fx-max-width: 44px;
+    -fx-max-height: 44px;
+}
+
+/* Rubrik */
+.warning-dialog .warning-heading {
+    -fx-text-fill: #10182B;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+/* Felmeddelande */
+.warning-dialog .warning-message {
+    -fx-text-fill: #52616B;
+    -fx-font-size: 14px;
+}
+
+/* Nedersta området med OK-knappen */
+.warning-dialog .button-bar {
+    -fx-padding: 10px 20px 16px 20px;
+}
+
+/* OK-knapp */
+.warning-dialog .button {
+    -fx-background-color: #B84A4A;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-padding: 9px 24px;
+    -fx-cursor: hand;
+}
+
+.warning-dialog .button:hover {
+    -fx-background-color: #963B3B;
 }

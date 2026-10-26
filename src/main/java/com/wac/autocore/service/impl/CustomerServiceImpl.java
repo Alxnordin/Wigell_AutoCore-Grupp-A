@@ -44,14 +44,20 @@ public class CustomerServiceImpl implements CustomerService {
         Validator.requireText(phone, "customerPhoneRequiredError");
         Validator.requireText(email, "customerEmailRequiredError");
 
+        phone = String.valueOf(Validator.requireInteger(phone, "phoneNumberMustBeIntegers"));
+
         //Alexander
         //samma e-post får inte användas av två kunder (verksamhetsregel -> BusinessRuleException)
         if (emailAlreadyExists(email)) {
             throw new BusinessRuleException("customerEmailExistsError", email.trim());
         }
 
+        if (!email.contains("@")) {
+            throw new BusinessRuleException("mustContain@", email.trim());
+        }
+
         String fullName = firstName.trim() + " " + lastName.trim();
-        Customer customer = new Customer(0, fullName, phone.trim(), email.trim(), vip);
+        Customer customer = new Customer(0, fullName, phone, email.trim(), vip);
 
         customerRepository.save(customer);
 

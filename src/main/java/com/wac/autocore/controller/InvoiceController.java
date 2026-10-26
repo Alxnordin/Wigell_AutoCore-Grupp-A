@@ -4,7 +4,6 @@ import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.*;
 import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.interf.*;
-import com.wac.autocore.validation.Validator;
 import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.InfoDialog;
 import com.wac.autocore.view.invoice.InvoiceDetailsView;

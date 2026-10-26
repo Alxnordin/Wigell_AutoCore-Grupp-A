@@ -11,6 +11,8 @@ import javafx.scene.layout.*;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.net.URL;
+
 public class UIComponents {
 
     //dropdownemenyerna
@@ -721,4 +723,47 @@ public class UIComponents {
 
         return container;
     }
+
+    public static Alert createWarningAlert(Alert.AlertType alertType, String message) {
+        Alert alert = new Alert(alertType, message);
+        alert.setTitle("AutoCore");
+        alert.setHeaderText(null);
+        alert.setGraphic(null);
+
+        Label icon = new Label("!");
+        icon.getStyleClass().add("warning-icon");
+
+        Label heading = new Label("Validation error");
+        heading.getStyleClass().add("warning-heading");
+
+        Label messageLabel = new Label(message);
+        messageLabel.getStyleClass().add("warning-message");
+        messageLabel.setWrapText(true);
+
+        VBox textBox = new VBox(6, heading, messageLabel);
+
+        HBox content = new HBox(16, icon, textBox);
+        content.setAlignment(Pos.CENTER_LEFT);
+        content.getStyleClass().add("warning-content");
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setContent(content);
+        dialogPane.getStyleClass().add("warning-dialog");
+
+        URL stylesheet = UIComponents.class.getResource("/style.css");
+        if (stylesheet != null) {
+            dialogPane.getStylesheets().add(stylesheet.toExternalForm());
+        }
+
+        dialogPane.setMinWidth(380);
+
+        return alert;
+    }
+
+
+
 }
+
+
+
+

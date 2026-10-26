@@ -39,8 +39,11 @@ public class ErrorHandler {
         }
     }
     private static void showAlert(Alert.AlertType type, String message) {
-        Alert alert = new Alert(type, message);
-        alert.setHeaderText(null);
+//        Alert alert = new Alert(type, message);
+//        alert.setHeaderText(null);
+//        alert.showAndWait();
+        Alert alert = UIComponents.createWarningAlert(type, message);
         alert.showAndWait();
+
     }
 }
