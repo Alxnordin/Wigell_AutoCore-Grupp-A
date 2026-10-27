@@ -5,6 +5,7 @@ import com.wac.autocore.model.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.ErrorHandler;
+import com.wac.autocore.view.UIComponents;
 import com.wac.autocore.view.booking.BookingDetailsView;
 import com.wac.autocore.view.booking.BookingListView;
 import com.wac.autocore.view.booking.BookingView;
@@ -13,7 +14,10 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BookingController {
 
@@ -28,6 +32,8 @@ public class BookingController {
     private final BookingView bookingView;
     private final BookingListView bookingListView;
     private Booking originalBookingForCopy;
+
+    private boolean fromCreateBookingWindow = false;
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -117,8 +123,22 @@ public class BookingController {
             bookingView.getDescriptionField().clear();
             bookingView.getServiceComboBox().setValue(null);
             bookingView.getServicesTable().getItems().clear();
-            showBookingConfirmationMessage("Bokning skapad. Det här är en tillfällig lösning " +
-                    "på bekräftelse :)");
+
+            Booking booking;
+
+            if (originalBookingForCopy != null) {
+                booking = bookingService.createBookingFromPreviousBooking(
+                        originalBookingForCopy.getId(), date);
+            } else {
+                booking = bookingService.createBooking(
+                        vehicleId, date, description, serviceItemIds);
+            }
+
+            fromCreateBookingWindow = true;
+            showBookingConfirmation(booking, fromCreateBookingWindow);
+
+            app.showBookingListView();
+
         } catch (Exception e) {
             ErrorHandler.show(e);
         }
@@ -359,9 +379,11 @@ public class BookingController {
                     }
                 }
 
-                showChangesConfirmationMessage("Ändringarna är sparade. Det här är en tillfällig lösning " +
-                        "på bekräftelse :)");
+                fromCreateBookingWindow = false;
+                showBookingConfirmation(booking, fromCreateBookingWindow);
+
                 detailsView.showBookingDetails();
+
             } catch (Exception e) {
                 ErrorHandler.show(e);
             }
@@ -401,20 +423,50 @@ public class BookingController {
     }
 
     private void showWarning(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING, message);
-        alert.setHeaderText(null);
+        Alert alert = UIComponents.createWarningAlert(Alert.AlertType.WARNING,
+        message, languageManager.getString("headingAlertWarning"));
         alert.showAndWait();
     }
 
-    private void showChangesConfirmationMessage(String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, message);
-        alert.setHeaderText(null);
-        alert.showAndWait();
-    }
+    private void showBookingConfirmation(Booking booking, boolean fromCreateBookingWindow) {
 
-    private void showBookingConfirmationMessage(String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, message);
-        alert.setHeaderText(null);
+        String heading;
+
+        if (!fromCreateBookingWindow)   {
+             heading = languageManager.getString("confirmationChangedBookingHeading");
+        }
+
+        else  {
+            heading = languageManager.getString("confirmationNewBookingHeading");
+        }
+
+        String subHeading = languageManager.getString("confirmationNewBookingSubHeading");
+
+        Vehicle vehicle = vehicleService.findVehicle(booking.getVehicleId());
+        Customer customer = customerService.findCustomer(vehicle.getCustomerId());
+
+        List<ServiceItem> services = bookingService.getServicesForBooking(booking.getId());
+
+        String serviceNames = services.stream()
+                .map(ServiceItem::getName)
+                .collect(Collectors.joining(", "));
+
+        Map<String, String> confirmationDetails = new LinkedHashMap<>();
+
+        confirmationDetails.put(languageManager.getString("bookingIdField"),
+                String.valueOf(booking.getId()));
+        confirmationDetails.put(languageManager.getString("name"), customer.getName());
+        confirmationDetails.put(languageManager.getString("registrationNumber"),
+                vehicle.getRegistrationNumber());
+        confirmationDetails.put(languageManager.getString("dateLabel"),
+                String.valueOf(booking.getDate()));
+        confirmationDetails.put(languageManager.getString("servicesTitle"), serviceNames);
+        confirmationDetails.put(languageManager.getString("estimatedTotalTime"),
+                formatTotalTime(services));
+        confirmationDetails.put(languageManager.getString("estimatedTotalPrice"),
+                formatTotalPrice(services));
+
+        Alert alert = UIComponents.createConfirmationAlert(heading, subHeading, confirmationDetails);
         alert.showAndWait();
     }
 

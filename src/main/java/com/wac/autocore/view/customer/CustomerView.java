@@ -10,7 +10,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import org.springframework.stereotype.Component;
 
 public class CustomerView {
 
@@ -23,24 +22,18 @@ public class CustomerView {
 
     private Label firstNameLabel;
     private TextField firstNameField;
-    private Label firstNameWrongInputLabel;
 
     private Label lastNameLabel;
     private TextField lastNameField;
-    private Label lastNameWrongInputLabel;
 
     private Label phoneLabel;
     private TextField phoneField;
-    private Label phoneWrongInputLabel;
 
     private Label emailLabel;
     private TextField emailField;
-    private Label emailWrongInputLabel;
 
     private Label vipLabel;
     private ComboBox<String> vipComboBox;
-
-    private Label confirmationLabel;
 
     private Button backButton;
 
@@ -66,16 +59,11 @@ public class CustomerView {
 
         HBox bottomButtonHBox = buildBottomButtonHBox();
 
-        //Ej klar med denna!
-        confirmationLabel = new Label("");
-        VBox summarySection = UIComponents.createSectionBox();
-        summarySection.getChildren().add(confirmationLabel);
-
         VBox sectionVBox = UIComponents.createSectionBox();
         sectionVBox.setSpacing(30);
         sectionVBox.getChildren().addAll(hBoxFirstLastName, hBoxemailPhone, vipVBox);
 
-        vBox.getChildren().addAll(titleHBox, subtitle, sectionVBox, summarySection, bottomButtonHBox);
+        vBox.getChildren().addAll(titleHBox, subtitle, sectionVBox, bottomButtonHBox);
         this.root = vBox;
 
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
@@ -88,20 +76,14 @@ public class CustomerView {
     }
 
     public TextField getFirstNameField() {return firstNameField;}
-    public Label getFirstNameWrongInputLabel() {return firstNameWrongInputLabel;}
 
     public TextField getLastNameField() {return lastNameField;}
-    public Label getLastNameWrongInputLabel() {return lastNameWrongInputLabel;}
 
     public TextField getPhoneField() {return phoneField;}
-    public Label getPhoneWrongInputLabel() {return phoneWrongInputLabel;}
 
     public TextField getEmailField() {return emailField;}
-    public Label getEmailWrongInputLabel() {return emailWrongInputLabel;}
 
     public ComboBox<String> getVipComboBox() {return vipComboBox;}
-
-    public Label getConfirmationLabel() {return confirmationLabel;}
 
     public Button getCreateCustomerButton() {return createCustomerButton;}
 
@@ -111,10 +93,9 @@ public class CustomerView {
         firstNameLabel = UIComponents.createFormLabel(languageManager.getString("firstNameLabel"));
         firstNameField = UIComponents.createTextField();
         firstNameField.setPromptText(languageManager.getString("firstNameField"));
-        firstNameWrongInputLabel = UIComponents.createWrongInputLabel("");
 
         VBox firstNameVBox = UIComponents.createVBoxWithSpacing5();
-        firstNameVBox.getChildren().addAll(firstNameLabel, firstNameField,  firstNameWrongInputLabel);
+        firstNameVBox.getChildren().addAll(firstNameLabel, firstNameField);
         firstNameVBox.setMaxWidth(Double.MAX_VALUE);
         firstNameField.setMaxWidth(Double.MAX_VALUE);
         return firstNameVBox;
@@ -124,10 +105,9 @@ public class CustomerView {
         lastNameLabel = UIComponents.createFormLabel(languageManager.getString("lastNameLabel"));
         lastNameField = UIComponents.createTextField();
         lastNameField.setPromptText(languageManager.getString("lastNameField"));
-        lastNameWrongInputLabel = UIComponents.createWrongInputLabel("");
 
         VBox lastNameVBox = UIComponents.createVBoxWithSpacing5();
-        lastNameVBox.getChildren().addAll(lastNameLabel, lastNameField, lastNameWrongInputLabel);
+        lastNameVBox.getChildren().addAll(lastNameLabel, lastNameField);
         lastNameVBox.setMaxWidth(Double.MAX_VALUE);
         lastNameField.setMaxWidth(Double.MAX_VALUE);
         return lastNameVBox;
@@ -154,9 +134,8 @@ public class CustomerView {
         phoneLabel = UIComponents.createFormLabel(languageManager.getString("phoneLabel"));
         phoneField = UIComponents.createTextField();
         phoneField.setPromptText(languageManager.getString("phoneField"));
-        phoneWrongInputLabel = UIComponents.createWrongInputLabel("");
         VBox phoneVBox = UIComponents.createVBoxWithSpacing5();
-        phoneVBox.getChildren().addAll(phoneLabel, phoneField, phoneWrongInputLabel);
+        phoneVBox.getChildren().addAll(phoneLabel, phoneField);
 
         phoneVBox.setMaxWidth(Double.MAX_VALUE);
         phoneField.setMaxWidth(Double.MAX_VALUE);
@@ -167,10 +146,9 @@ public class CustomerView {
         emailLabel = UIComponents.createFormLabel(languageManager.getString("emailLabel"));
         emailField = UIComponents.createTextField();
         emailField.setPromptText(languageManager.getString("emailField"));
-        emailWrongInputLabel = UIComponents.createWrongInputLabel("");
 
         VBox emailVBox = UIComponents.createVBoxWithSpacing5();
-        emailVBox.getChildren().addAll(emailLabel, emailField, emailWrongInputLabel);
+        emailVBox.getChildren().addAll(emailLabel, emailField);
         emailVBox.setMaxWidth(Double.MAX_VALUE);
         emailField.setMaxWidth(Double.MAX_VALUE);
         return emailVBox;

@@ -15,8 +15,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import org.springframework.stereotype.Component;
-
 
 public class CustomerListView {
 
@@ -95,7 +93,7 @@ public class CustomerListView {
     private TableView<Customer> buildTable() {
         customerTable = UIComponents.createTable();
 
-        customerIdColumn = new TableColumn<>(languageManager.getString("customerIdInTable"));
+        customerIdColumn = new TableColumn<>("ID");
         nameColumn = new TableColumn<>(languageManager.getString("nameInTable"));
         phoneColumn = new TableColumn<>(languageManager.getString("phoneInTable"));
         emailColumn = new TableColumn<>(languageManager.getString("emailInTable"));
@@ -119,7 +117,6 @@ public class CustomerListView {
         });
 
         customerTable.getColumns().addAll(customerIdColumn, nameColumn, phoneColumn, emailColumn, vipColumn);
-        customerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         return customerTable;
     }
 
@@ -153,7 +150,7 @@ public class CustomerListView {
         title.setText(languageManager.getString("customerListViewTitle"));
         subtitle.setText(languageManager.getString("customerListViewSubtitle"));
         createCustomerButton.setText(languageManager.getString("addCustomerButton"));
-        searchField.setText(languageManager.getString("searchTextField"));
+        searchField.setPromptText(languageManager.getString("searchTextField"));
 
         customerIdColumn.setText(languageManager.getString("customerIdInTable"));
         nameColumn.setText(languageManager.getString("nameInTable"));

@@ -62,9 +62,9 @@ public class VehicleServiceImpl implements VehicleService {
         Validator.requireText(brand, "missingVehicleDetailsWarning");
         Validator.requireText(model, "missingVehicleDetailsWarning");
 
-//        if (vehicleRepository.existsByRegistrationNumber(registrationNumber)) {
-//            throw new BusinessRuleException("Registration number already exists");
-//        }
+        if (vehicleAlreadyExists(registrationNumber)) {
+            throw new BusinessRuleException("vehicleAlreadyExistsError", registrationNumber.trim());
+        }
 
         int year = Validator.requireInteger(yearText, "invalidYearWarning");
         Validator.requireRange(year, FIRST_MODEL_YEAR, Year.now().getValue() + 1, "invalidYearRangeError");
@@ -78,5 +78,16 @@ public class VehicleServiceImpl implements VehicleService {
         vehicleRepository.save(vehicle);
 
         return vehicle;
+    }
+
+    private boolean vehicleAlreadyExists(String registrationNumber) {
+
+        for (Vehicle vehicle : vehicleRepository.findAll()) {
+            if (registrationNumber.trim().equalsIgnoreCase(vehicle.getRegistrationNumber().trim())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

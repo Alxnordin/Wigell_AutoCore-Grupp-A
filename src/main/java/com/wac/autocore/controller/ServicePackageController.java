@@ -7,6 +7,7 @@ import com.wac.autocore.service.interf.ServiceItemService;
 import com.wac.autocore.service.interf.ServicePackageService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.ErrorHandler;
+import com.wac.autocore.view.UIComponents;
 import com.wac.autocore.view.service.ServicePackageView;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
@@ -152,8 +153,11 @@ public class ServicePackageController {
     }
 
     private void showWarning(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING, message);
-        alert.setHeaderText(null);
+//        Alert alert = new Alert(Alert.AlertType.WARNING, message);
+//        alert.setHeaderText(null);
+        Alert alert = UIComponents.createWarningAlert(Alert.AlertType.WARNING,
+                message, languageManager.getString("headingAlertWarning"));
+
         alert.showAndWait();
     }
 

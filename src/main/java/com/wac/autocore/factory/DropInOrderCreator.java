@@ -3,6 +3,7 @@ package com.wac.autocore.factory;
 import com.wac.autocore.model.*;
 import com.wac.autocore.service.interf.WorkOrderService;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.view.UIComponents;
 import com.wac.autocore.view.order.CreateWorkOrderView;
 import javafx.scene.control.Alert;
 
@@ -80,12 +81,14 @@ public class DropInOrderCreator implements WorkOrderCreator{
 
     private void showWarning(String messageKey) {
         // Visar varningen på det språk som användaren valt.
-        Alert alert = new Alert(
-                Alert.AlertType.WARNING,
-                languageManager.getString(messageKey)
-        );
+//        Alert alert = new Alert(
+//                Alert.AlertType.WARNING,
+//                languageManager.getString(messageKey)
+//        );
+//        alert.setHeaderText(null);
 
-        alert.setHeaderText(null);
+        Alert alert = UIComponents.createWarningAlert(Alert.AlertType.WARNING,
+        messageKey, languageManager.getString("headingAlertWarning"));
         alert.showAndWait();
     }
 }

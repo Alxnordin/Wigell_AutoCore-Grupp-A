@@ -7,19 +7,18 @@ import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.service.interf.VehicleService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.ErrorHandler;
+import com.wac.autocore.view.UIComponents;
 import com.wac.autocore.view.vehicle.VehicleListView;
 import com.wac.autocore.view.vehicle.VehicleView;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 
-import java.text.MessageFormat;
-import java.util.List;
-
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class VehicleController {
 
     private final VehicleService vehicleService;
-    private final CustomerService customerService;
 
     private final AutoCoreApplication app;
     private final VehicleView vehicleView;
@@ -30,11 +29,20 @@ public class VehicleController {
     public VehicleController(VehicleService vehicleService, CustomerService customerService,
                              AutoCoreApplication app, VehicleView vehicleView,
                              VehicleListView vehicleListView) {
-        this.customerService = customerService;
         this.vehicleService = vehicleService;
         this.app = app;
         this.vehicleView = vehicleView;
         this.vehicleListView = vehicleListView;
+
+        vehicleListView.setGetCustomerName(customerId -> {
+            Customer customer = customerService.findCustomer(customerId);
+
+            if (customer == null) {
+                return "-";
+            }
+            return customer.getName();
+        });
+
         wireEvents();
         refreshVehicleList();
 
@@ -76,8 +84,13 @@ public class VehicleController {
             vehicleView.getYearField().clear();
 
             //listan ligger på en annan sida, så användaren får en bekräftelse här
-            showInformation(MessageFormat.format(languageManager.getString("vehicleCreatedInfo"),
-                    vehicle.getRegistrationNumber()));
+            String customerName = "";
+            if(selectedCustomer != null) {
+                customerName = selectedCustomer.getName();
+            }
+
+            showConfirmation(vehicle, customerName);
+            app.showVehicleListView();
 
         } catch (Exception e) {
             ErrorHandler.show(e);
@@ -89,10 +102,17 @@ public class VehicleController {
         vehicleListView.setVehicles(vehicleService.getVehicles());
     }
 
+    private void showConfirmation(Vehicle vehicle, String customerName) {
+        String heading = languageManager.getString("confirmationNewVehicleHeading");
+        String subHeading = languageManager.getString("confirmationNewVehicleSubHeading");
 
-    private void showInformation(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
-        alert.setHeaderText(null);
+        Map<String, String> confirmationDetails = new LinkedHashMap<>();
+        confirmationDetails.put(languageManager.getString("name"), customerName);
+        confirmationDetails.put("Reg. nr", vehicle.getRegistrationNumber());
+        confirmationDetails.put(languageManager.getString("brandAndModel"), vehicle.getBrand() + " " + vehicle.getModel());
+        confirmationDetails.put(languageManager.getString("vehicleYear"), String.valueOf(vehicle.getYear()));
+
+        Alert alert = UIComponents.createConfirmationAlert(heading, subHeading, confirmationDetails);
         alert.showAndWait();
     }
 

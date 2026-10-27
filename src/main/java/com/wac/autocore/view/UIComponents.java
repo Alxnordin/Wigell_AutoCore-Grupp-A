@@ -8,10 +8,12 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
+import java.util.Map;
 
 public class UIComponents {
 
@@ -129,7 +131,7 @@ public class UIComponents {
         button.getStyleClass().add("register-payment-button");
 
         FontIcon icon = new FontIcon("fa-credit-card");
-        icon.setIconColor(javafx.scene.paint.Color.WHITE);
+        icon.setIconColor(Color.WHITE);
         button.setGraphic(icon);
 
         button.setStyle("-fx-font-weight: bold;");
@@ -386,7 +388,7 @@ public class UIComponents {
         // Visar en historikikon i knappen.
         FontIcon icon = new FontIcon("fa-history");
         icon.setIconSize(14);
-        icon.setIconColor(javafx.scene.paint.Color.web("#2E7D32"));
+        icon.setIconColor(Color.web("#2E7D32"));
 
         button.setGraphic(icon);
         button.setGraphicTextGap(8);
@@ -703,7 +705,7 @@ public class UIComponents {
 
         FontIcon icon = new FontIcon(iconLiteral);
         icon.setIconSize(18);
-        icon.setIconColor(javafx.scene.paint.Color.web("#287A35"));
+        icon.setIconColor(Color.web("#287A35"));
         icon.setMouseTransparent(true);
 
         // Låter ComboBoxen fylla hela den tillgängliga bredden.
@@ -724,7 +726,7 @@ public class UIComponents {
         return container;
     }
 
-    public static Alert createWarningAlert(Alert.AlertType alertType, String message) {
+    public static Alert createWarningAlert(Alert.AlertType alertType, String message, String alertHeading) {
         Alert alert = new Alert(alertType, message);
         alert.setTitle("AutoCore");
         alert.setHeaderText(null);
@@ -733,7 +735,7 @@ public class UIComponents {
         Label icon = new Label("!");
         icon.getStyleClass().add("warning-icon");
 
-        Label heading = new Label("Validation error");
+        Label heading = new Label(alertHeading);
         heading.getStyleClass().add("warning-heading");
 
         Label messageLabel = new Label(message);
@@ -756,6 +758,60 @@ public class UIComponents {
         }
 
         dialogPane.setMinWidth(380);
+
+        return alert;
+    }
+
+    public static Alert createConfirmationAlert(String alertHeading, String message,
+                                                Map<String, String> informationDetails) {
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("AutoCore");
+        alert.setHeaderText(null);
+        alert.setGraphic(null);
+
+        Label successIcon = new Label("✓");
+        successIcon.getStyleClass().add("information-icon");
+
+        Label heading = new Label(alertHeading);
+        heading.getStyleClass().add("information-heading");
+
+        Label messageLabel = new Label(message);
+        messageLabel.getStyleClass().add("information-message");
+        messageLabel.setWrapText(true);
+
+        VBox header = new VBox(8, successIcon, heading, messageLabel);
+        header.setAlignment(Pos.CENTER);
+        header.getStyleClass().add("information-header");
+
+        VBox detailsBox = new VBox(12);
+        detailsBox.getStyleClass().add("information-details");
+
+        informationDetails.forEach((label, value) -> {
+            Label fieldLabel = new Label(label);
+            fieldLabel.getStyleClass().add("information-field-label");
+
+            Label fieldValue = new Label(value);
+            fieldValue.getStyleClass().add("information-field-value");
+            fieldValue.setWrapText(true);
+
+            VBox field = new VBox(3, fieldLabel, fieldValue);
+            detailsBox.getChildren().add(field);
+        });
+
+        VBox content = new VBox(header, detailsBox);
+        content.getStyleClass().add("information-content");
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setContent(content);
+        dialogPane.getStyleClass().add("information-dialog");
+
+        URL stylesheet = UIComponents.class.getResource("/style.css");
+        if (stylesheet != null) {
+            dialogPane.getStylesheets().add(stylesheet.toExternalForm());
+        }
+
+        dialogPane.setMinWidth(420);
 
         return alert;
     }

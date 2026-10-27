@@ -1227,3 +1227,72 @@ ListView .list-cell:filled:selected {
 .start-summary-icon {
     -fx-icon-color: #2E7D32;
 }
+
+.information-dialog {
+    -fx-background-color: white;
+    -fx-border-color: #DFE7E1;
+    -fx-border-width: 1px;
+}
+
+.information-dialog .information-content {
+    -fx-background-color: white;
+}
+
+.information-dialog .information-header {
+    -fx-background-color: #EAF5EE;
+    -fx-padding: 25px 20px;
+}
+
+.information-dialog .information-icon {
+    -fx-background-color: white;
+    -fx-background-radius: 50%;
+    -fx-text-fill: #27804C;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-min-width: 54px;
+    -fx-min-height: 54px;
+}
+
+.information-dialog .information-heading {
+    -fx-text-fill: #19382B;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.information-dialog .information-message {
+    -fx-text-fill: #527360;
+    -fx-font-size: 13px;
+}
+
+.information-dialog .information-details {
+    -fx-padding: 20px 25px;
+}
+
+.information-dialog .information-field-label {
+    -fx-text-fill: #82938A;
+    -fx-font-size: 12px;
+}
+
+.information-dialog .information-field-value {
+    -fx-text-fill: #263D31;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.information-dialog .button-bar {
+    -fx-padding: 0 20px 16px 20px;
+}
+
+.information-dialog .button {
+    -fx-background-color: #287A50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-padding: 9px 30px;
+    -fx-cursor: hand;
+}
+
+.information-dialog .button:hover {
+    -fx-background-color: #20613F;
+}

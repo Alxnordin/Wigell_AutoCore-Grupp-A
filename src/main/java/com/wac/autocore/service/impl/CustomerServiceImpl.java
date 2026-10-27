@@ -70,7 +70,6 @@ public class CustomerServiceImpl implements CustomerService {
         LOG.info("createCustomer: kund {} skapad", customer.getId());
 
         return customer;
-
     }
 
     private boolean emailAlreadyExists(String email) {

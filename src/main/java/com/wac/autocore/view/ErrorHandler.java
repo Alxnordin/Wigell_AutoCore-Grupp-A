@@ -14,9 +14,11 @@ import org.springframework.security.access.AccessDeniedException;
 //Fel i indata eller regler visas som varning med ett begripligt meddelande
 //Tekniska fel visas som ett allmänt felmeddelande med en felkod. Detaljerna loggas via ExceptionLogger
 public class ErrorHandler {
+
     private static final Logger LOG = LoggerFactory.getLogger(ErrorHandler.class);
-    private ErrorHandler() {
-    }
+
+    private ErrorHandler() {}
+
     public static void show(Exception exception) {
         LanguageManager languageManager = LanguageManager.getInstance();
         //Nekad behörighet
@@ -46,12 +48,19 @@ public class ErrorHandler {
             showAlert(Alert.AlertType.WARNING, message);
         }
     }
-    private static void showAlert(Alert.AlertType type, String message) {
-//        Alert alert = new Alert(type, message);
-//        alert.setHeaderText(null);
-//        alert.showAndWait();
-        Alert alert = UIComponents.createWarningAlert(type, message);
-        alert.showAndWait();
 
+    private static void showAlert(Alert.AlertType type, String message) {
+        LanguageManager languageManager = LanguageManager.getInstance();
+
+        String heading;
+        if(type == Alert.AlertType.ERROR){
+            heading = languageManager.getString("headingAlertError");
+        }
+        else {
+            heading = languageManager.getString("headingAlertWarning");
+        }
+
+        Alert alert = UIComponents.createWarningAlert(type, message, heading);
+        alert.showAndWait();
     }
 }

@@ -4,17 +4,24 @@ import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.*;
 import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.interf.*;
+import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.InfoDialog;
+import com.wac.autocore.view.UIComponents;
 import com.wac.autocore.view.invoice.InvoiceDetailsView;
 import com.wac.autocore.view.invoice.InvoiceListView;
 import com.wac.autocore.view.invoice.InvoiceView;
 import com.wac.autocore.view.payment.RegisterPaymentDialog;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InvoiceController {
+
+    private final AutoCoreApplication app;
 
     private final InvoiceService invoiceService;
     private final WorkOrderService workOrderService;
@@ -23,12 +30,12 @@ public class InvoiceController {
     private final CustomerService customerService;
     private final MechanicService mechanicService;
     private final InvoiceLineService invoiceLineService;
+    private final PaymentService paymentService;
 
-    private final AutoCoreApplication app;
     private final InvoiceListView invoiceListView;
     private final InvoiceView invoiceView;
 
-    private final PaymentService paymentService;
+    LanguageManager languageManager = LanguageManager.getInstance();
 
     public InvoiceController(InvoiceService invoiceService, WorkOrderService workOrderService,
                              BookingService bookingService, VehicleService vehicleService,
@@ -186,47 +193,89 @@ public class InvoiceController {
     }
 
     // Visar en bekräftelse efter att betalningen har registrerats.
-    private void showPaymentConfirmation(Payment payment, String paymentTypeCode) {
-        String amount = String.format("%.2f", payment.getAmount());
+//    private void showPaymentConfirmation(Payment payment, String paymentTypeCode) {
+//        String amount = String.format("%.2f", payment.getAmount());
+//
+//        String paymentTypeText;
+//
+//        switch (paymentTypeCode) {
+//            case "CARD":
+//                paymentTypeText = com.wac.autocore.util.LanguageManager
+//                        .getInstance().getString("paymentTypeCard");
+//                break;
+//            case "SWISH":
+//                paymentTypeText = com.wac.autocore.util.LanguageManager
+//                        .getInstance().getString("paymentTypeSwish");
+//                break;
+//            case "CASH":
+//                paymentTypeText = com.wac.autocore.util.LanguageManager
+//                        .getInstance().getString("paymentTypeCash");
+//                break;
+//            default:
+//                paymentTypeText = paymentTypeCode;
+//        }
+//
+//        Customer customer = paymentService.findCustomerForPayment(payment);
+//
+//        if (customer != null) {
+//            InfoDialog.show(
+//                    "paymentConfirmation",
+//                    String.valueOf(payment.getInvoiceId()),
+//                    amount,
+//                    paymentTypeText,
+//                    customer.getName(),
+//                    customer.getEmail()
+//            );
+//        } else {
+//            InfoDialog.show(
+//                    "paymentConfirmationNoCustomer",
+//                    String.valueOf(payment.getInvoiceId()),
+//                    amount,
+//                    paymentTypeText
+//            );
+//        }
+//    }
 
+    private void showPaymentConfirmation(Payment payment, String paymentTypeCode) {
+        String heading = languageManager.getString("confirmationPaymentHeading");
+        String subHeading = languageManager.getString("confirmationPaymentSubHeading");
+
+        String amount = String.format("%.2f", payment.getAmount());
         String paymentTypeText;
 
         switch (paymentTypeCode) {
             case "CARD":
-                paymentTypeText = com.wac.autocore.util.LanguageManager
-                        .getInstance().getString("paymentTypeCard");
+                paymentTypeText = languageManager.getString("paymentTypeCard");
                 break;
             case "SWISH":
-                paymentTypeText = com.wac.autocore.util.LanguageManager
-                        .getInstance().getString("paymentTypeSwish");
+                paymentTypeText = languageManager.getString("paymentTypeSwish");
                 break;
             case "CASH":
-                paymentTypeText = com.wac.autocore.util.LanguageManager
-                        .getInstance().getString("paymentTypeCash");
+                paymentTypeText = languageManager.getString("paymentTypeCash");
                 break;
+
             default:
                 paymentTypeText = paymentTypeCode;
         }
 
+        Map<String, String> confirmationDetails = new LinkedHashMap<>();
+
+        confirmationDetails.put(languageManager.getString("invoiceIdField"),
+                String.valueOf(payment.getInvoiceId()));
+
         Customer customer = paymentService.findCustomerForPayment(payment);
 
         if (customer != null) {
-            InfoDialog.show(
-                    "paymentConfirmation",
-                    String.valueOf(payment.getInvoiceId()),
-                    amount,
-                    paymentTypeText,
-                    customer.getName(),
-                    customer.getEmail()
-            );
-        } else {
-            InfoDialog.show(
-                    "paymentConfirmationNoCustomer",
-                    String.valueOf(payment.getInvoiceId()),
-                    amount,
-                    paymentTypeText
-            );
+            confirmationDetails.put(languageManager.getString("name"), customer.getName());
+            confirmationDetails.put(languageManager.getString("emailLabel"), customer.getEmail());
         }
+
+        confirmationDetails.put(languageManager.getString("paymentType"), paymentTypeText);
+        confirmationDetails.put(languageManager.getString("amount"), amount);
+
+        Alert alert = UIComponents.createConfirmationAlert(heading, subHeading,
+                confirmationDetails);
+        alert.showAndWait();
     }
 
     //Alexander

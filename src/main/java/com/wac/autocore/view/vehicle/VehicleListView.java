@@ -3,6 +3,7 @@ package com.wac.autocore.view.vehicle;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -20,6 +21,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.TextField;
 
 import java.util.List;
+import java.util.function.Function;
 
 //UI-vyn som visar listan över befintliga fordon.
 //Nya fordon skapas i VehicleView.
@@ -43,7 +45,9 @@ public class VehicleListView {
     private final TableColumn<Vehicle, String> brandColumn;
     private final TableColumn<Vehicle, String> modelColumn;
     private final TableColumn<Vehicle, Integer> yearColumn;
-    private final TableColumn<Vehicle, Integer> customerIdColumn;
+    private TableColumn<Vehicle, String> customerNameColumn;
+
+    private Function<Integer, String> getCustomerName;
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -63,12 +67,12 @@ public class VehicleListView {
         // Skapar sökrutan ovanför fordonslistan.
         HBox searchBox = buildSearchSection();
 
-        idColumn = new TableColumn<>(languageManager.getString("vehicleIdInTable"));
+        idColumn = new TableColumn<>("ID");
         registrationNumberColumn = new TableColumn<>(languageManager.getString("registrationNumber"));
         brandColumn = new TableColumn<>(languageManager.getString("vehicleBrand"));
         modelColumn = new TableColumn<>(languageManager.getString("vehicleModel"));
         yearColumn = new TableColumn<>(languageManager.getString("vehicleYear"));
-        customerIdColumn = new TableColumn<>(languageManager.getString("customerId"));
+        customerNameColumn = new TableColumn<>(languageManager.getString("owner"));
 
         //koppla kolumnerna till fordonets fält
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -76,7 +80,14 @@ public class VehicleListView {
         brandColumn.setCellValueFactory(new PropertyValueFactory<>("brand"));
         modelColumn.setCellValueFactory(new PropertyValueFactory<>("model"));
         yearColumn.setCellValueFactory(new PropertyValueFactory<>("year"));
-        customerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
+        customerNameColumn.setCellValueFactory(cellData -> {
+            Integer customerId = cellData.getValue().getCustomerId();
+
+            if (customerId == null) {
+                return new SimpleStringProperty("-");
+            }
+            return new SimpleStringProperty(getCustomerName.apply(customerId));
+        });
 
         vehicleTable.getColumns().addAll(
                 idColumn,
@@ -84,7 +95,7 @@ public class VehicleListView {
                 brandColumn,
                 modelColumn,
                 yearColumn,
-                customerIdColumn);
+                customerNameColumn);
 
         //kolumnerna delar på tabellens bredd (registreringsnumret får lite mer plats)
         vehicleTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -101,7 +112,6 @@ public class VehicleListView {
             changeTextAllComponents();
         });
     }
-
 
     private HBox buildHeaderSection() {
         // Skapar rubriken med fordonsikonen.
@@ -152,7 +162,9 @@ public class VehicleListView {
                         || matches(vehicle.getRegistrationNumber(), searchText)
                         || matches(vehicle.getBrand(), searchText)
                         || matches(vehicle.getModel(), searchText)
-                        || String.valueOf(vehicle.getYear()).contains(searchText);
+                        || String.valueOf(vehicle.getYear()).contains(searchText)
+                        || String.valueOf(vehicle.getYear()).contains(searchText)
+                        || matches(getCustomerName.apply(vehicle.getCustomerId()), searchText);
             });
         });
 
@@ -167,7 +179,6 @@ public class VehicleListView {
         return value != null && value.toLowerCase().contains(searchText);
     }
 
-
     // Gör knappen tillgänglig för VehicleController.
     public Button getCreateVehicleButton() {
         return createVehicleButton;
@@ -176,6 +187,10 @@ public class VehicleListView {
     // Uppdaterar originallistan när fordon hämtas från servicen.
     public void setVehicles(List<Vehicle> vehicles) {
         observableVehiclesList.setAll(vehicles);
+    }
+
+    public void setGetCustomerName(Function<Integer, String> function) {
+        this.getCustomerName = function;
     }
 
     public Parent getView() {return root;}
@@ -187,12 +202,11 @@ public class VehicleListView {
         title.setText(languageManager.getString("vehicleListTitle"));
         subtitle.setText(languageManager.getString("vehicleListSubtitle"));
         createVehicleButton.setText(languageManager.getString("addVehicleButton"));
-        idColumn.setText(languageManager.getString("vehicleIdInTable"));
         registrationNumberColumn.setText(languageManager.getString("registrationNumber"));
         brandColumn.setText(languageManager.getString("vehicleBrand"));
         modelColumn.setText(languageManager.getString("vehicleModel"));
         yearColumn.setText(languageManager.getString("vehicleYear"));
-        customerIdColumn.setText(languageManager.getString("customerId"));
+        customerNameColumn.setText(languageManager.getString("owner"));
         searchField.setPromptText(languageManager.getString("searchTextField"));
         backButton.setText(languageManager.getString("backButton"));
     }

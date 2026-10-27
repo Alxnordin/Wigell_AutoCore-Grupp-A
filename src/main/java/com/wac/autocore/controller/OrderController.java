@@ -14,6 +14,7 @@ import com.wac.autocore.service.interf.*;
 import com.wac.autocore.service.interf.WorkOrderService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.ErrorHandler;
+import com.wac.autocore.view.UIComponents;
 import com.wac.autocore.view.order.CreateWorkOrderView;
 import com.wac.autocore.view.order.OrderDetailsView;
 import com.wac.autocore.view.order.OrderListView;
@@ -1102,14 +1103,11 @@ public class OrderController {
 
     // Varningsruta
     private void showWarning(String message) {
-
-        Alert alert =
-                new Alert(
-                        Alert.AlertType.WARNING,
-                        message
-                );
-
-        alert.setHeaderText(null);
+//        Alert alert = new Alert(
+//                Alert.AlertType.WARNING, message);
+//        alert.setHeaderText(null);
+        Alert alert = UIComponents.createWarningAlert(Alert.AlertType.WARNING,
+        message, languageManager.getString("headingAlertWarning"));
         alert.showAndWait();
     }
 

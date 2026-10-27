@@ -2,7 +2,6 @@
 package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
-import com.wac.autocore.model.Payment;
 import com.wac.autocore.service.interf.PaymentService;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.payment.PaymentView;
