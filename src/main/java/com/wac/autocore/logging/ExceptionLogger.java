@@ -4,6 +4,8 @@ import com.wac.autocore.exception.AutoCoreException;
 import com.wac.autocore.exception.DataAccessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 
 import java.util.UUID;
 
@@ -13,16 +15,28 @@ import java.util.UUID;
 //Tekniska fel loggas som ERROR med hela stacktracen och får en felkod som även visas för användaren.
 //Fel i indata eller regler loggas som WARN utan stacktrace och utan args
 //(args kan innehålla personuppgifter, t.ex. e-postadress).
+//Säkerhetshändelser (nekad åtkomst, ej inloggad) loggas som WARN i SECURITY-loggern (security.log)
 
 public final class ExceptionLogger {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExceptionLogger.class);
+    private static final Logger SECURITY = LoggerFactory.getLogger("SECURITY");
 
     private ExceptionLogger() {
     }
 
     //loggar felet, returnerar en felkod för tekniska fel, annars null
     public static String log(Exception exception) {
+        //inloggad men saknar behörighet (@PreAuthorize nekde anropet)
+        if (exception instanceof AccessDeniedException) {
+            SECURITY.warn("Åtkomst nekad: {}", origin(exception));
+            return null;
+        }
+        //inte inloggad alls
+        if (exception instanceof AutoCoreException) {
+            SECURITY.warn("Ej autentiserad användare försökte köra {}", origin(exception));
+            return null;
+        }
         if (exception instanceof DataAccessException) {
             String errorId = newErrorId();
             LOG.error("Databasfel [felkod {}] i {}: {}",
@@ -61,6 +75,11 @@ public final class ExceptionLogger {
     private static String simpleName(StackTraceElement element) {
         String className = element.getClassName();
         String simpleClassName = className.substring(className.lastIndexOf('.') + 1);
+        //Spring lägger till t.ex. "$$SpringCGLIB$$0" på klasser med @PreAuthorize, det tas bort, renare loggning
+        int springSuffix = simpleClassName.indexOf("$$");
+        if (springSuffix > 0) {
+            simpleClassName = simpleClassName.substring(0, springSuffix);
+        }
         return simpleClassName + "." + element.getMethodName();
     }
 }
