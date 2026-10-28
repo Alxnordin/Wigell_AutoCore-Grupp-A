@@ -1227,3 +1227,28 @@ ListView .list-cell:filled:selected {
 .start-summary-icon {
     -fx-icon-color: #2E7D32;
 }
+
+/* Kort för navigering mellan olika delar av servicehanteringen. */
+.overview-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-border-color: #D9E1D7;
+    -fx-border-radius: 10px;
+    -fx-padding: 20px;
+    -fx-spacing: 12px;
+}
+
+/* Ikon och texter i navigeringskorten. */
+.overview-card-icon {
+    -fx-icon-color: #3F5F76;
+}
+
+.overview-card-title {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+.overview-card-description {
+    -fx-font-size: 13px;
+    -fx-text-fill: #5F665F;
+}

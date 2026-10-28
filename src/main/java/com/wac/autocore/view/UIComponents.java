@@ -761,6 +761,44 @@ public class UIComponents {
     }
 
 
+    // Skapar ett enhetligt navigeringskort med ikon, rubrik och beskrivning.
+    public static VBox createOverviewCard(
+            String icon,
+            Label titleLabel,
+            Label descriptionLabel,
+            Button actionButton) {
+
+        FontIcon cardIcon = new FontIcon(icon);
+        cardIcon.setIconSize(28);
+        cardIcon.getStyleClass().add("overview-card-icon");
+
+        titleLabel.getStyleClass().add("overview-card-title");
+
+        descriptionLabel.getStyleClass().add("overview-card-description");
+        descriptionLabel.setWrapText(true);
+
+        // Skapar en behållare som centrerar knappen i kortet.
+        HBox buttonContainer = new HBox(actionButton);
+        buttonContainer.setAlignment(Pos.CENTER);
+        buttonContainer.setMaxWidth(Double.MAX_VALUE);
+
+        VBox card = new VBox(12);
+        card.getStyleClass().add("overview-card");
+        card.setMaxWidth(Double.MAX_VALUE);
+
+        // Låter knappen behålla sin storlek och centrerar den i kortet.
+        actionButton.setMaxWidth(Region.USE_PREF_SIZE);
+
+        // Lägger in behållaren i stället för knappen direkt.
+        card.getChildren().addAll(
+                cardIcon,
+                titleLabel,
+                descriptionLabel,
+                buttonContainer
+        );
+
+        return card;
+    }
 
 }
 

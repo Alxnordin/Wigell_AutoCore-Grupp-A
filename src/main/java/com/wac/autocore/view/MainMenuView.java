@@ -18,7 +18,6 @@ public class MainMenuView {
     private final Parent root;
     private final List<VBox> allSubMenus = new ArrayList<>();
 
-    private Button showServicesButton, showMechanicsButton;
 
     private Button customersButton;
     private Button vehiclesButton;
@@ -49,14 +48,14 @@ public class MainMenuView {
                 "fa-calendar");
         menu.getChildren().add(buildSection(bookingsButton));
 
-        showServicesButton = new Button(languageManager.getString("showServices"));
-        showMechanicsButton = new Button(languageManager.getString("showMechanicsButton"));
-        servicesButton = UIComponents.createMenuButton(languageManager.getString("servicesButton"), "fa-wrench");
-        menu.getChildren().add(buildSection(servicesButton, showServicesButton, showMechanicsButton));
+        // Skapar Service-knappen utan undermeny.
+        servicesButton = UIComponents.createMenuButton(
+                languageManager.getString("servicesButton"),
+                "fa-wrench");
+        menu.getChildren().add(buildSection(servicesButton));
 
         ordersButton = new Button(languageManager.getString("ordersButton"));
         ordersButton = UIComponents.createMenuButton(languageManager.getString("ordersButton"), "fa-clipboard");
-
         menu.getChildren().add(buildSection(ordersButton));
 
         //skapar payment-knappen utan en undermeny
@@ -102,8 +101,6 @@ public class MainMenuView {
 //        addBookingButton.setText(languageManager.getString("addBooking"));
 
         servicesButton.setText(languageManager.getString("servicesButton"));
-        showServicesButton.setText(languageManager.getString("showServices"));
-        showMechanicsButton.setText(languageManager.getString("showMechanicsButton"));
 
         ordersButton.setText(languageManager.getString("ordersButton"));
 
@@ -151,13 +148,13 @@ public class MainMenuView {
 
     public Parent getView() { return root; }
 
+    public Button getServicesButton() {return servicesButton;}
+
     public Button getCustomersButton() { return customersButton; }
     public Button getVehiclesButton() {return vehiclesButton;}
 
     public Button getBookingsButton() {return bookingsButton;}
 
-    public Button getShowServicesButton() { return showServicesButton; }
-    public Button getShowMechanicsButton() { return showMechanicsButton; }
     public Button getOrdersButton() { return ordersButton; }
     public Button getPaymentsButton() {return paymentsButton;}
 
