@@ -30,8 +30,9 @@ public class MainMenuController {
 //        view.getShowBookingsButton().setOnAction(e -> app.showBookingListView());
 //        view.getAddBookingButton().setOnAction(e -> app.showBookingView());
 
-        view.getShowServicesButton().setOnAction(e -> app.showServiceItemView());
-        view.getShowMechanicsButton().setOnAction(e -> app.showMechanicView());
+        view.getServicesButton().setOnAction(e -> app.showServiceOverviewView());
+//        view.getShowServicesButton().setOnAction(e -> app.showServiceItemView());
+//        view.getShowMechanicsButton().setOnAction(e -> app.showMechanicView());
 
         view.getOrdersButton().setOnAction(e -> app.showOrderListView());
 

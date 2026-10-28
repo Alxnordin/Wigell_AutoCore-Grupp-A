@@ -1,6 +1,8 @@
 
 package com.wac.autocore.view;
 
+import com.wac.autocore.service.interf.ServiceItemService;
+import com.wac.autocore.service.interf.*;
 import com.wac.autocore.util.LanguageManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,11 +20,6 @@ import com.wac.autocore.model.Customer;
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.model.WorkOrder;
-import com.wac.autocore.service.interf.BookingService;
-import com.wac.autocore.service.interf.CustomerService;
-import com.wac.autocore.service.interf.InvoiceService;
-import com.wac.autocore.service.interf.VehicleService;
-import com.wac.autocore.service.interf.WorkOrderService;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -70,6 +67,7 @@ public class StartView {
     private final VehicleService vehicleService;
     private final InvoiceService invoiceService;
     private final CustomerService customerService;
+    private final ServiceItemService serviceItemService;
 
     private Label bookingsSectionTitle;
     private Label workOrdersSectionTitle;
@@ -80,7 +78,8 @@ public class StartView {
                      WorkOrderService workOrderService,
                      VehicleService vehicleService,
                      InvoiceService invoiceService,
-                     CustomerService customerService) {
+                     CustomerService customerService,
+                     ServiceItemService serviceItemService) {
 
         // Sparar services som skickas in från applikationen.
         this.bookingService = bookingService;
@@ -88,6 +87,7 @@ public class StartView {
         this.vehicleService = vehicleService;
         this.invoiceService = invoiceService;
         this.customerService = customerService;
+        this.serviceItemService = serviceItemService;
 
         // Samlar hela startsidan i en vertikal layout.
         VBox mainContent = new VBox(15);
@@ -345,8 +345,12 @@ public class StartView {
                             setGraphic(null);
                             setText(null);
                         } else {
+                            String displayStatus = "IN_PROGRESS".equals(status)
+                                    ? "In progress"
+                                    : status;
+
                             setText(null);
-                            setGraphic(UIComponents.createStatusBadge(status));
+                            setGraphic(UIComponents.createStatusBadge(displayStatus));
                         }
                     }
                 });
@@ -388,9 +392,7 @@ public class StartView {
 
     //Uppdaterar startsidans sammanfattning och tabeller med riktig data.
     private void refreshDashboardData() {
-
         LocalDate today = LocalDate.now();
-
         // Hämtar dagens bokningar.
         var todaysBookings = bookingService.getBookings()
                 .stream()
@@ -417,6 +419,21 @@ public class StartView {
         vehiclesValue.setText(String.valueOf(vehicles.size()));
         invoicesValue.setText(String.valueOf(unpaidInvoices.size()));
 
+        // Skapar en uppslagning av bokningar via deras ID.
+        Map<Integer, Booking> bookingById = new HashMap<>();
+
+        for (Booking booking : bookingService.getBookings()) {
+            bookingById.put(booking.getId(), booking);
+
+            // Skriver ut bokningens koppling till fordonet för felsökning.
+            if (booking.getId() == 3 || booking.getId() == 12) {
+                System.out.println(
+                        "Bokning ID: " + booking.getId()
+                                + " | Vehicle ID: " + booking.getVehicleId()
+                );
+            }
+        }
+
         // Bygger upp uppslag för att slippa leta efter samma fordon flera gånger.
         Map<Integer, Vehicle> vehicleById = new HashMap<>();
         for (Vehicle vehicle : vehicles) {
@@ -428,21 +445,21 @@ public class StartView {
             customerById.put(customer.getId(), customer);
         }
 
-        // Ersätter exempelraderna med dagens bokningar.
+        // Fyller bokningstabellen med dagens bokningar.
         bookingsTable.getItems().setAll(
                 todaysBookings.stream()
                         .map(booking -> {
+                            // Hämtar fordonet som hör till bokningen.
                             Vehicle vehicle = vehicleById.get(booking.getVehicleId());
 
                             String registration = vehicle != null
                                     ? vehicle.getRegistrationNumber()
                                     : "-";
 
+                            // Hämtar kunden via fordonets kund-ID.
                             String customerName = "-";
-
                             if (vehicle != null) {
-                                Customer customer =
-                                        customerById.get(vehicle.getCustomerId());
+                                Customer customer = customerById.get(vehicle.getCustomerId());
 
                                 if (customer != null) {
                                     customerName = customer.getName();
@@ -459,20 +476,40 @@ public class StartView {
                         .collect(Collectors.toList())
         );
 
-        // Ersätter exempelraderna med pågående arbetsordrar.
+        // Fyller arbetsordertabellen med pågående arbetsordrar.
         workOrdersTable.getItems().setAll(
                 ongoingWorkOrders.stream()
                         .map(order -> {
+                            // Försöker först hitta fordonet via arbetsorderns fordons-ID.
                             Vehicle vehicle = vehicleById.get(order.getVehicleId());
+                            // Skriver ut arbetsorderns kopplingar för felsökning.
 
+                            // Om fordonet saknas försöker vi hitta det via bokningen.
+                            if (vehicle == null && order.getBookingId() != null) {
+                                Booking linkedBooking = bookingById.get(order.getBookingId());
+
+                                if (linkedBooking != null) {
+                                    vehicle = vehicleById.get(linkedBooking.getVehicleId());
+                                }
+                            }
+
+                            // Visar registreringsnumret eller ett streck om fordonet saknas.
                             String registration = vehicle != null
                                     ? vehicle.getRegistrationNumber()
                                     : "-";
 
+                            // Hämtar tjänstenamnen via arbetsorderns tjänste-ID:n.
+                            String serviceNames = order.getServiceItemIds()
+                                    .stream()
+                                    .map(serviceItemService::findServiceItem)
+                                    .filter(service -> service != null)
+                                    .map(service -> service.getName())
+                                    .collect(Collectors.joining(", "));
+
                             return new WorkOrderRow(
                                     String.valueOf(order.getId()),
                                     registration,
-                                    order.getDescription(),
+                                    serviceNames,
                                     order.getStatus()
                             );
                         })

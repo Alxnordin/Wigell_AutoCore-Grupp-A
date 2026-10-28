@@ -1,6 +1,7 @@
 package com.wac.autocore;
 
 import com.wac.autocore.security.LoginController;
+import com.wac.autocore.view.service.ServiceOverviewView;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.wac.autocore.controller.*;
 import com.wac.autocore.dao.*;
@@ -227,7 +228,8 @@ public class AutoCoreApplication extends Application {
                 workOrderService,
                 vehicleService,
                 invoiceService,
-                customerService
+                customerService,
+                serviceItemService
         );
 
         borderPane.setCenter(startView.getView());
@@ -395,6 +397,42 @@ public class AutoCoreApplication extends Application {
                 mechanicService, invoiceLineService,
                 this, new InvoiceListView(), new InvoiceView(), paymentService);
         borderPane.setCenter(invoiceController.getInvoiceView());
+    }
+
+
+    // Visar översikten och kopplar kortens knappar till rätt vyer.
+    public void showServiceOverviewView() {
+        if (!requireLogin()) return;
+
+        ServiceOverviewView view = new ServiceOverviewView();
+
+        view.getServicesButton().setOnAction(
+                e -> showServiceItemView()
+        );
+
+        view.getPackagesButton().setOnAction(
+                e -> showServicePackageView()
+        );
+
+        view.getMechanicsButton().setOnAction(
+                e -> showMechanicView()
+        );
+
+        borderPane.setCenter(view.getView());
+    }
+
+    // Visar servicepaketen i en egen vy.
+    public void showServicePackageView() {
+        if (!requireLogin()) return;
+
+        ServicePackageController controller = new ServicePackageController(
+                servicePackageService,
+                serviceItemService,
+                this,
+                new ServicePackageView()
+        );
+
+        borderPane.setCenter(controller.getView());
     }
 
     public void exitApplication() {
