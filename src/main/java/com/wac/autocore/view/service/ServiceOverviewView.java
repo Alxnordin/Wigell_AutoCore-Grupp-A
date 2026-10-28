@@ -35,11 +35,14 @@ public class ServiceOverviewView {
     private final Button packagesButton;
     private final Button mechanicsButton;
 
+    private final Button backButton;
+
     public ServiceOverviewView() {
 
         // Skapar sidans rubrik och beskrivning med projektets standardstil.
         titleLabel = new Label();
         VBox page = UIComponents.createVBoxForViews();
+        backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
 
         subtitleLabel = UIComponents.createSubtitle("");
 
@@ -125,8 +128,13 @@ public class ServiceOverviewView {
             );
         }
 
+        // Lägger korten först och tillbaka-knappen direkt under dem.
         section.getChildren().add(cards);
-        page.getChildren().add(section);
+        page.getChildren().addAll(section, backButton);
+
+        // Håller tillbaka-knappen till vänster med lite avstånd till korten.
+        VBox.setMargin(backButton, new javafx.geometry.Insets(10, 0, 0, 0));
+        backButton.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
         view = page;
 
@@ -139,13 +147,16 @@ public class ServiceOverviewView {
 
     }
 
-    // Säkerställer att ikonen på en serviceknapp är vit.
+    // Sätter pilikonen till vit direkt via knappens grafik.
     private void setButtonIconWhite(Button button) {
-        for (Node node : button.lookupAll(".ikonli-font-icon")) {
-            if (node instanceof FontIcon icon) {
-                icon.setIconColor(javafx.scene.paint.Color.WHITE);
-            }
+        if (button.getGraphic() instanceof FontIcon) {
+            FontIcon icon = (FontIcon) button.getGraphic();
+            icon.setIconColor(javafx.scene.paint.Color.WHITE);
         }
+    }
+
+    public Button getBackButton() {
+        return backButton;
     }
 
     // Hämtar alla synliga texter från språkfilerna.
@@ -162,6 +173,7 @@ public class ServiceOverviewView {
         mechanicsTitle.setText(languageManager.getString("showMechanicsButton"));
         mechanicsDescription.setText(languageManager.getString("serviceOverviewMechanicsDescription"));
         mechanicsButton.setText(languageManager.getString("showMechanicsButton"));
+        backButton.setText(languageManager.getString("backButton"));
     }
 
     // Gör vyn tillgänglig för AutoCoreApplication.

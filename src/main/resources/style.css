@@ -1322,3 +1322,19 @@ ListView .list-cell:filled:selected {
     -fx-font-size: 13px;
     -fx-text-fill: #5F665F;
 }
+
+/* Håller kortens stora ikoner i projektets gröna färg. */
+.overview-card-icon {
+    -fx-icon-color: #287A35;
+}
+
+/* Centrerar rubriker och beskrivningar i navigeringskorten. */
+.overview-card-title {
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+.overview-card-description {
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}

@@ -48,7 +48,13 @@ public class ServicePackageController {
         servicePackageView.getCreatePackageButton().setOnAction(actionEvent -> createPackage());
         servicePackageView.getAddServiceButton().setOnAction(actionEvent -> addServiceToSelectedPackage());
         servicePackageView.getRemoveServiceButton().setOnAction(actionEvent -> removeServiceFromSelectedPackage());
+
+        // Tillbaka från servicepaket går till serviceöversikten.
+        servicePackageView.getBackButton().setOnAction(
+                event -> app.showServiceOverviewView()
+        );
     }
+
 
     //skapar ett nytt tomt paket med namnet i textfältet
     private void createPackage() {
