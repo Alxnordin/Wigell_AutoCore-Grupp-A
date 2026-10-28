@@ -38,6 +38,9 @@ public class ServicePackageView {
     private TextField packageNameField;
     private Button createPackageButton;
 
+    private Label title;
+    private Label subtitle;
+
     private Label packageServicesTitle;
     private TableView<ServiceItem> packageServicesTable;
     private TableColumn<ServiceItem, String> serviceColumn;
@@ -53,9 +56,20 @@ public class ServicePackageView {
     private Button addServiceButton;
     private Button removeServiceButton;
 
+    private Button backButton;
+
     LanguageManager languageManager = LanguageManager.getInstance();
 
     public ServicePackageView() {
+        // Skapar sidrubriken med ikon och projektets gemensamma stil.
+        title = new Label(languageManager.getString("servicePackagesTitle"));
+        HBox titleBox = UIComponents.createPageTitle(title, "fa-cubes");
+
+        // Skapar sidans beskrivande underrubrik.
+        subtitle = UIComponents.createSubtitle(
+                languageManager.getString("servicePackageSubtitle")
+        );
+
         servicePackagesTitle = UIComponents.createSectionTitle(languageManager.getString("servicePackagesTitle"));
 
         //lista över paket
@@ -181,7 +195,22 @@ public class ServicePackageView {
                 packageServicesTable,
                 serviceButtons
         );
-        this.root = section;
+
+        // Skapar tillbaka-knappen med projektets gemensamma stil.
+        backButton = UIComponents.createBackButton(
+                languageManager.getString("backButton")
+        );
+
+        // Lägger tillbaka-knappen under sektionen, till vänster.
+        VBox page = UIComponents.createVBoxForViews();
+        page.getChildren().addAll(
+                titleBox,
+                subtitle,
+                section,
+                backButton);
+
+        this.root = page;
+
 
         //ingen redigering förrän ett paket är markerat
         setServiceEditingDisabled(true);
@@ -190,6 +219,10 @@ public class ServicePackageView {
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
             changeTextAllComponents();
         });
+    }
+
+    public Button getBackButton() {
+        return backButton;
     }
 
     public Parent getView() {return root;}
@@ -218,7 +251,10 @@ public class ServicePackageView {
     }
 
     public void changeTextAllComponents() {
+        title.setText(languageManager.getString("servicePackagesTitle"));
+        subtitle.setText(languageManager.getString("servicePackageSubtitle"));
         servicePackagesTitle.setText(languageManager.getString("servicePackagesTitle"));
+        packageServicesTitle.setText(languageManager.getString("packageServicesTitle"));
         packageNameColumn.setText(languageManager.getString("packageNameColumn"));
         serviceCountColumn.setText(languageManager.getString("packageServiceCountColumn"));
         totalTimeColumn.setText(languageManager.getString("packageTotalTimeColumn"));
@@ -226,12 +262,13 @@ public class ServicePackageView {
         noPackagesLabel.setText(languageManager.getString("noServicePackagesHint"));
         packageNameField.setPromptText(languageManager.getString("packageNamePrompt"));
         createPackageButton.setText(languageManager.getString("createPackageButton"));
-        packageServicesTitle.setText(languageManager.getString("packageServicesTitle"));
         serviceColumn.setText(languageManager.getString("serviceColumn"));
         timeColumn.setText(languageManager.getString("timeColumn"));
         priceColumn.setText(languageManager.getString("priceColumn"));
         addServiceButton.setText(languageManager.getString("addService"));
         removeServiceButton.setText(languageManager.getString("removeService"));
+        backButton.setText(languageManager.getString("backButton"));
+
         setPackageSelected(packageSelected);
     }
 }

@@ -282,22 +282,26 @@ public class AutoCoreApplication extends Application {
     }
 
     public void showServiceItemView() {
-
         if(!requireLogin()) {
             return;
         }
         ServiceItemView serviceItemView = new ServiceItemView();
 
-        ServiceController controller = new ServiceController(serviceItemService,
-                mechanicService, workOrderService,
-                this, serviceItemView, new MechanicView());
+        ServiceController controller = new ServiceController(
+                serviceItemService,
+                mechanicService,
+                workOrderService,
+                this,
+                serviceItemView,
+                new MechanicView()
+        );
 
-        //Alexander
-        //servicepaketen visas i en egen sektion på samma sida
-        ServicePackageController packageController = new ServicePackageController(
-                servicePackageService, serviceItemService, this, new ServicePackageView());
-
-        serviceItemView.addSection(packageController.getView());
+//        //Alexander
+//        //servicepaketen visas i en egen sektion på samma sida
+//        ServicePackageController packageController = new ServicePackageController(
+//                servicePackageService, serviceItemService, this, new ServicePackageView());
+//
+//        serviceItemView.addSection(packageController.getView());
         borderPane.setCenter(controller.getServiceItemView());
     }
 
@@ -412,16 +416,15 @@ public class AutoCoreApplication extends Application {
         ServiceOverviewView view = new ServiceOverviewView();
 
         view.getServicesButton().setOnAction(
-                e -> showServiceItemView()
-        );
+                e -> showServiceItemView());
 
         view.getPackagesButton().setOnAction(
-                e -> showServicePackageView()
-        );
+                e -> showServicePackageView());
 
         view.getMechanicsButton().setOnAction(
-                e -> showMechanicView()
-        );
+                e -> showMechanicView());
+
+        view.getBackButton().setOnAction(e -> showMainMenu());
 
         borderPane.setCenter(view.getView());
     }

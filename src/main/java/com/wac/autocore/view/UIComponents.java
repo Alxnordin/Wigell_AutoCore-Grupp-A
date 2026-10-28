@@ -825,24 +825,34 @@ public class UIComponents {
 
         FontIcon cardIcon = new FontIcon(icon);
         cardIcon.setIconSize(28);
+        cardIcon.setIconColor(Color.web("#287A35"));
         cardIcon.getStyleClass().add("overview-card-icon");
 
+        // Centrerar rubrik och beskrivning.
         titleLabel.getStyleClass().add("overview-card-title");
+        titleLabel.setMaxWidth(Double.MAX_VALUE);
+        titleLabel.setAlignment(Pos.CENTER);
+        titleLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
         descriptionLabel.getStyleClass().add("overview-card-description");
         descriptionLabel.setWrapText(true);
+        descriptionLabel.setMaxWidth(Double.MAX_VALUE);
+        descriptionLabel.setAlignment(Pos.CENTER);
+        descriptionLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
         // Skapar en behållare som centrerar knappen i kortet.
         HBox buttonContainer = new HBox(actionButton);
         buttonContainer.setAlignment(Pos.CENTER);
         buttonContainer.setMaxWidth(Double.MAX_VALUE);
 
+        // Låter knappen behålla sin storlek och centrerar den i kortet.
+        actionButton.setMaxWidth(Region.USE_PREF_SIZE);
+
+        // Samlar och centrerar kortets samtliga komponenter.
         VBox card = new VBox(12);
         card.getStyleClass().add("overview-card");
         card.setMaxWidth(Double.MAX_VALUE);
-
-        // Låter knappen behålla sin storlek och centrerar den i kortet.
-        actionButton.setMaxWidth(Region.USE_PREF_SIZE);
+        card.setAlignment(Pos.CENTER);
 
         // Lägger in behållaren i stället för knappen direkt.
         card.getChildren().addAll(

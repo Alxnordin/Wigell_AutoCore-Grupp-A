@@ -1323,6 +1323,7 @@ ListView .list-cell:filled:selected {
     -fx-text-fill: #5F665F;
 }
 
+
 /* Dialog för att ändra pris */
 
 .price-dialog {
@@ -1384,3 +1385,20 @@ ListView .list-cell:filled:selected {
 .price-dialog .button:default:hover {
     -fx-background-color: #20613F;
 }
+
+/* Håller kortens stora ikoner i projektets gröna färg. */
+.overview-card-icon {
+    -fx-icon-color: #287A35;
+}
+
+/* Centrerar rubriker och beskrivningar i navigeringskorten. */
+.overview-card-title {
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+.overview-card-description {
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+

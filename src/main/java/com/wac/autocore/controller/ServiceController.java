@@ -40,6 +40,7 @@ public class ServiceController {
         this.app = app;
         this.serviceItemView = serviceItemView;
         this.mechanicView = mechanicView;
+        this.mechanicView.setServiceNamesProvider(this::getServiceNames);
         wireEvents();
         refreshLists();
 
@@ -49,7 +50,6 @@ public class ServiceController {
     }
 
     public void refreshLists() {
-
         serviceItemView.getServiceItemTableView().getItems().clear();
 
         for (ServiceItem item : serviceItemService.getServiceItems())   {
@@ -61,7 +61,7 @@ public class ServiceController {
                 mechanicService.getMechanics()
         );
 
-        mechanicView.getMechanicWorkListView().getItems().clear();
+        mechanicView.getMechanicWorkTable().getItems().clear();
     }
 
     private void wireEvents() {
@@ -73,8 +73,13 @@ public class ServiceController {
                         showMechanicWork(selectedMechanic)
                 );
 
-        serviceItemView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
-        mechanicView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+        // Tillbaka från tjänster går till serviceöversikten.
+        serviceItemView.getBackButton().setOnAction(
+                event -> app.showServiceOverviewView());
+
+        // Tillbaka från mekaniker går till serviceöversikten.
+        mechanicView.getBackButton().setOnAction(
+                event -> app.showServiceOverviewView());
 
         serviceItemView.setOnChangePrice(serviceItem -> {
 //            TextInputDialog dialog = new TextInputDialog(String.valueOf(serviceItem.getPrice()));
@@ -103,8 +108,19 @@ public class ServiceController {
         });
     }
 
+    // Hämtar tjänsternas namn utifrån arbetsorderns tjänste-ID:n.
+    public String getServiceNames(WorkOrder workOrder) {
+        return workOrder.getServiceItemIds().stream()
+                .map(serviceId -> serviceItemService.getServiceItems().stream()
+                        .filter(service -> service.getId() == serviceId)
+                        .map(ServiceItem::getName)
+                        .findFirst()
+                        .orElse("ID: " + serviceId))
+                .collect(java.util.stream.Collectors.joining(", "));
+    }
+
     private void showMechanicWork(Mechanic selectedMechanic) {
-        mechanicView.getMechanicWorkListView().getItems().clear();
+        mechanicView.getMechanicWorkTable().getItems().clear();
 
         // Avslutar om ingen mekaniker är vald.
         if (selectedMechanic == null) {
@@ -113,34 +129,7 @@ public class ServiceController {
 
         for (WorkOrder workOrder : workOrderService.findAllWorkOrders()) {
             if (workOrder.getMechanicId() == selectedMechanic.getId()) {
-
-                String workOrderStatus;
-
-                if (workOrder.getStatus().equals("CREATED")) {
-                    workOrderStatus = languageManager.getString("statusCreated");
-
-                } else if (workOrder.getStatus().equals("IN_PROGRESS")) {
-                    workOrderStatus = languageManager.getString("statusInProgress");
-
-                } else if (workOrder.getStatus().equals("COMPLETED")) {
-                    workOrderStatus = languageManager.getString("statusCompleted");
-
-                } else {
-                    workOrderStatus = workOrder.getStatus();
-                }
-
-                String workOrderInfo =
-                        workOrder.getId() + " | "
-                                + languageManager.getString("workOrderBookingId")
-                                + ": " + workOrder.getBookingId() + " | "
-                                + languageManager.getString("workOrderMechanicId")
-                                + ": " + workOrder.getMechanicId() + " | "
-                                + languageManager.getString("workOrderServices")
-                                + ": " + workOrder.getServiceItemIds() + " | "
-                                + languageManager.getString("workOrderStatus")
-                                + ": " + workOrderStatus;
-
-                mechanicView.getMechanicWorkListView().getItems().add(workOrderInfo);
+                mechanicView.getMechanicWorkTable().getItems().add(workOrder);
             }
         }
     }
