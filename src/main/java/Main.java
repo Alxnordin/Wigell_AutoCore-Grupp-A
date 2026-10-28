@@ -3,12 +3,15 @@ import com.wac.autocore.exception.AutoCoreException;
 import com.wac.autocore.exception.BusinessRuleException;
 import com.wac.autocore.exception.NotFoundException;
 import com.wac.autocore.exception.ValidationException;
+import com.wac.autocore.logging.ExceptionLogger;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.model.WorkOrder;
 import com.wac.autocore.repository.*;
 import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.interf.*;
+import com.wac.autocore.exception.ValidationException;
 import com.wac.autocore.util.LanguageManager;
+import org.slf4j.MDC;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -22,6 +25,11 @@ public class Main {
     //private static final GarageSystem garageSystem = new GarageSystem();
 
     public static void main(String[] args) {
+
+        //Alexander
+        //det fristående programmet har ingen inloggning, därför märks alla loggrader med user="fristående-program"
+        //så att det syns i loggen att händelsen kom från det fristående programmet
+        MDC.put("user", "fristående-program");
 
         WorkOrderRepository workOrderRepository = new WorkOrderDAO();
         CustomerRepository customerRepository = new CustomerDAO();
@@ -134,16 +142,19 @@ public class Main {
             System.out.println("Customer is now registered:\n" + customer);
 
         } catch (ValidationException validationError) {
-            getAndPrintErrorMessage(validationError);
+            handleError(validationError);
 //            String validationError = validationMessage.getMessage();
 //            System.out.println(languageManager.getString(validationError));
 
         } catch (BusinessRuleException businessRuleError) {
-            getAndPrintErrorMessage(businessRuleError);
+            handleError(businessRuleError);
 //            String businessRuleError = businessRuleMessage.getMessage();
 //            System.out.println(languageManager.getString(businessRuleError));
         } catch (NotFoundException notFoundMessage){
-            getAndPrintErrorMessage(notFoundMessage);
+            handleError(notFoundMessage);
+
+        } catch (Exception technicalError) {
+            handleError(technicalError);
         }
 
         //boolean inCorrectInput = true;
@@ -217,10 +228,13 @@ public class Main {
             System.out.println("Invalid service ID.");
 
         } catch (BusinessRuleException businessRuleError) {
-            getAndPrintErrorMessage(businessRuleError);
+            handleError(businessRuleError);
 
         } catch (NotFoundException notFoundError)   {
-            getAndPrintErrorMessage(notFoundError);
+            handleError(notFoundError);
+
+        } catch (Exception technicalError) {
+            handleError(technicalError);
         }
     }
 
@@ -232,14 +246,32 @@ public class Main {
 
         try {
             workOrderService.startWorkOrder(workOrderId);
+            System.out.println("Work order " + workOrderId + " started.");
 
         } catch (NotFoundException notFoundError) {
-            getAndPrintErrorMessage(notFoundError);
+            handleError(notFoundError);
 
         } catch (BusinessRuleException businessRuleError) {
-            getAndPrintErrorMessage(businessRuleError);
+            handleError(businessRuleError);
+
+        } catch (Exception technicalError) {
+            handleError(technicalError);
         }
 
+    }
+
+    //Alexander
+    //loggar felet med samma ExceptionLogger som JavaFX-appen och skriver sedan ett begripligt meddelande
+    //tekniska fel t.ex. databasfel visas bara med felkod, detaljerna finns i loggfilen
+    private static void handleError(Exception exception) {
+        String errorId = ExceptionLogger.log(exception);
+
+        if (errorId != null) {
+            System.out.println(MessageFormat.format(
+                    languageManager.getString("technicalErrorWithReference"), errorId));
+        } else if (exception instanceof AutoCoreException) {
+            getAndPrintErrorMessage((AutoCoreException) exception);
+        }
     }
 
     private static void getAndPrintErrorMessage(AutoCoreException exception) {

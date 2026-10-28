@@ -33,7 +33,7 @@ public final class ExceptionLogger {
             return null;
         }
         //inte inloggad alls
-        if (exception instanceof AutoCoreException) {
+        if (exception instanceof AuthenticationException) {
             SECURITY.warn("Ej autentiserad användare försökte köra {}", origin(exception));
             return null;
         }
