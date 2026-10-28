@@ -816,7 +816,6 @@ public class UIComponents {
         return alert;
     }
 
-
     // Skapar ett enhetligt navigeringskort med ikon, rubrik och beskrivning.
     public static VBox createOverviewCard(
             String icon,
@@ -855,6 +854,28 @@ public class UIComponents {
 
         return card;
     }
+
+    public static TextInputDialog createPriceInputDialog(
+            String title, String heading, String label, String currentPrice) {
+
+        TextInputDialog dialog = new TextInputDialog(currentPrice);
+
+        dialog.setTitle(title);
+        dialog.setHeaderText(heading);
+        dialog.setContentText(label);
+        dialog.setGraphic(null);
+
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStyleClass().add("price-dialog");
+
+        URL stylesheet = UIComponents.class.getResource("/style.css");
+        if (stylesheet != null) {
+            dialogPane.getStylesheets().add(stylesheet.toExternalForm());
+        }
+
+        return dialog;
+    }
+
 
 }
 

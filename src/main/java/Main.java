@@ -143,60 +143,16 @@ public class Main {
 
         } catch (ValidationException validationError) {
             handleError(validationError);
-//            String validationError = validationMessage.getMessage();
-//            System.out.println(languageManager.getString(validationError));
 
         } catch (BusinessRuleException businessRuleError) {
             handleError(businessRuleError);
-//            String businessRuleError = businessRuleMessage.getMessage();
-//            System.out.println(languageManager.getString(businessRuleError));
+
         } catch (NotFoundException notFoundMessage){
             handleError(notFoundMessage);
 
         } catch (Exception technicalError) {
             handleError(technicalError);
         }
-
-        //boolean inCorrectInput = true;
-//        String firstName;
-//        String lastName;
-//        String phone;
-//        String email;
-//        String vipInput;
-//        boolean vip;
-
-//        while (inCorrectInput) {
-//
-//            System.out.print("First name: ");
-//            firstName = scanner.nextLine();
-//            System.out.print("Last name: ");
-//            lastName = scanner.nextLine();
-//            System.out.print("Phone: ");
-//            phone = scanner.nextLine();
-//            System.out.print("Email: ");
-//            email = scanner.nextLine();
-//            System.out.println("Skriv ja om kunden är vip eller nej om kunden inte är vip");
-//            vipInput = scanner.nextLine();
-//            if (vipInput.equalsIgnoreCase("ja")) {
-//                vip = true;
-//            }
-//            else {
-//                vip = false;
-//            }
-//            try {
-//                Customer customer = customerService.createCustomer(firstName, lastName, phone, email, vip);
-//                System.out.println("Customer is now registered:\n" + customer);
-//                inCorrectInput = false;
-//
-//            } catch (ValidationException validationMessage) {
-//                String validationError = validationMessage.getMessage();
-//                System.out.println(languageManager.getString(validationError));
-//
-//            } catch (BusinessRuleException businessRuleMessage) {
-//                String businessRuleError = businessRuleMessage.getMessage();
-//                System.out.println(languageManager.getString(businessRuleError));
-//            }
-        //}
     }
 
     private static void createWorkOrder(WorkOrderService workOrderService) {

@@ -78,6 +78,10 @@ public class ServiceItemView {
     public Parent getView() { return root; }
     public TableView<ServiceItem> getServiceItemTableView() { return serviceItemTableView; }
     public Button getBackButton() { return backButton; }
+    public String getPrice(ServiceItem serviceItem){
+        String price = String.valueOf(serviceItem.getPrice());
+        return price;
+    }
 
     //Alexander
     //lägger in en sektion till på sidan (servicepaketen), ovanför tillbaka-knappen

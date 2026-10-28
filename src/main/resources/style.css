@@ -1322,3 +1322,65 @@ ListView .list-cell:filled:selected {
     -fx-font-size: 13px;
     -fx-text-fill: #5F665F;
 }
+
+/* Dialog för att ändra pris */
+
+.price-dialog {
+    -fx-background-color: white;
+    -fx-border-color: #DFE7E1;
+    -fx-border-width: 1px;
+}
+
+.price-dialog .header-panel {
+    -fx-background-color: #EAF5EE;
+    -fx-padding: 18px 20px;
+}
+
+.price-dialog .header-panel .label {
+    -fx-text-fill: #19382B;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+.price-dialog .content {
+    -fx-padding: 20px;
+}
+
+.price-dialog .label {
+    -fx-text-fill: #527360;
+    -fx-font-size: 13px;
+}
+
+.price-dialog .text-field {
+    -fx-background-color: white;
+    -fx-border-color: #CFE0D6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 10px;
+    -fx-font-size: 14px;
+}
+
+.price-dialog .text-field:focused {
+    -fx-border-color: #287A50;
+}
+
+.price-dialog .button-bar {
+    -fx-padding: 10px 20px 16px 20px;
+}
+
+.price-dialog .button {
+    -fx-background-color: #EAF1EC;
+    -fx-text-fill: #263D31;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 22px;
+    -fx-cursor: hand;
+}
+
+.price-dialog .button:default {
+    -fx-background-color: #287A50;
+    -fx-text-fill: white;
+}
+
+.price-dialog .button:default:hover {
+    -fx-background-color: #20613F;
+}

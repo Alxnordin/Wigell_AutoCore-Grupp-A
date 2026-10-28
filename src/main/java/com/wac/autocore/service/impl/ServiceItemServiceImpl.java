@@ -1,5 +1,6 @@
 package com.wac.autocore.service.impl;
 
+import com.wac.autocore.exception.BusinessRuleException;
 import com.wac.autocore.exception.NotFoundException;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.service.interf.ServiceItemService;
@@ -44,6 +45,10 @@ public class ServiceItemServiceImpl implements ServiceItemService {
         ServiceItem serviceItem = findServiceItem(serviceItemId);
         if (serviceItem == null) {
             throw new NotFoundException("serviceItemNotFoundError", String.valueOf(serviceItemId));
+        }
+
+        if (serviceItem.getPrice() == newPrice) {
+            throw new BusinessRuleException("noChangeMade");
         }
 
         serviceItemRepository.updatePrice(serviceItemId, newPrice);
