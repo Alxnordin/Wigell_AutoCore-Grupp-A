@@ -2,6 +2,7 @@ package com.wac.autocore;
 
 import com.wac.autocore.security.LoginController;
 import com.wac.autocore.view.service.ServiceOverviewView;
+import org.slf4j.MDC;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.wac.autocore.controller.*;
 import com.wac.autocore.dao.*;
@@ -86,6 +87,10 @@ public class AutoCoreApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
+        //Alexander
+        //körläget märks på alla loggrader, så att det syns att händelsen kom från JavaFX-appen
+        MDC.put("mode", "JavaFX-app");
 
         //Alexander
         //fel som ingen har fångat på JavaFX-tråden loggas och visas via ErrorHandler
