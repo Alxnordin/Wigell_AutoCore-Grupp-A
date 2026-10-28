@@ -80,13 +80,6 @@ public class DropInOrderCreator implements WorkOrderCreator{
     }
 
     private void showWarning(String messageKey) {
-        // Visar varningen på det språk som användaren valt.
-//        Alert alert = new Alert(
-//                Alert.AlertType.WARNING,
-//                languageManager.getString(messageKey)
-//        );
-//        alert.setHeaderText(null);
-
         Alert alert = UIComponents.createWarningAlert(Alert.AlertType.WARNING,
         messageKey, languageManager.getString("headingAlertWarning"));
         alert.showAndWait();

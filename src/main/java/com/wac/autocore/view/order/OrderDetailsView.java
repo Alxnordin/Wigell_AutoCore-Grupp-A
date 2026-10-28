@@ -129,6 +129,7 @@ public class OrderDetailsView {
         mechanicLabel = UIComponents.createInfoLabel(languageManager.getString("mechanicLabel"));
 
         mechanicComboBox = UIComponents.createComboBox();
+        mechanicComboBox.setDisable(!"DRAFT".equals(workOrder.getStatus()));
         mechanicComboBox.getItems().addAll(mechanics);
 
         for (Mechanic mechanic : mechanics) {

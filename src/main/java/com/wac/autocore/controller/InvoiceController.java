@@ -280,17 +280,40 @@ public class InvoiceController {
 
     //Alexander
     //bekräftelse till användaren: fakturan är skapad och vem aviseringen skickades till
+//    private void showInvoiceConfirmation(Invoice invoice) {
+//        String amount = String.format("%.2f", invoice.getTotalAmount());
+//        Customer customer = invoiceService.findCustomerForInvoice(invoice);
+//
+//        if (customer != null) {
+//            InfoDialog.show("invoiceCreatedConfirmation", String.valueOf(invoice.getId()), amount,
+//                    customer.getName(), customer.getEmail());
+//        } else {
+//            InfoDialog.show("invoiceCreatedConfirmationNoCustomer", String.valueOf(invoice.getId()), amount);
+//        }
+//    }
+
     private void showInvoiceConfirmation(Invoice invoice) {
+        String heading = languageManager.getString("invoiceConfirmationHeading");
+        String subHeading = languageManager.getString("invoiceConfirmationSubHeading");
+
         String amount = String.format("%.2f", invoice.getTotalAmount());
         Customer customer = invoiceService.findCustomerForInvoice(invoice);
 
-        if (customer != null) {
-            InfoDialog.show("invoiceCreatedConfirmation", String.valueOf(invoice.getId()), amount,
-                    customer.getName(), customer.getEmail());
-        } else {
-            InfoDialog.show("invoiceCreatedConfirmationNoCustomer", String.valueOf(invoice.getId()), amount);
-        }
+        Map<String, String> confirmationDetails = new LinkedHashMap<>();
+        confirmationDetails.put(languageManager.getString("invoiceNumber"), String.valueOf(invoice.getId()));
+        confirmationDetails.put(languageManager.getString("customerLabel"), customer.getName());
+        confirmationDetails.put(languageManager.getString("amount"), amount);
+
+        Alert alert = UIComponents.createConfirmationAlert(heading, subHeading, confirmationDetails);
+        alert.showAndWait();
+//        if (customer != null) {
+//            InfoDialog.show("invoiceCreatedConfirmation", String.valueOf(invoice.getId()), amount,
+//                    customer.getName(), customer.getEmail());
+//        } else {
+//            InfoDialog.show("invoiceCreatedConfirmationNoCustomer", String.valueOf(invoice.getId()), amount);
+//        }
     }
+
 
     private void refreshLists() {
         // Uppdaterar översikten med befintliga fakturor.

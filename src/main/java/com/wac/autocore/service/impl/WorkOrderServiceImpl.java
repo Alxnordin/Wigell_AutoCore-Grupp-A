@@ -69,7 +69,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         // Mekanikern får bara ändras innan ordern har skapats.
         if (!"DRAFT".equals(workOrder.getStatus())) {
             throw new BusinessRuleException("mechanicCannotChangeAfterWorkOrderCreation");
-            //return;
         }
 
         // Kontrollerar att den nya mekanikern finns.

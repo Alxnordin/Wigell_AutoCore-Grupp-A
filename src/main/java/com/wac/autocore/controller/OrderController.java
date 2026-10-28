@@ -22,9 +22,10 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 
 import java.text.MessageFormat;
-
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class OrderController {
@@ -201,7 +202,6 @@ public class OrderController {
             );
 
 
-
             detailsView.setOnStatusChange(newStatus -> {
                 if ("IN_PROGRESS".equals(newStatus)) {
                     workOrderService.startWorkOrder(workOrder.getId());
@@ -218,6 +218,9 @@ public class OrderController {
 
                 // Visar den nya statusen och uppdaterar knapparna.
                 detailsView.updateStatus();
+
+                showStatusChangeConfirmation(newStatus, workOrder.getId());
+                showOrderList();
             });
 
 
@@ -226,8 +229,11 @@ public class OrderController {
             //felet visas då via ErrorHandler
             detailsView.setOnCreateInvoice(workOrderToInvoice -> {
                 try {
-                    invoiceService.createInvoice(workOrderToInvoice.getId(), null);
-                    detailsView.showInvoiceCreatedPopup();
+                    //invoiceService.createInvoice(workOrderToInvoice.getId(), null);
+                    //detailsView.showInvoiceCreatedPopup();
+                    Invoice invoice = invoiceService.createInvoice(workOrderToInvoice.getId(), null);
+                    showInvoiceConfirmation(invoice);
+                    showOrderList();
                 } catch (Exception e) {
                     ErrorHandler.show(e);
                 }
@@ -502,7 +508,7 @@ public class OrderController {
                 return;
             }
 
-            /// Sparar utkastet med vald kund, fordon, mekaniker och tjänster.
+            // Sparar utkastet med vald kund, fordon, mekaniker och tjänster.
             WorkOrder draft = workOrderService.createDraftWorkOrder(
                     customer.getId(),
                     vehicle.getId(),
@@ -512,6 +518,8 @@ public class OrderController {
             );
 
             if (draft != null) {
+
+                showConfirmationSavedDraft(draft);
                 showOrderList();
             }
         });
@@ -527,7 +535,6 @@ public class OrderController {
 
         app.showView(createWorkOrderView.getView());
     }
-
 
 
     // Öppnar ett sparat utkast och förbereder formuläret för redigering.
@@ -635,6 +642,8 @@ public class OrderController {
 
             // Går tillbaka till listan först när sparandet lyckats.
             if (updatedDraft != null) {
+
+                showConfirmationSavedDraft(updatedDraft);
                 showOrderList();
             }
         });
@@ -669,13 +678,7 @@ public class OrderController {
 
             if (completedDraft != null) {
                 // Visar bekräftelse när utkastet har färdigställts.
-                showInformation(
-                        MessageFormat.format(
-                                languageManager.getString("workOrderCreatedInfo"),
-                                String.valueOf(completedDraft.getId())
-                        )
-                );
-
+                showConfirmationOrderCreated(completedDraft);
                 showOrderList();
             } else {
                 // Visar felruta om utkastet inte kunde färdigställas.
@@ -687,7 +690,6 @@ public class OrderController {
         // Visar det förifyllda formuläret.
         app.showView(view.getView());
     }
-
 
 
     // Öppna planned order från en bokning
@@ -784,7 +786,6 @@ public class OrderController {
     }
 
 
-
     // Fabriken väljer skapare, medan controllern behåller gemensam hantering.
     private void createOrder(CreateWorkOrderView view, String orderType) {
         WorkOrderType type;
@@ -813,18 +814,7 @@ public class OrderController {
         }
 
         // Behåller samma bekräftelser som tidigare.
-        if (workOrder.isComplaint()) {
-            showInformation(MessageFormat.format(
-                    languageManager.getString("warrantyOrderCreatedInfo"),
-                    String.valueOf(workOrder.getId()),
-                    String.valueOf(workOrder.getOriginalWorkOrderId())
-            ));
-        } else {
-            showInformation(MessageFormat.format(
-                    languageManager.getString("workOrderCreatedInfo"),
-                    String.valueOf(workOrder.getId())
-            ));
-        }
+        showConfirmationOrderCreated(workOrder);
 
         // Uppdaterar listan och återgår till den.
         showOrderList();
@@ -957,15 +947,12 @@ public class OrderController {
             return;
         }
 
-
         List<Mechanic> allMechanics =
                 mechanicService.getMechanics();
-
 
         view.getMechanicComboBox()
                 .getItems()
                 .clear();
-
 
         for (Mechanic mechanic :
                 allMechanics) {
@@ -981,7 +968,6 @@ public class OrderController {
                         .add(mechanic);
             }
         }
-
 
         view.getMechanicComboBox()
                 .getSelectionModel()
@@ -1103,23 +1089,118 @@ public class OrderController {
 
     // Varningsruta
     private void showWarning(String message) {
-//        Alert alert = new Alert(
-//                Alert.AlertType.WARNING, message);
-//        alert.setHeaderText(null);
         Alert alert = UIComponents.createWarningAlert(Alert.AlertType.WARNING,
         message, languageManager.getString("headingAlertWarning"));
         alert.showAndWait();
     }
 
+    private void showConfirmationSavedDraft(WorkOrder draftWorkOrder) {
+        String heading = languageManager.getString("savedDraftConfirmationHeading");
+        String subheading = languageManager.getString("savedDraftConfirmationSubheading");
 
-    //Alexander
-    //bekräftelse, samma som i VehicleController
-    private void showInformation(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
-        alert.setHeaderText(null);
+        Vehicle vehicle = vehicleService.findVehicle(draftWorkOrder.getVehicleId());
+
+        List<ServiceItem> serviceItems = workOrderService.getServicesForWorkOrder(draftWorkOrder);
+
+        String services = serviceItems.stream()
+            .map(ServiceItem::getName)
+            .collect(Collectors.joining(", "));
+
+        Map<String, String> confirmationDetails = new LinkedHashMap<>();
+
+        confirmationDetails.put(languageManager.getString("workOrderIdField"),
+                String.valueOf(draftWorkOrder.getId()));
+        confirmationDetails.put(languageManager.getString("mechanicNameLabel"),
+                getMechanicName(draftWorkOrder.getMechanicId()));
+        confirmationDetails.put(languageManager.getString("services"), services);
+        confirmationDetails.put(languageManager.getString("estimatedTimeInTable"),
+                formatTotalTime(serviceItems));
+        confirmationDetails.put(languageManager.getString("regNrBookingTable"),
+                vehicle.getRegistrationNumber());
+
+        Alert alert = UIComponents.createConfirmationAlert(heading, subheading, confirmationDetails);
         alert.showAndWait();
     }
 
+    //Alexander
+    //bekräftelse, samma som i VehicleController
+    private void showConfirmationOrderCreated(WorkOrder workOrder) {
+        String heading = languageManager.getString("workOrderConfirmationHeading");
+        String subHeading = languageManager.getString("workOrderConfirmationSubHeading");
+
+        Vehicle vehicle = vehicleService.findVehicle(workOrder.getVehicleId());
+        List<ServiceItem> serviceItems = workOrderService.getServicesForWorkOrder(workOrder);
+
+        String orderType;
+        if (workOrder.isComplaint())    {
+            orderType = languageManager.getString("warrantyOrder");
+        }
+        else if (workOrder.getBookingId() == null) {
+            orderType = languageManager.getString("dropInOrder");
+        }
+        else {
+            orderType = languageManager.getString("plannedOrder");
+        }
+
+        String services = serviceItems.stream()
+                .map(ServiceItem::getName)
+                .collect(Collectors.joining(", "));
+
+        Map<String, String> confirmationDetails = new LinkedHashMap<>();
+        confirmationDetails.put(languageManager.getString("workOrderIdField"), String.valueOf(workOrder.getId()));
+        confirmationDetails.put(languageManager.getString("workOrderType"), orderType);
+
+        if (workOrder.isComplaint()) {
+            confirmationDetails.put(languageManager.getString("originalWorkOrderSection"),
+                    String.valueOf(workOrder.getOriginalWorkOrderId()));
+        }
+
+        confirmationDetails.put(languageManager.getString("mechanicNameLabel"), getMechanicName(workOrder.getMechanicId()));
+        confirmationDetails.put(languageManager.getString("services"), services);
+        confirmationDetails.put(languageManager.getString("estimatedTimeInTable"), formatTotalTime(serviceItems));
+        confirmationDetails.put(languageManager.getString("regNrBookingTable"), vehicle.getRegistrationNumber());
+
+        Alert alert = UIComponents.createConfirmationAlert(heading, subHeading, confirmationDetails);
+        alert.showAndWait();
+    }
+
+    private void showInvoiceConfirmation(Invoice invoice) {
+        String heading = languageManager.getString("invoiceConfirmationHeading");
+        String subHeading = languageManager.getString("invoiceConfirmationSubHeading");
+
+        String amount = String.format("%.2f", invoice.getTotalAmount());
+        Customer customer = invoiceService.findCustomerForInvoice(invoice);
+
+        Map<String, String> confirmationDetails = new LinkedHashMap<>();
+        confirmationDetails.put(languageManager.getString("invoiceNumber"), String.valueOf(invoice.getId()));
+        confirmationDetails.put(languageManager.getString("customerLabel"), customer.getName());
+        confirmationDetails.put(languageManager.getString("amount"), amount);
+
+        Alert alert = UIComponents.createConfirmationAlert(heading, subHeading, confirmationDetails);
+        alert.showAndWait();
+    }
+
+    private void showStatusChangeConfirmation(String newStatus, int workOrderId) {
+        String heading;
+        String subHeading;
+
+        if ("IN_PROGRESS".equals(newStatus)) {
+            heading = languageManager.getString("workStartedConfirmationHeading");
+            subHeading = languageManager.getString("workStartedConfirmationSubHeading");
+
+        } else if ("COMPLETED".equals(newStatus)) {
+            heading = languageManager.getString("workCompletedConfirmationHeading");
+            subHeading = languageManager.getString("workCompletedConfirmationSubHeading");
+
+        } else {
+            return;
+        }
+
+        subHeading = MessageFormat.format(subHeading, workOrderId);
+
+        Alert alert = UIComponents.createConfirmationAlert(heading, subHeading, new LinkedHashMap<>());
+        alert.showAndWait();
+    }
 
     public Parent getOrderListPane() {
 
