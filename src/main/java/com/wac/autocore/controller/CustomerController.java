@@ -14,6 +14,7 @@ import javafx.scene.control.Alert;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class CustomerController {
 
@@ -23,6 +24,8 @@ public class CustomerController {
     private final CustomerListView customerListView;
 
     LanguageManager languageManager = LanguageManager.getInstance();
+    private Consumer<Customer> onCustomerCreated;
+    private Runnable onBack;
 
     public CustomerController(CustomerService customerService,
                               AutoCoreApplication app, CustomerView customerView,
@@ -64,7 +67,12 @@ public class CustomerController {
                 customerView.getEmailField().clear();
 
                 showConfirmation(customer);
-                app.showCustomerListView();
+
+                if (onCustomerCreated != null) {
+                    onCustomerCreated.accept(customer);
+                } else {
+                    app.showCustomerListView();
+                }
 
             } catch (Exception e) {
                 ErrorHandler.show(e);
@@ -72,7 +80,11 @@ public class CustomerController {
         });
 
         customerView.getBackButton().setOnAction(actionEvent -> {
-            app.showCustomerListView();
+            if (onBack!= null) {
+                onBack.run();
+            } else {
+                app.showCustomerListView();
+            }
         });
 
         customerListView.getCreateCustomerButton().setOnAction(actionEvent -> {
@@ -106,6 +118,18 @@ public class CustomerController {
 
     public Parent getCustomerListView() {
         return customerListView.getView();
+    }
+
+    public Parent getCustomerFormView() {
+        return customerView.getView();
+    }
+
+    public void setOnCustomerCreated(Consumer<Customer> action) {
+        this.onCustomerCreated = action;
+    }
+
+    public void setOnBack(Runnable action) {
+        this.onBack = action;
     }
 
 }

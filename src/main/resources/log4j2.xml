@@ -8,8 +8,7 @@
         <Property name="LOG_DIR">${sys:autocore.log.dir:-logs}</Property>
         <Property name="APP_LEVEL">${sys:autocore.log.level:-DEBUG}</Property>
         <Property name="CONSOLE_LEVEL">${sys:autocore.console.level:-DEBUG}</Property>
-        <Property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss} %-5level [%c{1}] %notEmpty{mode=%X{mode} }
-            %notEmpty{user=%X{user} }- %msg%n</Property>
+        <Property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss} %-5level [%c{1}] %notEmpty{mode=%X{mode} }%notEmpty{user=%X{user} }- %msg%n</Property>
     </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">

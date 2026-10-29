@@ -172,8 +172,8 @@ public class BookingView {
         StackPane.setAlignment(customerLockIcon, Pos.CENTER_RIGHT);
         StackPane.setMargin(customerLockIcon, new Insets(0, 14, 0, 0));
 
-        //************** OBS EJ KLAR med knappen för ny kund, testar bara ***********
-        newCustomerButton = new Button("+ Ny kund");
+        //genväg till kundformuläret vid "+ny kund", BookingController kopplar vad knappen gör
+        newCustomerButton = new Button(languageManager.getString("newCustomerButton"));
         newCustomerButton.getStyleClass().add("create-new-if-missing-button");
         newCustomerButton.setVisible(true);
         newCustomerButton.setManaged(true);
@@ -182,8 +182,8 @@ public class BookingView {
         VBox vehicleBox = new VBox(5);
         vehicleRegistrationNumber = UIComponents.createFormLabel(languageManager.getString("vehicleRegistrationNumber"));
 
-        //************** OBS EJ KLAR med knappen för nytt fordon, testar bara ***********
-        newVehicleButton = new Button("+ Nytt fordon");
+        //genväg till fordonsformuläret vid "+nytt fordon", BookingController kopplar vad knappen gör
+        newVehicleButton = new Button(languageManager.getString("newVehicleButton"));
         newVehicleButton.getStyleClass().add("create-new-if-missing-button");
         newVehicleButton.setVisible(true);
         newVehicleButton.setManaged(true);
@@ -357,6 +357,8 @@ public class BookingView {
     public TextField getDescriptionField() {return descriptionField;}
     public Button getCreateBookingButton() {return createBookingButton;}
     public Button getBackButton() {return backButton;}
+    public Button getNewCustomerButton() {return newCustomerButton;}
+    public Button getNewVehicleButton() {return newVehicleButton;}
 
     public void setOnCancelButton(Runnable action) {
         cancelBookingButton.setOnAction(e -> action.run());
@@ -421,5 +423,7 @@ public class BookingView {
         createBookingButton.setText(languageManager.getString("createBookingButton"));
         cancelBookingButton.setText(languageManager.getString("cancelBookingButton"));
         backButton.setText(languageManager.getString("backButton"));
+        newCustomerButton.setText(languageManager.getString("newCustomerButton"));
+        newVehicleButton.setText(languageManager.getString("newVehicleButton"));
     }
 }
