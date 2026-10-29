@@ -83,7 +83,7 @@ public class PlannedOrderCreator implements WorkOrderCreator{
 //                languageManager.getString(messageKey));
 //        alert.setHeaderText(null);
         Alert alert = UIComponents.createWarningAlert(Alert.AlertType.WARNING,
-        messageKey, languageManager.getString("headingAlertWarning"));
+                languageManager.getString(messageKey), languageManager.getString("headingAlertWarning"));
 
         alert.showAndWait();
     }

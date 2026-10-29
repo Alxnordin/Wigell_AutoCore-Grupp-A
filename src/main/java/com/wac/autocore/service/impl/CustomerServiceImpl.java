@@ -1,6 +1,7 @@
 package com.wac.autocore.service.impl;
 
 import com.wac.autocore.exception.BusinessRuleException;
+import com.wac.autocore.exception.ValidationException;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.repository.CustomerRepository;
 import com.wac.autocore.service.interf.CustomerService;
@@ -43,14 +44,20 @@ public class CustomerServiceImpl implements CustomerService {
     //samma regler gäller oavsett om kunden skapas från appen, ett test eller ett annat system.
     @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public Customer createCustomer(String firstName, String lastName, String phone,
-                                   String email, boolean vip) {
+                                   String email, Boolean vip) {
 
         Validator.requireText(firstName, "customerFirstNameRequiredError");
         Validator.requireText(lastName, "customerLastNameRequiredError");
         Validator.requireText(phone, "customerPhoneRequiredError");
         Validator.requireText(email, "customerEmailRequiredError");
 
-        phone = String.valueOf(Validator.requireInteger(phone, "phoneNumberMustBeIntegers"));
+        if (!phone.trim().matches("^0\\d(?:[\\s-]?\\d){6,9}$")) {
+            throw new ValidationException("invalidPhoneNrInput");
+        }
+
+        if (!email.trim().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)+$")) {
+            throw new ValidationException("invalidEmailInput");
+        }
 
         //Alexander
         //samma e-post får inte användas av två kunder (verksamhetsregel -> BusinessRuleException)
@@ -58,8 +65,8 @@ public class CustomerServiceImpl implements CustomerService {
             throw new BusinessRuleException("customerEmailExistsError", email.trim());
         }
 
-        if (!email.contains("@")) {
-            throw new BusinessRuleException("mustContain@", email.trim());
+        if (vip == null) {
+            throw new BusinessRuleException("customerVipRequiredError");
         }
 
         String fullName = firstName.trim() + " " + lastName.trim();

@@ -426,12 +426,12 @@ public class StartView {
             bookingById.put(booking.getId(), booking);
 
             // Skriver ut bokningens koppling till fordonet för felsökning.
-            if (booking.getId() == 3 || booking.getId() == 12) {
-                System.out.println(
-                        "Bokning ID: " + booking.getId()
-                                + " | Vehicle ID: " + booking.getVehicleId()
-                );
-            }
+//            if (booking.getId() == 3 || booking.getId() == 12) {
+//                System.out.println(
+//                        "Bokning ID: " + booking.getId()
+//                                + " | Vehicle ID: " + booking.getVehicleId()
+//                );
+//            }
         }
 
         // Bygger upp uppslag för att slippa leta efter samma fordon flera gånger.

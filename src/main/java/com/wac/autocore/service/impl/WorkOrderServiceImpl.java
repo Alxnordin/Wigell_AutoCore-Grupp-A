@@ -107,13 +107,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         Booking booking = bookingService.findBooking(bookingId);
 
         if (booking == null) {
-            //System.out.println("Booking with ID " + bookingId + " does not exist.");
             throw new NotFoundException("bookingNotFoundError", String.valueOf(bookingId));
         }
 
         //en bokning kan bara ha en arbetsorder
         if (hasWorkOrder(bookingId)) {
-            //System.out.println("Booking " + bookingId + " already has a work order.");
             throw new BusinessRuleException("bookingAlreadyHasWorkOrder", String.valueOf(bookingId));
         }
 
@@ -360,7 +358,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         // Kontrollerar statusövergången innan arbetet slutförs.
         if (!isAllowedStatusTransition(workOrder, "COMPLETED")) {
-            //System.out.println("Only work orders in progress can be completed.");
             throw new BusinessRuleException("onlyWorkOrderInProgressCanBeCompleted");
         }
 
@@ -579,7 +576,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         if (serviceItemIds != null) {
             for (int serviceItemId : serviceItemIds) {
                 if (serviceItemService.findServiceItem(serviceItemId) == null) {
-                    System.out.println("Service item does not exist: " + serviceItemId);
                     throw new NotFoundException("serviceItemNotFoundError", String.valueOf(serviceItemId));
                 }
             }

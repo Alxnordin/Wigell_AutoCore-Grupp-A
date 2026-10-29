@@ -9,7 +9,7 @@ public interface CustomerService {
     List<Customer> getAllCustomers();
     Customer findCustomer(int id);
     Customer createCustomer(String firstName, String lastName, String phone,
-                            String email, boolean vip);
+                            String email, Boolean vip);
 
 
 

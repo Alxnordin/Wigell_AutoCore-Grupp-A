@@ -42,10 +42,14 @@ public class CustomerController {
         customerView.getCreateCustomerButton().setOnAction(actionEvent -> {
 
             String vipValue = customerView.getVipComboBox().getValue();
+            Boolean vip;
+
             if (vipValue == null) {
-                throw new BusinessRuleException("customerVipRequiredError");
+                vip = null;
             }
-            boolean vip = languageManager.getString("vipYes").equals(vipValue);
+            else {
+                vip = languageManager.getString("vipYes").equals(vipValue);
+            }
 
             try {
 

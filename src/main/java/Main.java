@@ -127,11 +127,11 @@ public class Main {
         System.out.print("Email: ");
         String email = scanner.nextLine();
 
-        System.out.println("Skriv ja om kunden är vip eller nej om kunden inte är vip");
+        System.out.println("Type yes if customer is vip or no if customer is not vip");
         String vipInput = scanner.nextLine();
         boolean vip;
 
-        if (vipInput.equalsIgnoreCase("ja")) {
+        if (vipInput.equalsIgnoreCase("yes")) {
             vip = true;
         } else {
             vip = false;

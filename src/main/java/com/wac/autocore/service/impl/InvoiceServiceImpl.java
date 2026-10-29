@@ -94,19 +94,34 @@ public class InvoiceServiceImpl implements InvoiceService {
         double discountPercentage = 0.0;
         double fixedDiscount = 0.0;
 
-        Booking booking = bookingService.findBooking(workOrder.getBookingId());
+        Booking booking = null;
+
+        if (workOrder.getBookingId() != null) {
+            booking = bookingService.findBooking(workOrder.getBookingId());
+
+            if (booking == null) {
+                throw new NotFoundException("bookingNotFoundError",
+                        String.valueOf(workOrder.getBookingId()));
+            }
+        }
 
         if (booking != null) {
-
             Vehicle vehicle = vehicleService.findVehicle(booking.getVehicleId());
 
-            if (vehicle != null) {
+            if (vehicle == null) {
+                throw new NotFoundException("vehicleNotFoundError",
+                        String.valueOf(booking.getVehicleId()));
+            }
 
-                Customer customer = customerService.findCustomer(vehicle.getCustomerId());
+            Customer customer = customerService.findCustomer(vehicle.getCustomerId());
 
-                if (customer != null && customer.isVip()) {
-                    discountPercentage += 0.10;
-                }
+            if (customer == null) {
+                throw new NotFoundException("customerNotFoundError",
+                        String.valueOf(vehicle.getCustomerId()));
+            }
+
+            if (customer.isVip()) {
+                discountPercentage += 0.10;
             }
         }
 
@@ -220,7 +235,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     public Customer findCustomerForInvoice(Invoice invoice) {
         WorkOrder workOrder = workOrderService.findWorkOrder(invoice.getWorkOrderId());
         if (workOrder == null) {
-            return null;
+            throw new NotFoundException("workOrderNotFoundError", String.valueOf(invoice.getWorkOrderId()));
         }
 
         if (workOrder.getCustomerId() > 0) {
