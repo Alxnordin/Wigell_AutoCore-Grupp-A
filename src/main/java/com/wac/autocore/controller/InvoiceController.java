@@ -104,19 +104,36 @@ public class InvoiceController {
                 return;
             }
 
-            Booking booking = bookingService.findBooking(workOrder.getBookingId());
-            if (booking == null) {
-                return;
-            }
+            Booking booking = null;
+            Vehicle vehicle;
+            Customer customer;
 
-            Vehicle vehicle = vehicleService.findVehicle(booking.getVehicleId());
-            if (vehicle == null) {
-                return;
-            }
+            if (workOrder.getBookingId() != null) {
+                booking = bookingService.findBooking(workOrder.getBookingId());
+                if (booking == null) {
+                    return;
+                }
 
-            Customer customer = customerService.findCustomer(vehicle.getCustomerId());
-            if (customer == null) {
-                return;
+                vehicle = vehicleService.findVehicle(booking.getVehicleId());
+                if (vehicle == null) {
+                    return;
+                }
+
+                customer = customerService.findCustomer(vehicle.getCustomerId());
+                if (customer == null) {
+                    return;
+                }
+
+            } else {
+                vehicle = vehicleService.findVehicle(workOrder.getVehicleId());
+                if (vehicle == null) {
+                    return;
+                }
+
+                customer = customerService.findCustomer(workOrder.getCustomerId());
+                if (customer == null) {
+                    return;
+                }
             }
 
             Mechanic mechanic = mechanicService.findMechanic(workOrder.getMechanicId());
@@ -306,12 +323,6 @@ public class InvoiceController {
 
         Alert alert = UIComponents.createConfirmationAlert(heading, subHeading, confirmationDetails);
         alert.showAndWait();
-//        if (customer != null) {
-//            InfoDialog.show("invoiceCreatedConfirmation", String.valueOf(invoice.getId()), amount,
-//                    customer.getName(), customer.getEmail());
-//        } else {
-//            InfoDialog.show("invoiceCreatedConfirmationNoCustomer", String.valueOf(invoice.getId()), amount);
-//        }
     }
 
 
