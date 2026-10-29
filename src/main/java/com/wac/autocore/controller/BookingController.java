@@ -9,6 +9,10 @@ import com.wac.autocore.view.UIComponents;
 import com.wac.autocore.view.booking.BookingDetailsView;
 import com.wac.autocore.view.booking.BookingListView;
 import com.wac.autocore.view.booking.BookingView;
+import com.wac.autocore.view.customer.CustomerView;
+import com.wac.autocore.view.customer.CustomerListView;
+import com.wac.autocore.view.vehicle.VehicleView;
+import com.wac.autocore.view.vehicle.VehicleListView;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
@@ -89,7 +93,88 @@ public class BookingController {
         bookingListView.setGetRegistrationNumber(vehicleId -> getRegistrationNumber(vehicleId));
         bookingView.getBackButton().setOnAction(actionEvent -> app.showBookingListView());
         bookingListView.getAddBookingButton().setOnAction(event -> app.showBookingView());
+
+        //Alexander
+        //genväg för att skapa kund eller fordon utan att lämna bokningen
+        bookingView.getNewCustomerButton().setOnAction(event -> openCreateCustomerFromBooking());
+        bookingView.getNewVehicleButton().setOnAction(event -> openCreateVehicleFromBooking());
     }
+
+    //Alexander
+    //"+ Ny kund": visar det vanliga kundformuläret (samma formulär och validering som i Kunder)
+    //När kunden har skapats visas samma bokningsformulär igen, så allt som redan är ifyllt
+    //ligger kvar, och den nya kunden är vald.
+    private void openCreateCustomerFromBooking() {
+        CustomerController customerController = new CustomerController(
+                customerService, app, new CustomerView(), new CustomerListView());
+
+        customerController.setOnCustomerCreated(customer -> {
+            refreshCustomerComboBox();
+            selectCustomerById(customer.getId());
+            app.showView(bookingView.getView());
+        });
+        customerController.setOnBack(() -> app.showView(bookingView.getView()));
+
+        app.showView(customerController.getCustomerFormView());
+    }
+
+    //Alexander
+    //"+ Nytt fordon": visar det vanliga fordonsformuläret med bokningens kund förvald.
+    //När fordonet har skapats visas samma bokningsformulär igen med fordonet och dess ägare valda.
+    private void openCreateVehicleFromBooking() {
+        VehicleController vehicleController = new VehicleController(
+                vehicleService, customerService, app, new VehicleView(), new VehicleListView());
+
+        vehicleController.preselectCustomer(bookingView.getCustomerComboBox().getValue());
+
+        vehicleController.setOnVehicleCreated(vehicle -> {
+            refreshVehicleComboBox();
+            selectVehicleById(vehicle.getId());
+            selectCustomerById(vehicle.getCustomerId());
+            app.showView(bookingView.getView());
+        });
+        vehicleController.setOnBack(() -> app.showView(bookingView.getView()));
+
+        app.showView(vehicleController.getVehicleFormView());
+    }
+
+    //hämtar kunderna igen så att en nyss skapad kund finns med i listan
+    private void refreshCustomerComboBox() {
+        Customer selected = bookingView.getCustomerComboBox().getValue();
+        bookingView.getCustomerComboBox().getItems().setAll(customerService.getAllCustomers());
+        if (selected != null) {
+            selectCustomerById(selected.getId());
+        }
+    }
+
+    //hämtar fordonen igen så att ett nyss skapat fordon finns med i listan
+    private void refreshVehicleComboBox() {
+        Vehicle selected = bookingView.getVehicleComboBox().getValue();
+        bookingView.getVehicleComboBox().getItems().setAll(vehicleService.getVehicles());
+        if (selected != null) {
+            selectVehicleById(selected.getId());
+        }
+    }
+
+    //väljer på id, eftersom listan innehåller nya objekt efter att den hämtats igen
+    private void selectCustomerById(int customerId) {
+        for (Customer customer : bookingView.getCustomerComboBox().getItems()) {
+            if (customer.getId() == customerId) {
+                bookingView.getCustomerComboBox().setValue(customer);
+                return;
+            }
+        }
+    }
+
+    private void selectVehicleById(int vehicleId) {
+        for (Vehicle vehicle : bookingView.getVehicleComboBox().getItems()) {
+            if (vehicle.getId() == vehicleId) {
+                bookingView.getVehicleComboBox().setValue(vehicle);
+                return;
+            }
+        }
+    }
+
 
     //Alexander
     //läser formuläret och låter servicen validera. Vid fel kastar servicen en exception
@@ -111,10 +196,12 @@ public class BookingController {
         try {
             //Vanlig booking använder createBooking, bokning skapad av tidigare bokning använder
             //createBookingFromPreviousBooking. tjänsterna hämtas då från originalbokningen.
+            //Bokningen skapas EN gång och samma objekt används till bekräftelsen.
+            Booking booking;
             if (originalBookingForCopy != null) {
-                bookingService.createBookingFromPreviousBooking(originalBookingForCopy.getId(), date);
+                booking = bookingService.createBookingFromPreviousBooking(originalBookingForCopy.getId(), date);
             } else {
-                bookingService.createBooking(vehicleId, date, description, serviceItemIds);
+                booking = bookingService.createBooking(vehicleId, date, description, serviceItemIds);
             }
 
             refreshBookingList();
@@ -124,18 +211,10 @@ public class BookingController {
             bookingView.getServiceComboBox().setValue(null);
             bookingView.getServicesTable().getItems().clear();
 
-            Booking booking;
-
-            if (originalBookingForCopy != null) {
-                booking = bookingService.createBookingFromPreviousBooking(
-                        originalBookingForCopy.getId(), date);
-            } else {
-                booking = bookingService.createBooking(
-                        vehicleId, date, description, serviceItemIds);
-            }
-
             fromCreateBookingWindow = true;
             showBookingConfirmation(booking, fromCreateBookingWindow);
+
+            app.showBookingListView();
 
             app.showBookingListView();
 

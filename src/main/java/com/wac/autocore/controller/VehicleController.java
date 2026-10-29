@@ -15,6 +15,7 @@ import javafx.scene.control.Alert;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class VehicleController {
 
@@ -25,6 +26,8 @@ public class VehicleController {
     private final VehicleListView vehicleListView;
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
+    private Consumer<Vehicle> onVehicleCreated;
+    private Runnable onBack;
 
     public VehicleController(VehicleService vehicleService, CustomerService customerService,
                              AutoCoreApplication app, VehicleView vehicleView,
@@ -52,7 +55,15 @@ public class VehicleController {
     private void wireEvents() {
         vehicleView.getCreateVehicleButton().setOnAction(actionEvent -> createVehicle());
 
-        vehicleView.getBackButton().setOnAction(actionEvent -> app.showVehicleListView());
+        vehicleView.getBackButton().setOnAction(actionEvent -> {
+                    if (onBack != null) {
+                        onBack.run();
+                        ;
+                    } else {
+                        app.showVehicleListView();
+                    }
+                });
+
         vehicleListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
 
         // Öppnar formuläret när användaren klickar på Lägg till fordon.
@@ -90,7 +101,11 @@ public class VehicleController {
             }
 
             showConfirmation(vehicle, customerName);
-            app.showVehicleListView();
+            if (onVehicleCreated != null) {
+                onVehicleCreated.accept(vehicle);
+            } else {
+                app.showVehicleListView();
+            }
 
         } catch (Exception e) {
             ErrorHandler.show(e);
@@ -122,5 +137,27 @@ public class VehicleController {
 
     public Parent getVehicleListPane() {
         return vehicleListView.getView();
+    }
+
+    public void setOnVehicleCreated(Consumer<Vehicle> action) {
+        this.onVehicleCreated = action;
+    }
+
+    public void setOnBack(Runnable action) {
+        this.onBack = action;
+    }
+
+    //Alexander
+    //förväljer en kund i formuläret t.ex. den kund som redan är vald i bokningen
+    public void preselectCustomer(Customer customer) {
+        if (customer == null) {
+            return;
+        }
+        for (Customer item : vehicleView.getCustomerComboBox().getItems()) {
+            if (item.getId() == customer.getId()) {
+                vehicleView.getCustomerComboBox().setValue(item);
+                return;
+            }
+        }
     }
 }
