@@ -256,15 +256,15 @@ public class ServicePackageView {
         servicePackagesTitle.setText(languageManager.getString("servicePackagesTitle"));
         packageServicesTitle.setText(languageManager.getString("packageServicesTitle"));
         packageNameColumn.setText(languageManager.getString("packageNameColumn"));
-        serviceCountColumn.setText(languageManager.getString("packageServiceCountColumn"));
+        serviceCountColumn.setText(languageManager.getString("services"));
         totalTimeColumn.setText(languageManager.getString("packageTotalTimeColumn"));
         totalPriceColumn.setText(languageManager.getString("packageTotalPriceColumn"));
         noPackagesLabel.setText(languageManager.getString("noServicePackagesHint"));
         packageNameField.setPromptText(languageManager.getString("packageNamePrompt"));
         createPackageButton.setText(languageManager.getString("createPackageButton"));
-        serviceColumn.setText(languageManager.getString("serviceColumn"));
+        serviceColumn.setText(languageManager.getString("service"));
         timeColumn.setText(languageManager.getString("timeColumn"));
-        priceColumn.setText(languageManager.getString("priceColumn"));
+        priceColumn.setText(languageManager.getString("price"));
         addServiceButton.setText(languageManager.getString("addService"));
         removeServiceButton.setText(languageManager.getString("removeService"));
         backButton.setText(languageManager.getString("backButton"));

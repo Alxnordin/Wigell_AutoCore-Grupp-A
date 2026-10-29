@@ -97,7 +97,7 @@ public class PaymentView {
                                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
 
         // Skapar statuskolumnen med samma färgade badges som i övriga systemet.
-        statusColumn = new TableColumn<>(languageManager.getString("statusColumn"));
+        statusColumn = new TableColumn<>(languageManager.getString("status"));
 
         // Centrerar statusbadgarna i betalningshistoriken.
         UIComponents.centerTableColumn(statusColumn);
@@ -167,7 +167,7 @@ public class PaymentView {
         amountColumn.setText(languageManager.getString("amountInTable"));
         paymentTypeColumn.setText(languageManager.getString("paymentTypeInTable"));
         dateColumn.setText(languageManager.getString("dateInTable"));
-        statusColumn.setText(languageManager.getString("statusColumn"));
+        statusColumn.setText(languageManager.getString("status"));
 
         // Uppdaterar även statusvärdena på svenska eller engelska.
         paymentTable.refresh();

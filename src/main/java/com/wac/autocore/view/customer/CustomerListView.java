@@ -75,7 +75,7 @@ public class CustomerListView {
     public ObservableList<Customer> getObservableCustomersList() {return observableCustomersList;}
 
     private HBox buildHeaderSection() {
-        title = new Label(languageManager.getString("customerListViewTitle"));
+        title = new Label(languageManager.getString("customers"));
         HBox titleHBox = UIComponents.createPageTitle(title, "fa-address-book");
 
         createCustomerButton = UIComponents.createCreateButton(
@@ -147,7 +147,7 @@ public class CustomerListView {
     }
 
     public void changeTextAllComponents() {
-        title.setText(languageManager.getString("customerListViewTitle"));
+        title.setText(languageManager.getString("customers"));
         subtitle.setText(languageManager.getString("customerListViewSubtitle"));
         createCustomerButton.setText(languageManager.getString("addCustomerButton"));
         searchField.setPromptText(languageManager.getString("searchTextField"));

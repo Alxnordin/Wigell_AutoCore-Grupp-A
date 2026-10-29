@@ -43,20 +43,20 @@ public class ServiceItemView {
 
         box = UIComponents.createVBoxForViews();
 
-        title = new Label(languageManager.getString("serviceLabel"));
+        title = new Label(languageManager.getString("services"));
         HBox titleBox = UIComponents.createPageTitle(title, "fa-wrench");
         subtitle = UIComponents.createSubtitle(
                 languageManager.getString("serviceItemSubtitle"));
 
         serviceItemTableView = UIComponents.createTable();
         nameColumn = new TableColumn<>(
-                languageManager.getString("serviceItemName"));
+                languageManager.getString("service"));
         // Hämtar tjänstens namn på det aktiva gränssnittsspråket.
         nameColumn.setCellValueFactory(cell ->
                 new javafx.beans.property.SimpleStringProperty(
                         getLocalizedServiceName(cell.getValue().getName())));
 
-        priceColumn = new TableColumn<>(languageManager.getString("serviceItemPrice"));
+        priceColumn = new TableColumn<>(languageManager.getString("price"));
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
         actionColumn = new TableColumn<>(languageManager.getString("changePrice"));
 
@@ -159,10 +159,10 @@ public class ServiceItemView {
 
 
     public void changeTextAllComponents() {
-        title.setText(languageManager.getString("serviceLabel"));
+        title.setText(languageManager.getString("services"));
         subtitle.setText(languageManager.getString("serviceItemSubtitle"));
-        nameColumn.setText(languageManager.getString("serviceItemName"));
-        priceColumn.setText(languageManager.getString("serviceItemPrice"));
+        nameColumn.setText(languageManager.getString("service"));
+        priceColumn.setText(languageManager.getString("price"));
         actionColumn.setText(languageManager.getString("changePrice"));
         backButton.setText(languageManager.getString("backButton"));
 

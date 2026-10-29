@@ -79,7 +79,7 @@ public class VehicleView {
         modelField.setPromptText(languageManager.getString("vehicleModelPlaceholder"));
         yearField.setPromptText(languageManager.getString("vehicleYearPlaceholder"));
 
-        customerLabel = new Label(languageManager.getString("customerLabel"));
+        customerLabel = new Label(languageManager.getString("customer"));
         registrationNumberLabel = new Label(languageManager.getString("registrationNumber"));
         brandLabel = new Label(languageManager.getString("vehicleBrand"));
         modelLabel = new Label(languageManager.getString("vehicleModel"));
@@ -147,7 +147,7 @@ public class VehicleView {
         title.setText(languageManager.getString("vehicleTitle"));
         subtitle.setText(languageManager.getString("vehicleSubtitle"));
         vehicleInformationTitle.setText(languageManager.getString("vehicleInformationTitle"));
-        customerLabel.setText(languageManager.getString("customerLabel"));
+        customerLabel.setText(languageManager.getString("customer"));
         registrationNumberLabel.setText(languageManager.getString("registrationNumber"));
         brandLabel.setText(languageManager.getString("vehicleBrand"));
         modelLabel.setText(languageManager.getString("vehicleModel"));

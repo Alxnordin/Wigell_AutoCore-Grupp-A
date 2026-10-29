@@ -83,10 +83,15 @@ public class CreateWorkOrderView {
     private final Label selectedServicesLabel;
     private final Label noServicesLabel;
 
-    //för test utan koppling till backend ännu:
     private final ComboBox<Customer> customerComboBox;
     private final ComboBox<Vehicle> vehicleComboBox;
     private final ComboBox<Mechanic> mechanicComboBox;
+
+    private Label originalOrderIdLabel;
+    private Label originalOrderStatusLabel;
+    private Label originalOrderCustomerLabel;
+    private Label originalOrderVehicleLabel;
+    private Label originalOrderMechanicLabel;
 
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
@@ -182,10 +187,10 @@ public class CreateWorkOrderView {
         VBox customerVehicleSection = UIComponents.createFormSection();
         customerVehicleTitle = UIComponents.createSectionTitle(languageManager.getString("customerVehicleSection"));
 
-        customerLabel = UIComponents.createFormLabel(languageManager.getString("customerLabel"));
+        customerLabel = UIComponents.createFormLabel(languageManager.getString("customer"));
         customerComboBox = UIComponents.createComboBox();
 
-        vehicleLabel = UIComponents.createFormLabel(languageManager.getString("vehicleLabel"));
+        vehicleLabel = UIComponents.createFormLabel(languageManager.getString("vehicle"));
         vehicleComboBox = UIComponents.createComboBox();
 
         // Customer
@@ -285,7 +290,7 @@ public class CreateWorkOrderView {
         );
 
         //date
-        dateLabel = UIComponents.createFormLabel(languageManager.getString("dateLabel"));
+        dateLabel = UIComponents.createFormLabel(languageManager.getString("date"));
         datePicker = UIComponents.createDatePicker();
 
         VBox dateBox = new VBox(5);
@@ -321,7 +326,7 @@ public class CreateWorkOrderView {
 
         // Original work description
         descriptionLabel = UIComponents.createFormLabel(
-                languageManager.getString("descriptionLabel")
+                languageManager.getString("description")
         );
 
         descriptionField = new TextArea();
@@ -382,7 +387,7 @@ public class CreateWorkOrderView {
         // Services
         VBox servicesSection = UIComponents.createFormSection();
 
-        servicesTitle = UIComponents.createSectionTitle(languageManager.getString("servicesSection"));
+        servicesTitle = UIComponents.createSectionTitle(languageManager.getString("services"));
         servicesTable = UIComponents.createTable();
         servicesTable.setMaxWidth(Double.MAX_VALUE);
 
@@ -410,7 +415,7 @@ public class CreateWorkOrderView {
                 if (serviceComponent instanceof ServicePackage) {
                     return languageManager.getString("packageInListLabel") + ": " + serviceComponent.getName()
                             + " (" + serviceComponent.getServiceItems().size() + " "
-                            + languageManager.getString("packageInListServices") + ")";
+                            + languageManager.getString("services") + ")";
                 }
                 return serviceComponent.getName();
             }
@@ -429,9 +434,9 @@ public class CreateWorkOrderView {
                 addServiceButton
         );
 
-        serviceColumn = new TableColumn<>(languageManager.getString("serviceColumn"));
+        serviceColumn = new TableColumn<>(languageManager.getString("service"));
         timeColumn = new TableColumn<>(languageManager.getString("timeColumn"));
-        priceColumn = new TableColumn<>(languageManager.getString("priceColumn"));
+        priceColumn = new TableColumn<>(languageManager.getString("price"));
         costResponsibilityColumn = new TableColumn<>(languageManager.getString("costResponsibility"));
         actionColumn = new TableColumn<>(languageManager.getString("actionColumn"));
 
@@ -719,42 +724,35 @@ public class CreateWorkOrderView {
 
     // Skapar sektionen som visar en översikt av den valda ursprungliga arbetsordern
     private VBox createOriginalWorkOrderOverview() {
-        Label overviewTitle = UIComponents.createSectionTitle(languageManager.getString("selectedOriginalWorkOrder"));
-        overviewTitle.getStyleClass().add("original-work-order-title");
-        Label orderIdLabel = UIComponents.createFormLabel(languageManager.getString("originalOrderId"));
-        Label statusLabel = UIComponents.createFormLabel(languageManager.getString("originalOrderStatus"));
-        Label customerLabel = UIComponents.createFormLabel(languageManager.getString("originalOrderCustomer"));
-        Label vehicleLabel = UIComponents.createFormLabel(languageManager.getString("originalOrderVehicle"));
-        Label mechanicLabel = UIComponents.createFormLabel(languageManager.getString("originalOrderMechanic"));
+        originalWorkOrderTitle.getStyleClass().add("original-work-order-title");
+        originalOrderIdLabel = UIComponents.createFormLabel(languageManager.getString("originalOrderId"));
+        originalOrderStatusLabel = UIComponents.createFormLabel(languageManager.getString("status"));
+        originalOrderCustomerLabel = UIComponents.createFormLabel(languageManager.getString("originalOrderCustomer"));
+        originalOrderVehicleLabel = UIComponents.createFormLabel(languageManager.getString("vehicle"));
+        originalOrderMechanicLabel = UIComponents.createFormLabel(languageManager.getString("originalOrderMechanic"));
 
         GridPane grid = new GridPane();
-
         grid.setHgap(30);
         grid.setVgap(10);
 
-        grid.add(orderIdLabel, 0, 0);
+        grid.add(originalOrderIdLabel, 0, 0);
         grid.add(originalOrderIdValue, 1, 0);
 
-        grid.add(statusLabel, 0, 1);
+        grid.add(originalOrderStatusLabel, 0, 1);
         grid.add(originalOrderStatusValue, 1, 1);
 
-        grid.add(customerLabel, 0, 2);
+        grid.add(originalOrderCustomerLabel, 0, 2);
         grid.add(originalOrderCustomerValue, 1, 2);
 
-        grid.add(vehicleLabel, 0, 3);
+        grid.add(originalOrderVehicleLabel, 0, 3);
         grid.add(originalOrderVehicleValue, 1, 3);
 
-        grid.add(mechanicLabel, 0, 4);
+        grid.add(originalOrderMechanicLabel, 0, 4);
         grid.add(originalOrderMechanicValue, 1, 4);
 
         VBox overview = UIComponents.createFormSection();
-
         overview.getStyleClass().add("original-work-order-overview");
-
-        overview.getChildren().addAll(
-                overviewTitle,
-                grid
-        );
+        overview.getChildren().addAll(originalWorkOrderTitle, grid);
 
         return overview;
     }
@@ -891,17 +889,17 @@ public class CreateWorkOrderView {
         bookingLabel.setText(languageManager.getString("bookingLabel"));
         bookingDescription.setText(languageManager.getString("bookingDescription"));
         customerVehicleTitle.setText(languageManager.getString("customerVehicleSection"));
-        customerLabel.setText(languageManager.getString("customerLabel"));
-        vehicleLabel.setText(languageManager.getString("vehicleLabel"));
+        customerLabel.setText(languageManager.getString("customer"));
+        vehicleLabel.setText(languageManager.getString("vehicle"));
         orderInformationTitle.setText(languageManager.getString("orderInformationSection"));
         mechanicLabel.setText(languageManager.getString("mechanicLabel"));
-        dateLabel.setText(languageManager.getString("dateLabel"));
-        descriptionLabel.setText(languageManager.getString("descriptionLabel"));
+        dateLabel.setText(languageManager.getString("date"));
+        descriptionLabel.setText(languageManager.getString("description"));
         warrantyDescriptionLabel.setText(languageManager.getString("warrantyDescriptionLabel"));
-        servicesTitle.setText(languageManager.getString("servicesSection"));
-        serviceColumn.setText(languageManager.getString("serviceColumn"));
+        servicesTitle.setText(languageManager.getString("services"));
+        serviceColumn.setText(languageManager.getString("service"));
         timeColumn.setText(languageManager.getString("timeColumn"));
-        priceColumn.setText(languageManager.getString("priceColumn"));
+        priceColumn.setText(languageManager.getString("price"));
         costResponsibilityColumn.setText(languageManager.getString("costResponsibility"));
         actionColumn.setText(languageManager.getString("actionColumn"));
         selectServiceLabel.setText(languageManager.getString("selectService"));
@@ -913,11 +911,18 @@ public class CreateWorkOrderView {
         originalWorkOrderDescription.setText(languageManager.getString("originalWorkOrderDescription"));
         originalWorkOrderLabel.setText(languageManager.getString("originalWorkOrderLabel"));
 
+        originalWorkOrderTitle.setText(languageManager.getString("selectedOriginalWorkOrder"));
+        originalOrderIdLabel.setText(languageManager.getString("originalOrderId"));
+        originalOrderStatusLabel.setText(languageManager.getString("status"));
+        originalOrderCustomerLabel.setText(languageManager.getString("originalOrderCustomer"));
+        originalOrderVehicleLabel.setText(languageManager.getString("vehicle"));
+        originalOrderMechanicLabel.setText(languageManager.getString("originalOrderMechanic"));
+
         summaryTitle.setText(languageManager.getString("summaryTitle"));
         totalTimeTitle.setText(languageManager.getString("estimatedTotalTime"));
         totalPriceTitle.setText(languageManager.getString("estimatedTotalPrice"));
 
-        dateLabel.setText(languageManager.getString("dateLabel"));
+        dateLabel.setText(languageManager.getString("date"));
         backButton.setText(languageManager.getString("backButton"));
         nextButton.setText(languageManager.getString("nextButton"));
         saveDraftButton.setText(languageManager.getString("saveDraft"));

@@ -90,10 +90,10 @@ public class MechanicView {
                 languageManager.getString("workOrderBookingId"));
 
         servicesColumn = new TableColumn<>(
-                languageManager.getString("workOrderServices"));
+                languageManager.getString("services"));
 
         statusColumn = new TableColumn<>(
-                languageManager.getString("workOrderStatus"));
+                languageManager.getString("status"));
 
 
         workOrderIdColumn.setCellValueFactory(cell ->
@@ -223,11 +223,15 @@ public class MechanicView {
         specializationColumn = new TableColumn<>(
                         languageManager.getString("mechanicSpecialization")
                 );
+
         specializationColumn.setCellValueFactory(
                 cell -> new javafx.beans.property.SimpleStringProperty(
-                        cell.getValue().getSpecialization()
+                        getLocalizedSpecialization(
+                                cell.getValue().getSpecialization()
+                        )
                 )
         );
+
 
         availabilityColumn = new TableColumn<>(
                 languageManager.getString("available"));
@@ -296,6 +300,30 @@ public class MechanicView {
         mechanicWorkTable.refresh();
     }
 
+
+    //Översätter mekanikerns specialisering till valt gränssnittsspråk.
+    private String getLocalizedSpecialization(String specialization) {
+        if (specialization == null) {
+            return "";
+        }
+
+        switch (specialization.trim().toLowerCase(java.util.Locale.ROOT)) {
+            case "general service":
+                return languageManager.getString("specializationGeneralService");
+
+            case "brakes":
+                return languageManager.getString("specializationBrakes");
+
+            case "diagnostics":
+                return languageManager.getString("specializationDiagnostics");
+
+            default:
+                // Visar originalvärdet om specialiseringen saknar översättning.
+                return specialization;
+        }
+    }
+
+
     // Översätter arbetsorderns status utifrån valt gränssnittsspråk.
     private String getLocalizedWorkOrderStatus(String status) {
         switch (status) {
@@ -336,9 +364,10 @@ public class MechanicView {
 
         workOrderIdColumn.setText(languageManager.getString("workOrderId"));
         bookingIdColumn.setText(languageManager.getString("workOrderBookingId"));
-        servicesColumn.setText(languageManager.getString("workOrderServices"));
-        statusColumn.setText(languageManager.getString("workOrderStatus"));
+        servicesColumn.setText(languageManager.getString("services"));
+        statusColumn.setText(languageManager.getString("status"));
 
         mechanicWorkTable.refresh();
+        mechanicListView.refresh();
     }
 }

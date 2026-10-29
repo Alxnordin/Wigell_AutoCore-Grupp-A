@@ -301,7 +301,7 @@ public class InvoiceController {
 
         Map<String, String> confirmationDetails = new LinkedHashMap<>();
         confirmationDetails.put(languageManager.getString("invoiceNumber"), String.valueOf(invoice.getId()));
-        confirmationDetails.put(languageManager.getString("customerLabel"), customer.getName());
+        confirmationDetails.put(languageManager.getString("customer"), customer.getName());
         confirmationDetails.put(languageManager.getString("amount"), amount);
 
         Alert alert = UIComponents.createConfirmationAlert(heading, subHeading, confirmationDetails);

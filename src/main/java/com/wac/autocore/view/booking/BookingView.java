@@ -156,10 +156,10 @@ public class BookingView {
         date = UIComponents.createDatePicker();
 
         descriptionField = UIComponents.createTextField();
-        descriptionField.setPromptText(languageManager.getString("descriptionField"));
+        descriptionField.setPromptText(languageManager.getString("description"));
 
         VBox customerBox = new VBox(5);
-        customerLabel = UIComponents.createFormLabel(languageManager.getString("customerLabel"));
+        customerLabel = UIComponents.createFormLabel(languageManager.getString("customer"));
 
         //Obs! Kolla hur lösa detta i UIComponent ist.
         StackPane customerComboBoxContainer = new StackPane(customerComboBox);
@@ -190,11 +190,11 @@ public class BookingView {
         vehicleBox.getChildren().addAll(vehicleRegistrationNumber, vehicleComboBox, newVehicleButton);
 
         dateBox = UIComponents.createVBoxWithSpacing5();
-        dateLabel = UIComponents.createFormLabel(languageManager.getString("dateLabel"));
+        dateLabel = UIComponents.createFormLabel(languageManager.getString("date"));
         dateBox.getChildren().addAll(dateLabel, date);
 
         VBox descriptionBox = new VBox(5);
-        descriptionLabel = new Label(languageManager.getString("descriptionLabel"));
+        descriptionLabel = new Label(languageManager.getString("description"));
         descriptionLabel.getStyleClass().add("form-label");
         descriptionBox.getChildren().addAll(descriptionLabel, descriptionField);
 
@@ -209,7 +209,7 @@ public class BookingView {
     }
 
     private VBox buildSection2ServiceInformation() {
-        servicesTitle = UIComponents.createSectionTitle(languageManager.getString("servicesTitle"));
+        servicesTitle = UIComponents.createSectionTitle(languageManager.getString("services"));
         selectServiceLabel = UIComponents.createFormLabel(languageManager.getString("selectService"));
         selectedServicesLabel = UIComponents.createFormLabel(languageManager.getString("selectedServices"));
         noServicesLabel = UIComponents.createPlaceholderLabel(languageManager.getString("noServices"));
@@ -230,7 +230,7 @@ public class BookingView {
                 if (serviceComponent instanceof ServicePackage) {
                     return languageManager.getString("packageInListLabel") + ": " + serviceComponent.getName()
                             + " (" + serviceComponent.getServiceItems().size() + " "
-                            + languageManager.getString("packageInListServices") + ")";
+                            + languageManager.getString("services") + ")";
                 }
                 return serviceComponent.getName();}
 
@@ -246,9 +246,9 @@ public class BookingView {
         // Servicetabell
         servicesTable = UIComponents.createTable();
 
-        serviceColumn = new TableColumn<>(languageManager.getString("serviceColumn"));
+        serviceColumn = new TableColumn<>(languageManager.getString("service"));
         timeColumn = new TableColumn<>(languageManager.getString("timeColumn"));
-        priceColumn = new TableColumn<>(languageManager.getString("priceColumn"));
+        priceColumn = new TableColumn<>(languageManager.getString("price"));
 
         deleteColumn = new TableColumn<>();
         deleteColumn.setPrefWidth(60);
@@ -404,22 +404,22 @@ public class BookingView {
         newBookingFromPrevoiusBookingButton.setText(languageManager.getString("newBookingFromPrevoiusBookingButton"));
         bookingInformationTitle.setText("1. " + languageManager.getString("bookingInformationTitle"));
         vehicleRegistrationNumber.setText(languageManager.getString("vehicleRegistrationNumber"));
-        dateLabel.setText(languageManager.getString("dateLabel"));
-        descriptionLabel.setText(languageManager.getString("descriptionLabel"));
-        servicesTitle.setText("2. " + languageManager.getString("servicesTitle"));
-        customerLabel.setText(languageManager.getString("customerLabel"));
-        serviceColumn.setText(languageManager.getString("serviceColumn"));
+        dateLabel.setText(languageManager.getString("date"));
+        descriptionLabel.setText(languageManager.getString("description"));
+        servicesTitle.setText("2. " + languageManager.getString("services"));
+        customerLabel.setText(languageManager.getString("customer"));
+        serviceColumn.setText(languageManager.getString("service"));
         selectServiceLabel.setText(languageManager.getString("selectService"));
         selectedServicesLabel.setText(languageManager.getString("selectedServices"));
         timeColumn.setText(languageManager.getString("timeColumn"));
-        priceColumn.setText(languageManager.getString("priceColumn"));
+        priceColumn.setText(languageManager.getString("price"));
         noServicesLabel.setText(languageManager.getString("noServices"));
         addServiceButton.setText(languageManager.getString("addService"));
         summaryTitle.setText("3. " + languageManager.getString("summaryTitle"));
         totalTimeTitle.setText(languageManager.getString("estimatedTotalTime"));
         totalPriceTitle.setText(languageManager.getString("estimatedTotalPrice"));
 
-        descriptionField.setPromptText(languageManager.getString("descriptionField"));
+        descriptionField.setPromptText(languageManager.getString("description"));
         createBookingButton.setText(languageManager.getString("createBookingButton"));
         cancelBookingButton.setText(languageManager.getString("cancelBookingButton"));
         backButton.setText(languageManager.getString("backButton"));
