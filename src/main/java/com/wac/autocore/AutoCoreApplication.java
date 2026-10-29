@@ -43,12 +43,16 @@ import javafx.scene.image.ImageView;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.GrantedAuthority;
 
 //JavaFX startpunkt, bygger upp scenen/fönstret, skapar vyer och kontroller, och styr växling mellan de olika vyerna
 public class AutoCoreApplication extends Application {
 
     private BorderPane borderPane;
     private Stage stage;
+    private Label userLabel;
 
     //***** SPRING *******
     private CustomerService customerService;
@@ -118,6 +122,9 @@ public class AutoCoreApplication extends Application {
                         : "EN"
         );
 
+        userLabel = new Label();
+        userLabel.getStyleClass().add("user-label");
+
         HBox languageContent = new HBox(8, globeIcon, languageLabel);
         languageContent.setAlignment(Pos.CENTER);
 
@@ -145,6 +152,9 @@ public class AutoCoreApplication extends Application {
 
         StackPane header = new StackPane();
 
+        HBox rightHeader = new HBox(15, userLabel, languageButton);
+        rightHeader.setAlignment(Pos.CENTER_RIGHT);
+
         // Logotyp till vänster
         StackPane.setAlignment(logoView, Pos.CENTER_LEFT);
         StackPane.setMargin(logoView, new Insets(0, 0, 0, 15));
@@ -152,8 +162,8 @@ public class AutoCoreApplication extends Application {
         StackPane.setAlignment(languageButton, Pos.CENTER_RIGHT);
         StackPane.setMargin(languageButton, new Insets(0, 15, 0, 0));
 
-        header.getChildren().addAll(logoView, languageButton);
-
+        //header.getChildren().addAll(logoView, languageButton);
+        header.getChildren().addAll(logoView, rightHeader);
         languageButton.setOnAction(e -> {
             languageManager.changeLanguage();
         });
@@ -193,6 +203,8 @@ public class AutoCoreApplication extends Application {
         String password = loginView.getPassword();
 
         if (loginController.login(username, password)){
+
+            userLabel.setText(getLoggedInRole());
             new MainMenuController(this, borderPane);
             showMainMenu();
         }else{
@@ -201,11 +213,32 @@ public class AutoCoreApplication extends Application {
         });
         borderPane.setCenter(loginView.getView());
     }
+    //Hämtar användarnamnet (t.ex. admin) som ska synas
+    private String getLoggedInRole(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication == null || !authentication.isAuthenticated()){
+            return "";
+        }
+
+        for(GrantedAuthority authority : authentication.getAuthorities()){
+            switch(authority.getAuthority()){
+                case "ROLE_ADMIN":
+                    return "Admin";
+                case "ROLE_WORKSHOP":
+                    return "Verkstad";
+                case "ROLE_READ_ONLY":
+                    return "Läsare";
+            }
+        }
+        return authentication.getName();
+    }
 
     public void logout(){
         LoginController loginController = springContext.getBean(LoginController.class);
 
         loginController.logout();
+        userLabel.setText("");
         showLoginView();
     }
 
