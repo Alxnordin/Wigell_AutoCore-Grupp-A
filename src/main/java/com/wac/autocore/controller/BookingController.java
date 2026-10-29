@@ -53,7 +53,7 @@ public class BookingController {
         this.bookingView = bookingView;
         this.bookingListView = bookingListView;
         bookingView.getCustomerComboBox().getItems().setAll(customerService.getAllCustomers());
-        bookingView.getVehicleComboBox().getItems().setAll(vehicleService.getVehicles());
+        //bookingView.getVehicleComboBox().getItems().setAll(vehicleService.getVehicles());
 
         wireEvents();
         refreshBookingList();
@@ -82,6 +82,7 @@ public class BookingController {
                 (ListChangeListener<ServiceItem>) change -> updateNewBookingSummary());
 
         bookingView.getCreateBookingButton().setOnAction(actionEvent -> createBooking());
+        bookingView.getCustomerComboBox().setOnAction(event -> updateVehicleChoices());
 
         bookingListView.setOnCreateWorkOrder(booking -> openCreateWorkOrder(booking));
         bookingListView.setOnViewBooking(booking -> openBookingDetails(booking));
@@ -142,6 +143,21 @@ public class BookingController {
         } catch (Exception e) {
             ErrorHandler.show(e);
         }
+    }
+    //Ny metod som gör att man bara kan välja bil som hör till aktuell kund
+    private void updateVehicleChoices(){
+        var customer = bookingView.getCustomerComboBox().getValue();
+        var vehicleComboBox = bookingView.getVehicleComboBox();
+
+        vehicleComboBox.setValue(null);
+
+        if (customer == null){
+            vehicleComboBox.getItems().clear();
+            return;
+        }
+        vehicleComboBox.getItems().setAll(vehicleService.getVehicles().stream().filter
+                (vehicle -> vehicle.getCustomerId() == customer.getId()).toList());
+
     }
 
     //Alexander
@@ -411,12 +427,14 @@ public class BookingController {
     private void refreshBookingList() {
         Booking selectedBooking = bookingListView.getBookingTable().getSelectionModel().getSelectedItem();
 
-        bookingListView.getBookingTable().getItems().setAll(bookingService.getBookings());
+        //bookingListView.getBookingTable().getItems().setAll(bookingService.getBookings());
+        bookingListView.getObservableBookingList().setAll(bookingService.getBookings());
 
         if (selectedBooking != null) {
             for (Booking booking : bookingListView.getBookingTable().getItems()) {
                 if (booking.getId() == selectedBooking.getId()) {
                     bookingListView.getBookingTable().getSelectionModel().select(booking);
+                    break;
                 }
             }
         }

@@ -252,31 +252,44 @@ public class BookingListView {
                 createOrderColumn,
                 viewAndEditColumn);
 
+        bookingTable.setItems(filteredBookingList);
         return bookingTable;
     }
 
-    //EJ KLAR
+
     public HBox buildSearchSection() {
         searchField = new TextField();
         HBox searchBox = UIComponents.createSearchBox(searchField);
         searchField.setPromptText(languageManager.getString("searchTextField"));
 
-//        searchField.textProperty().addListener((
-//                observable, oldValue, newValue) -> {
-//            filteredBookingList.setPredicate(booking -> {
-//
-//                if (newValue == null || newValue.isEmpty()) {
-//                    return true;
-//                }
-//
-//                return booking.getDescription().toLowerCase().contains(newValue.toLowerCase());
-//
-//            });
-//        });
-//
-//        observableBookingList = FXCollections.observableArrayList();
-//        filteredBookingList = new FilteredList<>(observableBookingList, customer -> true);
-//        bookingTable.setItems(filteredBookingList);
+        observableBookingList = FXCollections.observableArrayList();
+        filteredBookingList = new FilteredList<>(observableBookingList, booking -> true);
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            String searchText = newValue == null ? "" : newValue.trim().toLowerCase(java.util.Locale.ROOT);
+
+            filteredBookingList.setPredicate(booking ->{
+                if(searchText.isEmpty()){
+                    return true;
+                }
+                String id = String.valueOf(booking.getId());
+                String date = String.valueOf(booking.getDate());
+                String description = booking.getDescription() == null ? "" : booking.getDescription();
+                String status = String.valueOf(booking.getStatus());
+                String registrationNumber = "";
+                if (getRegistrationNumber != null) {
+                    String result = getRegistrationNumber.apply(booking.getVehicleId());
+                    registrationNumber = result == null ? "" : result;
+                    }
+                return id.contains(searchText) ||
+                        date.toLowerCase(java.util.Locale.ROOT).contains(searchText) ||
+                        description.toLowerCase(java.util.Locale.ROOT).contains(searchText) ||
+                        status.toLowerCase(java.util.Locale.ROOT).contains(searchText) ||
+                        registrationNumber.toLowerCase(java.util.Locale.ROOT).contains(searchText);
+
+
+            });
+        });
 
         return searchBox;
     }
