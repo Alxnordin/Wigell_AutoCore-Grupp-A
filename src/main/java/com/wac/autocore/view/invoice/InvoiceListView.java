@@ -72,7 +72,7 @@ public class InvoiceListView {
         amountColumn = new TableColumn<>(languageManager.getString("amountInTable"));
         discountColumn = new TableColumn<>(languageManager.getString("discountInTable"));
         totalColumn = new TableColumn<>(languageManager.getString("totalInTable"));
-        paidColumn = new TableColumn<>(languageManager.getString("statusLabel"));
+        paidColumn = new TableColumn<>(languageManager.getString("status"));
         actionColumn = new TableColumn<>(languageManager.getString("actionInTable"));
 
         invoiceIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -301,7 +301,7 @@ public class InvoiceListView {
         amountColumn.setText(languageManager.getString("amountInTable"));
         discountColumn.setText(languageManager.getString("discountInTable"));
         totalColumn.setText(languageManager.getString("totalInTable"));
-        paidColumn.setText(languageManager.getString("statusLabel"));
+        paidColumn.setText(languageManager.getString("status"));
         actionColumn.setText(languageManager.getString("actionInTable"));
         createInvoiceButton.setText(languageManager.getString("createInvoiceButton"));
         paymentHistoryButton.setText(languageManager.getString("paymentHistoryButton"));

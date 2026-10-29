@@ -68,7 +68,7 @@ public class InvoiceDetailsView {
         VBox invoiceDateBox = UIComponents.createVBoxWithSpacing6();
         invoiceDateBox.getChildren().addAll(invoiceDate, invoiceDateValue);
 
-        customerNameLabel = UIComponents.createInfoLabel(languageManager.getString("customerNameLabel"));
+        customerNameLabel = UIComponents.createInfoLabel(languageManager.getString("customer"));
         Label customerNameValue = UIComponents.createValueLabel(customer.getName());
         VBox customerNameBox = UIComponents.createVBoxWithSpacing6();
         customerNameBox.getChildren().addAll(customerNameLabel, customerNameValue);
@@ -78,7 +78,7 @@ public class InvoiceDetailsView {
         VBox customerPhoneBox = UIComponents.createVBoxWithSpacing6();
         customerPhoneBox.getChildren().addAll(customerPhoneLabel, customerPhoneValue);
 
-        vehicleLabel = UIComponents.createInfoLabel(languageManager.getString("vehicleLabelInvoice"));
+        vehicleLabel = UIComponents.createInfoLabel(languageManager.getString("vehicle"));
         Label vehicleValue = UIComponents.createValueLabel(vehicle.getRegistrationNumber());
         VBox vehicleBox = UIComponents.createVBoxWithSpacing6();
         vehicleBox.getChildren().addAll(vehicleLabel, vehicleValue);
@@ -88,7 +88,7 @@ public class InvoiceDetailsView {
         VBox mechanicBox = UIComponents.createVBoxWithSpacing6();
         mechanicBox.getChildren().addAll(mechanicNameLabel, mechanicNameValue);
 
-        statusLabel = UIComponents.createInfoLabel(languageManager.getString("statusLabel"));
+        statusLabel = UIComponents.createInfoLabel(languageManager.getString("status"));
 
         if (invoice.isPaid()) {
             statusText = languageManager.getString("paid");
@@ -132,8 +132,8 @@ public class InvoiceDetailsView {
         VBox invoiceLinesBox = UIComponents.createSectionBox();
 
         invoiceTableView = UIComponents.createTable();
-        serviceColumn = new TableColumn<>(languageManager.getString("serviceColumn"));
-        priceColumn = new TableColumn<>(languageManager.getString("priceColumn"));
+        serviceColumn = new TableColumn<>(languageManager.getString("service"));
+        priceColumn = new TableColumn<>(languageManager.getString("price"));
         discountColumn = new TableColumn<>(languageManager.getString("discountColumn"));
         totalAmount = new TableColumn<>(languageManager.getString("totalPriceColumn"));
 
@@ -207,9 +207,9 @@ public class InvoiceDetailsView {
         subtitle.setText(languageManager.getString("invoiceSubtitle"));
 
         invoiceDate.setText(languageManager.getString("invoiceDate"));
-        customerNameLabel.setText(languageManager.getString("customerNameLabel"));
+        customerNameLabel.setText(languageManager.getString("customer"));
         customerPhoneLabel.setText(languageManager.getString("customerPhoneLabel"));
-        vehicleLabel.setText(languageManager.getString("vehicleLabelInvoice"));
+        vehicleLabel.setText(languageManager.getString("vehicle"));
         mechanicNameLabel.setText(languageManager.getString("mechanicNameLabel"));
 
         if (invoice.isPaid()) {
@@ -218,8 +218,8 @@ public class InvoiceDetailsView {
             statusValue.setText(languageManager.getString("unpaid"));
         }
 
-        serviceColumn.setText(languageManager.getString("serviceColumn"));
-        priceColumn.setText(languageManager.getString("priceColumn"));
+        serviceColumn.setText(languageManager.getString("service"));
+        priceColumn.setText(languageManager.getString("price"));
         discountColumn.setText(languageManager.getString("discountColumn"));
         totalAmount.setText(languageManager.getString("totalPriceColumn"));
         totalTitle.setText(languageManager.getString("totalPriceColumn"));

@@ -157,8 +157,8 @@ public class OrderListView {
         orderIdColumn = new TableColumn<>(languageManager.getString("orderIdInTable"));
         bookingIdColumn = new TableColumn<>(languageManager.getString("bookingIdInTable"));
         mechanicIdColumn = new TableColumn<>(languageManager.getString("mechanicIdInTable"));
-        serviceColumn = new TableColumn<>(languageManager.getString("serviceItemIdsInTable"));
-        statusColumn = new TableColumn<>(languageManager.getString("statusInTable"));
+        serviceColumn = new TableColumn<>(languageManager.getString("services"));
+        statusColumn = new TableColumn<>(languageManager.getString("status"));
         actionColumn = new TableColumn<>(languageManager.getString("actionInTable"));
 
         // Visar arbetsorder-ID som WO-1, WO-2 osv.
@@ -413,8 +413,8 @@ public class OrderListView {
         orderIdColumn.setText(languageManager.getString("orderIdInTable"));
         bookingIdColumn.setText(languageManager.getString("bookingIdInTable"));
         mechanicIdColumn.setText(languageManager.getString("mechanicIdInTable"));
-        serviceColumn.setText(languageManager.getString("serviceItemIdsInTable"));
-        statusColumn.setText(languageManager.getString("statusInTable"));
+        serviceColumn.setText(languageManager.getString("services"));
+        statusColumn.setText(languageManager.getString("status"));
         actionColumn.setText(languageManager.getString("actionInTable"));
         backButton.setText(languageManager.getString("backButton"));
         createOrderButton.setText(languageManager.getString("createOrderButton"));

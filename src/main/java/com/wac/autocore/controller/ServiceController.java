@@ -30,6 +30,8 @@ public class ServiceController {
     private final ServiceItemView serviceItemView;
     private final MechanicView mechanicView;
 
+    private Integer selectedMechanicId;
+
     LanguageManager languageManager = LanguageManager.getInstance();
 
     public ServiceController(ServiceItemService serviceItemService, MechanicService mechanicService, WorkOrderService workOrderService, AutoCoreApplication app,
@@ -44,9 +46,21 @@ public class ServiceController {
         wireEvents();
         refreshLists();
 
-        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
-            refreshLists();
-        });
+        languageManager.localeProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    // Uppdaterar tabellerna efter språkbytet.
+                    refreshLists();
+
+                    // Återställer arbetet utifrån det sparade mekaniker-ID:t.
+                    if (selectedMechanicId != null) {
+                        mechanicService.getMechanics().stream()
+                                .filter(mechanic ->
+                                        mechanic.getId() == selectedMechanicId)
+                                .findFirst()
+                                .ifPresent(this::showMechanicWork);
+                    }
+                }
+        );
     }
 
     public void refreshLists() {
@@ -60,18 +74,19 @@ public class ServiceController {
         mechanicView.getMechanicListView().getItems().setAll(
                 mechanicService.getMechanics()
         );
-
-        mechanicView.getMechanicWorkTable().getItems().clear();
     }
 
     private void wireEvents() {
-        // Hämtar den valda mekanikern direkt från tabellen.
+        // Sparar mekanikerns ID och visar dennes arbetsordrar.
         mechanicView.getMechanicListView()
                 .getSelectionModel()
                 .selectedItemProperty()
-                .addListener((observable, oldMechanic, selectedMechanic) ->
-                        showMechanicWork(selectedMechanic)
-                );
+                .addListener((observable, oldMechanic, selectedMechanic) -> {
+                    if (selectedMechanic != null) {
+                        selectedMechanicId = selectedMechanic.getId();
+                        showMechanicWork(selectedMechanic);
+                    }
+                });
 
         // Tillbaka från tjänster går till serviceöversikten.
         serviceItemView.getBackButton().setOnAction(

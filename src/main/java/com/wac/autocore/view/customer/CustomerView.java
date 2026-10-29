@@ -90,9 +90,9 @@ public class CustomerView {
     public Button getBackButton() {return backButton;}
 
     private VBox buildFirstNameVBox()   {
-        firstNameLabel = UIComponents.createFormLabel(languageManager.getString("firstNameLabel"));
+        firstNameLabel = UIComponents.createFormLabel(languageManager.getString("firstName"));
         firstNameField = UIComponents.createTextField();
-        firstNameField.setPromptText(languageManager.getString("firstNameField"));
+        firstNameField.setPromptText(languageManager.getString("firstName"));
 
         VBox firstNameVBox = UIComponents.createVBoxWithSpacing5();
         firstNameVBox.getChildren().addAll(firstNameLabel, firstNameField);
@@ -183,8 +183,8 @@ public class CustomerView {
         title.setText(languageManager.getString("customerViewTitle"));
         subtitle.setText(languageManager.getString("customerViewSubtitle"));
 
-        firstNameLabel.setText(languageManager.getString("firstNameLabel"));
-        firstNameField.setPromptText(languageManager.getString("firstNameField"));
+        firstNameLabel.setText(languageManager.getString("firstName"));
+        firstNameField.setPromptText(languageManager.getString("firstName"));
 
         lastNameLabel.setText(languageManager.getString("lastNameLabel"));
         lastNameField.setPromptText(languageManager.getString("lastNameField"));

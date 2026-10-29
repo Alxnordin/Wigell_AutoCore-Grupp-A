@@ -308,9 +308,9 @@ public class StartView {
     // Uppdaterar bokningstabellens rubriker efter valt språk.
     private void updateBookingColumnHeaders() {
         bookingRegistrationColumn.setText(languageManager.getString("startTableRegistration"));
-        bookingCustomerColumn.setText(languageManager.getString("startTableCustomer"));
-        bookingDescriptionColumn.setText(languageManager.getString("startTableDescription"));
-        bookingStatusColumn.setText(languageManager.getString("startTableStatus"));
+        bookingCustomerColumn.setText(languageManager.getString("customer"));
+        bookingDescriptionColumn.setText(languageManager.getString("description"));
+        bookingStatusColumn.setText(languageManager.getString("status"));
     }
 
 
@@ -370,8 +370,8 @@ public class StartView {
     private void updateWorkOrderColumnHeaders() {
         workOrderIdColumn.setText(languageManager.getString("startWorkOrderTableId"));
         workOrderRegistrationColumn.setText(languageManager.getString("startTableRegistration"));
-        workOrderServiceColumn.setText(languageManager.getString("startTableService"));
-        workOrderStatusColumn.setText(languageManager.getString("startTableStatus"));
+        workOrderServiceColumn.setText(languageManager.getString("service"));
+        workOrderStatusColumn.setText(languageManager.getString("status"));
     }
 
 

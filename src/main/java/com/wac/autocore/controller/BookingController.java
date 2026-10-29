@@ -458,9 +458,9 @@ public class BookingController {
         confirmationDetails.put(languageManager.getString("name"), customer.getName());
         confirmationDetails.put(languageManager.getString("registrationNumber"),
                 vehicle.getRegistrationNumber());
-        confirmationDetails.put(languageManager.getString("dateLabel"),
+        confirmationDetails.put(languageManager.getString("date"),
                 String.valueOf(booking.getDate()));
-        confirmationDetails.put(languageManager.getString("servicesTitle"), serviceNames);
+        confirmationDetails.put(languageManager.getString("services"), serviceNames);
         confirmationDetails.put(languageManager.getString("estimatedTotalTime"),
                 formatTotalTime(services));
         confirmationDetails.put(languageManager.getString("estimatedTotalPrice"),

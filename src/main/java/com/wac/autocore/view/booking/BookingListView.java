@@ -135,11 +135,11 @@ public class BookingListView {
         dateColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(String.valueOf(cellData.getValue().getDate())));
 
-        descriptionColumn = new TableColumn<>(languageManager.getString("descriptionInTable"));
+        descriptionColumn = new TableColumn<>(languageManager.getString("description"));
         descriptionColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getDescription()));
 
-        statusColumn = new TableColumn<>(languageManager.getString("statusInTable"));
+        statusColumn = new TableColumn<>(languageManager.getString("status"));
 
         // Centrerar statusbadgarna i betalningshistoriken.
         UIComponents.centerTableColumn(statusColumn);
@@ -285,8 +285,8 @@ public class BookingListView {
         idColumn.setText(languageManager.getString("bookingIdBookingTable"));
         vehicleColumn.setText(languageManager.getString("regNrBookingTable"));
         dateColumn.setText(languageManager.getString("dateInTable"));
-        descriptionColumn.setText(languageManager.getString("descriptionInTable"));
-        statusColumn.setText(languageManager.getString("statusInTable"));
+        descriptionColumn.setText(languageManager.getString("description"));
+        statusColumn.setText(languageManager.getString("status"));
         addBookingButton.setText(languageManager.getString("addBookingButton"));
         createOrderColumn.setText(languageManager.getString("createOrderColumn"));
         viewAndEditColumn.setText(languageManager.getString("actionColumn"));

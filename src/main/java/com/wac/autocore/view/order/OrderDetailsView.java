@@ -85,7 +85,7 @@ public class OrderDetailsView {
         VBox bookingInfoBox = UIComponents.createSectionBox();
 
         // Customer;
-        customerLabel = UIComponents.createInfoLabel(languageManager.getString("customerLabel"));
+        customerLabel = UIComponents.createInfoLabel(languageManager.getString("customer"));
         Label customerValue = UIComponents.createValueLabel(customer.getName());
 
         VBox customerBox = UIComponents.createVBoxWithSpacing6();
@@ -95,7 +95,7 @@ public class OrderDetailsView {
         );
 
         // Vehicle
-        vehicleLabel = UIComponents.createInfoLabel(languageManager.getString("vehicleLabel"));
+        vehicleLabel = UIComponents.createInfoLabel(languageManager.getString("vehicle"));
         Label vehicleValue = UIComponents.createValueLabel(vehicle.getRegistrationNumber());
 
         VBox vehicleBox = UIComponents.createVBoxWithSpacing6();
@@ -105,7 +105,7 @@ public class OrderDetailsView {
         );
 
         // Booking date
-        dateLabel = UIComponents.createInfoLabel(languageManager.getString("dateLabel"));
+        dateLabel = UIComponents.createInfoLabel(languageManager.getString("date"));
         //Alexander
         //drop-in saknar bokning och därmed bokningsdatum
         Label dateValue = UIComponents.createValueLabel(booking != null ? booking.getDate().toString() : "--");
@@ -171,7 +171,7 @@ public class OrderDetailsView {
         );
 
         // Status
-        statusLabel = new Label(languageManager.getString("statusLabel"));
+        statusLabel = new Label(languageManager.getString("status"));
         statusLabel.getStyleClass().add("info-label");
         statusValue = new Label(languageManager.getString("statusCreated"));
 
@@ -232,7 +232,7 @@ public class OrderDetailsView {
         );
 
         // Description
-        descriptionLabel = new Label(languageManager.getString("descriptionLabel"));
+        descriptionLabel = new Label(languageManager.getString("description"));
         descriptionLabel.getStyleClass().add("info-label");
 
         //Alexander
@@ -260,14 +260,14 @@ public class OrderDetailsView {
         );
 
         VBox servicesBox = UIComponents.createSectionBox();
-        servicesTitle = UIComponents.createSectionTitle(languageManager.getString("servicesTitle"));
+        servicesTitle = UIComponents.createSectionTitle(languageManager.getString("services"));
 
         //TableView<ServiceItem> servicesTable = UIComponents.createTable();
         servicesTable = UIComponents.createTable();
 
-        serviceColumn = new TableColumn<>(languageManager.getString("serviceInTable"));
+        serviceColumn = new TableColumn<>(languageManager.getString("service"));
         timeColumn = new TableColumn<>(languageManager.getString("estimatedTimeInTable"));
-        priceColumn = new TableColumn<>(languageManager.getString("priceInTable"));
+        priceColumn = new TableColumn<>(languageManager.getString("price"));
         deleteServiceColumn = new TableColumn<>(languageManager.getString("deleteServiceInTable"));
 
         serviceColumn.setCellValueFactory(
@@ -566,17 +566,17 @@ public class OrderDetailsView {
         title.setText(languageManager.getString("workOrderTitle") + " #" + workOrder.getId());
         subtitle.setText(languageManager.getString("workOrderSubtitle"));
 
-        customerLabel.setText(languageManager.getString("customerLabel"));
-        vehicleLabel.setText(languageManager.getString("vehicleLabel"));
-        dateLabel.setText(languageManager.getString("dateLabel"));
+        customerLabel.setText(languageManager.getString("customer"));
+        vehicleLabel.setText(languageManager.getString("vehicle"));
+        dateLabel.setText(languageManager.getString("date"));
         mechanicLabel.setText(languageManager.getString("mechanicLabel"));
-        descriptionLabel.setText(languageManager.getString("descriptionLabel"));
-        statusLabel.setText(languageManager.getString("statusLabel"));
+        descriptionLabel.setText(languageManager.getString("description"));
+        statusLabel.setText(languageManager.getString("status"));
 
-        servicesTitle.setText(languageManager.getString("servicesTitle"));
-        serviceColumn.setText(languageManager.getString("serviceInTable"));
+        servicesTitle.setText(languageManager.getString("services"));
+        serviceColumn.setText(languageManager.getString("service"));
         timeColumn.setText(languageManager.getString("estimatedTimeInTable"));
-        priceColumn.setText(languageManager.getString("priceInTable"));
+        priceColumn.setText(languageManager.getString("price"));
         summaryTitle.setText(languageManager.getString("summaryTitle"));
         totalTimeTitle.setText(languageManager.getString("estimatedTotalTime"));
         totalPriceTitle.setText(languageManager.getString("estimatedTotalPrice"));

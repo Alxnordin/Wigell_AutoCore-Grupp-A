@@ -36,7 +36,7 @@ public class MainMenuView {
         VBox menu = new VBox();
         menu.getStyleClass().add("main-menu");
 
-        customersButton = UIComponents.createMenuButton(languageManager.getString("customersButton"), "fa-user");
+        customersButton = UIComponents.createMenuButton(languageManager.getString("customers"), "fa-user");
         menu.getChildren().add(buildSection(customersButton));
 
         vehiclesButton = UIComponents.createMenuButton(languageManager.getString("vehiclesButton"), "fa-car");
@@ -50,7 +50,7 @@ public class MainMenuView {
 
         // Skapar Service-knappen utan undermeny.
         servicesButton = UIComponents.createMenuButton(
-                languageManager.getString("servicesButton"),
+                languageManager.getString("service"),
                 "fa-wrench");
         menu.getChildren().add(buildSection(servicesButton));
 
@@ -90,7 +90,7 @@ public class MainMenuView {
     }
 
     public void changeTextAllComponents() {
-        customersButton.setText(languageManager.getString("customersButton"));
+        customersButton.setText(languageManager.getString("customers"));
 
         vehiclesButton.setText(languageManager.getString("vehiclesButton"));
 //        showVehiclesButton.setText(languageManager.getString("showVehicles"));
@@ -100,7 +100,7 @@ public class MainMenuView {
 //        showBookingsButton.setText(languageManager.getString("showBookings"));
 //        addBookingButton.setText(languageManager.getString("addBooking"));
 
-        servicesButton.setText(languageManager.getString("servicesButton"));
+        servicesButton.setText(languageManager.getString("service"));
 
         ordersButton.setText(languageManager.getString("ordersButton"));
 

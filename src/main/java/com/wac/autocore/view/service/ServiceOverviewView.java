@@ -161,7 +161,7 @@ public class ServiceOverviewView {
 
     // Hämtar alla synliga texter från språkfilerna.
     private void changeTextAllComponents() {
-        titleLabel.setText(languageManager.getString("serviceOverviewTitle"));
+        titleLabel.setText(languageManager.getString("service"));
         subtitleLabel.setText(languageManager.getString("serviceOverviewSubtitle"));
         servicesTitle.setText(languageManager.getString("showServices"));
         servicesDescription.setText(languageManager.getString("serviceOverviewServicesDescription"));
