@@ -1,5 +1,6 @@
 package com.wac.autocore.view;
 
+import com.wac.autocore.model.WorkOrderType;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
@@ -886,6 +887,39 @@ public class UIComponents {
         return dialog;
     }
 
+
+    // Skapar en färgad badge beroende på arbetsorderns typ.
+    public static Label createOrderTypeBadge(WorkOrderType type, String text) {
+
+        Label badge = new Label(text);
+
+        // Gemensam utformning för alla ordertyper.
+        badge.setPadding(new Insets(6, 12, 6, 12));
+        badge.setAlignment(Pos.CENTER);
+        badge.setStyle(
+                "-fx-background-radius: 15;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        // Varje ordertyp får sin egen färg.
+        if (type == WorkOrderType.PLANNED) {
+            badge.setStyle(badge.getStyle() +
+                    "-fx-background-color: #DCE8F5;" +
+                    "-fx-text-fill: #315B85;");
+
+        } else if (type == WorkOrderType.DROP_IN) {
+            badge.setStyle(badge.getStyle() +
+                    "-fx-background-color: #FBE7D8;" +
+                    "-fx-text-fill: #A65B26;");
+
+        } else if (type == WorkOrderType.WARRANTY) {
+            badge.setStyle(badge.getStyle() +
+                    "-fx-background-color: #E9DFF3;" +
+                    "-fx-text-fill: #704A91;");
+        }
+
+        return badge;
+    }
 
 }
 

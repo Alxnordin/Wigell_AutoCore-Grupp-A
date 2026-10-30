@@ -70,6 +70,25 @@ public class WorkOrder {
         this.bookingId = bookingId;
     }
 
+    // Avgör vilken typ av arbetsorder det är.
+    public WorkOrderType getWorkOrderType() {
+
+        // Utkast har ännu ingen fastställd ordertyp.
+        if ("DRAFT".equals(status)) {
+            return null;
+        }
+
+        if (complaint) {
+            return WorkOrderType.WARRANTY;
+        }
+
+        if (bookingId != null) {
+            return WorkOrderType.PLANNED;
+        }
+
+        return WorkOrderType.DROP_IN;
+    }
+
     public int getMechanicId() {
         return mechanicId;
     }

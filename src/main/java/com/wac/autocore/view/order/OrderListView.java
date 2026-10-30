@@ -2,9 +2,14 @@ package com.wac.autocore.view.order;
 
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.WorkOrder;
+import com.wac.autocore.model.WorkOrderType;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -12,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -22,7 +28,7 @@ public class OrderListView {
     private final TableView<WorkOrder> orderTable;
 
     private final TableColumn<WorkOrder, String> orderIdColumn;
-    private final TableColumn<WorkOrder, String> bookingIdColumn;
+    private final TableColumn<WorkOrder, WorkOrderType> orderTypeColumn;
     private final TableColumn<WorkOrder, String> mechanicIdColumn;
     private final TableColumn<WorkOrder, String> serviceColumn;
     private final TableColumn<WorkOrder, String> statusColumn;
@@ -50,6 +56,11 @@ public class OrderListView {
 
     private Function<Integer, String> getMechanicName;
     private Function<Integer, ServiceItem> getServiceItem;
+
+    private final TextField searchField;
+    private final ObservableList<WorkOrder> allOrders = FXCollections.observableArrayList();
+    private final FilteredList<WorkOrder> filteredOrders =
+            new FilteredList<>(allOrders, order -> true);
 
     LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -151,11 +162,25 @@ public class OrderListView {
         //Underrubrik
         subtitle = UIComponents.createSubtitle(languageManager.getString("ordersSubtitle"));
 
+        // Skapar sökrutan med samma utseende som i bokningsvyn.
+        searchField = UIComponents.createTextField();
+        searchField.setPromptText(languageManager.getString("searchTextField"));
+
+        HBox searchBox = UIComponents.createSearchBox(searchField);
+
+        // Kopplar sökfältet till filtreringen.
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterOrders(newValue);
+        });
+
         //Tabell
         orderTable = UIComponents.createTable();
 
+        // Kopplar tabellen till den filtrerade listan.
+        orderTable.setItems(filteredOrders);
+
         orderIdColumn = new TableColumn<>(languageManager.getString("orderIdInTable"));
-        bookingIdColumn = new TableColumn<>(languageManager.getString("bookingIdInTable"));
+        orderTypeColumn = new TableColumn<>(languageManager.getString("orderType"));
         mechanicIdColumn = new TableColumn<>(languageManager.getString("mechanicIdInTable"));
         serviceColumn = new TableColumn<>(languageManager.getString("services"));
         statusColumn = new TableColumn<>(languageManager.getString("status"));
@@ -168,13 +193,46 @@ public class OrderListView {
                 )
         );
 
-        // Visar boknings-ID som Bokning #1, Bokning #2 osv.
-        bookingIdColumn.setCellValueFactory(
-                cellData -> new SimpleStringProperty(
-                        languageManager.getString("bookingNumber")
-                                + " #"
-                                + cellData.getValue().getBookingId()
+        // Hämtar arbetsorderns typ till tabellens ordertypskolumn.
+        orderTypeColumn.setCellValueFactory(cellData ->
+                new SimpleObjectProperty<>(
+                        cellData.getValue().getWorkOrderType()
                 )
+        );
+
+        // Visar arbetsorderns typ som en färgad badge.
+        orderTypeColumn.setCellFactory(column ->
+                new TableCell<WorkOrder, WorkOrderType>() {
+
+                    @Override
+                    protected void updateItem(WorkOrderType type, boolean empty) {
+                        super.updateItem(type, empty);
+
+                        if (empty) {
+                            setGraphic(null);
+                            setText(null);
+                            return;
+                        }
+
+                        // Utkast utan fastställd ordertyp visas med ett streck.
+                        if (type == null) {
+                            setGraphic(null);
+                            setText("—");
+                            return;
+                        }
+
+                        // Hämtar texten på det språk som är aktivt.
+                        String translatedType = getTranslatedOrderType(type);
+
+                        // Skapar och visar rätt färgad badge.
+                        setText(null);
+                        setGraphic(
+                                UIComponents.createOrderTypeBadge(type, translatedType)
+                        );
+
+                        setAlignment(Pos.CENTER);
+                    }
+                }
         );
 
         // Visar mekanikerns namn istället för mekaniker-ID
@@ -315,12 +373,23 @@ public class OrderListView {
 
                 WorkOrder workOrder = getTableView().getItems().get(getIndex());
 
+                // Anpassar knappens text efter arbetsorderns status.
                 if ("DRAFT".equals(workOrder.getStatus())) {
-                    // Visar Continue med pennikon för utkast.
+
+                    // Utkast kan fortsättas och redigeras.
                     actionButton.setText(languageManager.getString("continueDraft"));
                     actionButton.setGraphic(pencilIcon);
+
+                } else if ("CREATED".equals(workOrder.getStatus())
+                        || "IN_PROGRESS".equals(workOrder.getStatus())) {
+
+                    // Skapade och pågående arbetsordrar kan hanteras.
+                    actionButton.setText(languageManager.getString("manageWork"));
+                    actionButton.setGraphic(new FontIcon("fa-wrench"));
+
                 } else {
-                    // Behåller View för övriga arbetsordrar.
+
+                    // Slutförda arbetsordrar kan endast visas.
                     actionButton.setText(languageManager.getString("viewOrder"));
                     actionButton.setGraphic(new FontIcon("fa-eye"));
                 }
@@ -332,7 +401,7 @@ public class OrderListView {
         //lägg till kolumner
         orderTable.getColumns().addAll(
                 orderIdColumn,
-                bookingIdColumn,
+                orderTypeColumn,
                 mechanicIdColumn,
                 serviceColumn,
                 statusColumn,
@@ -344,12 +413,11 @@ public class OrderListView {
         //tillbakaknapp
         backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
 
-
-
         //lägg till allt i layouten
         box.getChildren().addAll(
                 orderHeader,
                 subtitle,
+                searchBox,
                 orderTable,
                 backButton
         );
@@ -368,6 +436,10 @@ public class OrderListView {
     public void setOnViewOrder(Consumer<WorkOrder> onViewOrder) {
         this.onViewOrder = onViewOrder;}
 
+    public void setOrders(Collection<WorkOrder> orders) {
+        allOrders.setAll(orders);
+    }
+
     // Kopplar vyn till controllerns hantering av utkast.
     public void setOnContinueDraft(Consumer<WorkOrder> onContinueDraft) {
         this.onContinueDraft = onContinueDraft;
@@ -383,6 +455,89 @@ public class OrderListView {
 
     public void setGetServiceItem(Function<Integer, ServiceItem> getServiceItem) {
          this.getServiceItem = getServiceItem;
+    }
+
+    // Filtrerar arbetsordrar utifrån söktexten.
+    private void filterOrders(String searchText) {
+
+        String search = searchText == null
+                ? ""
+                : searchText.trim().toLowerCase();
+
+        filteredOrders.setPredicate(workOrder -> {
+
+            // Visa alla arbetsordrar om sökfältet är tomt.
+            if (search.isEmpty()) {
+                return true;
+            }
+
+            String orderId = "WO-" + workOrder.getId();
+
+            // Hämtar arbetsorderns översatta typ för sökningen.
+            String orderType = getTranslatedOrderType(workOrder.getWorkOrderType());
+
+            String mechanic = getMechanicName.apply(
+                    workOrder.getMechanicId()
+            );
+
+            String services = workOrder.getServiceItemIds()
+                    .stream()
+                    .map(serviceId -> getServiceItem.apply(serviceId))
+                    .filter(service -> service != null)
+                    .map(service -> getTranslatedServiceName(service.getName()))
+                    .collect(java.util.stream.Collectors.joining(", "));
+
+            // Hämtar statusens översättning.
+            String status = getTranslatedStatus(workOrder.getStatus());
+
+            // Söker bland arbetsorderns viktigaste uppgifter.
+            return orderId.toLowerCase().contains(search)
+                    || orderType.toLowerCase().contains(search)
+                    || mechanic.toLowerCase().contains(search)
+                    || services.toLowerCase().contains(search)
+                    || status.toLowerCase().contains(search);
+        });
+    }
+
+
+
+    // Översätter arbetsorderns status till det aktiva språket.
+    private String getTranslatedStatus(String status) {
+
+        switch (status) {
+            case "CREATED":
+                return languageManager.getString("statusCreated");
+            case "IN_PROGRESS":
+                return languageManager.getString("statusInProgress");
+            case "COMPLETED":
+                return languageManager.getString("statusCompleted");
+            case "DRAFT":
+                return languageManager.getString("statusDraft");
+            default:
+                return status;
+        }
+    }
+
+    // Översätter arbetsorderns typ till det aktiva språket.
+    private String getTranslatedOrderType(WorkOrderType type) {
+
+        if (type == null) {
+            return "—";
+        }
+
+        switch (type) {
+            case PLANNED:
+                return languageManager.getString("plannedOrder");
+
+            case DROP_IN:
+                return languageManager.getString("dropInOrder");
+
+            case WARRANTY:
+                return languageManager.getString("warrantyOrder");
+
+            default:
+                return "";
+        }
     }
 
     // Översätter service-namn beroende på valt språk
@@ -410,8 +565,9 @@ public class OrderListView {
     public void changeTextAllComponents() {
         title.setText(languageManager.getString("ordersTitle"));
         subtitle.setText(languageManager.getString("ordersSubtitle"));
+        searchField.setPromptText(languageManager.getString("searchTextField"));
         orderIdColumn.setText(languageManager.getString("orderIdInTable"));
-        bookingIdColumn.setText(languageManager.getString("bookingIdInTable"));
+        orderTypeColumn.setText(languageManager.getString("orderType"));
         mechanicIdColumn.setText(languageManager.getString("mechanicIdInTable"));
         serviceColumn.setText(languageManager.getString("services"));
         statusColumn.setText(languageManager.getString("status"));

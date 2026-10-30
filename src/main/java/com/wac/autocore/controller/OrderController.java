@@ -1074,16 +1074,11 @@ public class OrderController {
     }
 
 
-    // Uppdatera arbetsorder-tabellen
+    // Hämtar arbetsordrar och uppdaterar listan i vyn.
     private void refreshOrderList() {
-
-        orderListView
-                .getOrderTable()
-                .getItems()
-                .setAll(
-                        workOrderService
-                                .findAllWorkOrders()
-                );
+        orderListView.setOrders(
+                workOrderService.findAllWorkOrders()
+        );
     }
 
 
