@@ -156,11 +156,12 @@ public class OrderController {
                     );
 
             detailsView.setOnMechanicChange(mechanic -> {
-                workOrderService.updateMechanic(
-                        workOrder,
-                        mechanic.getId()
-                );
-            });
+                        try {
+                            workOrderService.updateMechanic(workOrder, mechanic.getId());
+                        } catch (Exception e) {
+                            ErrorHandler.show(e);
+                        }
+                    });
 
 
             detailsView.setOnDeleteService(serviceItem -> {
@@ -185,14 +186,15 @@ public class OrderController {
                     return;
                 }
 
-                workOrderService.removeServiceItemFromWorkOrder(
-                        workOrder,
-                        serviceItem.getId()
-                );
+                try {
+                    workOrderService.removeServiceItemFromWorkOrder(
+                            workOrder, serviceItem.getId()
+                    );
 
-                detailsView.removeServiceFromTable(
-                        serviceItem
-                );
+                    detailsView.removeServiceFromTable(serviceItem);
+                } catch (Exception e) {
+                    ErrorHandler.show(e);
+                }
             });
 
 
@@ -202,25 +204,33 @@ public class OrderController {
             );
 
 
+
+            //om servicen nekar (fel status, mekaniker upptagen, saknar behörighet)
+            //visas felet och statusen i vyn ändras inte
             detailsView.setOnStatusChange(newStatus -> {
-                if ("IN_PROGRESS".equals(newStatus)) {
-                    workOrderService.startWorkOrder(workOrder.getId());
+                try {
+                    if ("IN_PROGRESS".equals(newStatus)) {
+                        workOrderService.startWorkOrder(workOrder.getId());
 
-                    // Uppdaterar objektet som vyn använder.
-                    workOrder.setStatus("IN_PROGRESS");
+                        // Uppdaterar objektet som vyn använder.
+                        workOrder.setStatus("IN_PROGRESS");
 
-                } else if ("COMPLETED".equals(newStatus)) {
-                    workOrderService.completeWorkOrder(workOrder.getId());
+                    } else if ("COMPLETED".equals(newStatus)) {
+                        workOrderService.completeWorkOrder(workOrder.getId());
 
-                    // Uppdaterar objektet som vyn använder.
-                    workOrder.setStatus("COMPLETED");
+                        // Uppdaterar objektet som vyn använder.
+                        workOrder.setStatus("COMPLETED");
+                    }
+
+                    // Visar den nya statusen och uppdaterar knapparna.
+                    detailsView.updateStatus();
+
+                    showStatusChangeConfirmation(newStatus, workOrder.getId());
+                    showOrderList();
+
+                } catch (Exception e) {
+                    ErrorHandler.show(e);
                 }
-
-                // Visar den nya statusen och uppdaterar knapparna.
-                detailsView.updateStatus();
-
-                showStatusChangeConfirmation(newStatus, workOrder.getId());
-                showOrderList();
             });
 
 
@@ -508,19 +518,23 @@ public class OrderController {
                 return;
             }
 
-            // Sparar utkastet med vald kund, fordon, mekaniker och tjänster.
-            WorkOrder draft = workOrderService.createDraftWorkOrder(
-                    customer.getId(),
-                    vehicle.getId(),
-                    description,
-                    mechanic.getId(),
-                    serviceIds
-            );
 
-            if (draft != null) {
+            //servicen validerar utkastet och kastar exception vid fel, formuläret ligger då kvar
+            try {
+                // Sparar utkastet med vald kund, fordon, mekaniker och tjänster.
+                WorkOrder draft = workOrderService.createDraftWorkOrder(
+                        customer.getId(),
+                        vehicle.getId(),
+                        description,
+                        mechanic.getId(),
+                        serviceIds
+                );
 
                 showConfirmationSavedDraft(draft);
                 showOrderList();
+
+            } catch (Exception e) {
+                ErrorHandler.show(e);
             }
         });
 
@@ -668,26 +682,26 @@ public class OrderController {
                 return;
             }
 
-            // Färdigställer det befintliga utkastet med dess nuvarande ID.
-            WorkOrder completedDraft = workOrderService.completeDraftWorkOrder(
-                    draft.getId(),
-                    mechanic.getId(),
-                    serviceIds
-            );
+            //servicen kastar exception med rätt orsak t.ex. mekanikern är inte ledig
+            //så felet visas via ErrorHandler istället för en fast text
+            try {
+                // Färdigställer det befintliga utkastet med dess nuvarande ID.
+                WorkOrder completedDraft = workOrderService.completeDraftWorkOrder(
+                        draft.getId(),
+                        mechanic.getId(),
+                        serviceIds
+                );
 
-
-            if (completedDraft != null) {
-                // Visar bekräftelse när utkastet har färdigställts.
+                //visar bekräftelse när utkastet har färdigställts.
                 showConfirmationOrderCreated(completedDraft);
                 showOrderList();
-            } else {
-                // Visar felruta om utkastet inte kunde färdigställas.
-                showWarning(languageManager.getString("mechanicNotAvailable"));
-            }
 
+            } catch (Exception e) {
+                ErrorHandler.show(e);
+            }
         });
 
-        // Visar det förifyllda formuläret.
+        //visar det förifyllda formuläret.
         app.showView(view.getView());
     }
 
@@ -805,19 +819,26 @@ public class OrderController {
                 return;
         }
 
-        // Hämtar rätt skapare och låter den validera och skapa arbetsordern.
-        WorkOrderCreator creator = workOrderFactory.getCreator(type);
-        WorkOrder workOrder = creator.createOrder(view);
+//skaparen kontrollerar formuläret (returnerar null om något saknas),
+        //servicen kontrollerar reglerna och kastar exception, t.ex. om mekanikern redan är bokad
+        try {
+            // Hämtar rätt skapare och låter den validera och skapa arbetsordern.
+            WorkOrderCreator creator = workOrderFactory.getCreator(type);
+            WorkOrder workOrder = creator.createOrder(view);
 
-        if (workOrder == null) {
-            return;
+            if (workOrder == null) {
+                return;
+            }
+
+            //behåller samma bekräftelser som tidigare.
+            showConfirmationOrderCreated(workOrder);
+
+            //uppdaterar listan och återgår till den.
+            showOrderList();
+
+        } catch (Exception e) {
+            ErrorHandler.show(e);
         }
-
-        // Behåller samma bekräftelser som tidigare.
-        showConfirmationOrderCreated(workOrder);
-
-        // Uppdaterar listan och återgår till den.
-        showOrderList();
     }
 
 
