@@ -2,6 +2,7 @@ package com.wac.autocore.view.order;
 
 import com.wac.autocore.model.*;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.UIComponents;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -295,7 +296,7 @@ public class OrderDetailsView {
                         price = serviceItem.getPrice();
                     }
 
-                    return new javafx.beans.property.SimpleStringProperty(UIComponents.formatPrice(price));
+                    return new javafx.beans.property.SimpleStringProperty(PriceFormatter.formatPrice(price));
                 }
         );
 
@@ -480,7 +481,7 @@ public class OrderDetailsView {
         double totalPrice = services.stream().mapToDouble(serviceItem ->
                 workOrder.getServiceItemPrices().getOrDefault(serviceItem.getId(), serviceItem.getPrice())).sum();
 
-        showSummary(totalMinutes + " min", UIComponents.formatPrice(totalPrice));
+        showSummary(totalMinutes + " min", PriceFormatter.formatPrice(totalPrice));
     }
 
 

@@ -2,6 +2,7 @@ package com.wac.autocore.view.booking;
 
 import com.wac.autocore.model.*;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -333,7 +334,7 @@ public class BookingDetailsView {
                 new SimpleStringProperty(cellData.getValue().getEstimatedMinutes() + " min"));
 
         priceColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getPrice())));
+                new SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getPrice())));
 
         serviceColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.48));
         timeColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.24));
@@ -401,7 +402,7 @@ public class BookingDetailsView {
         }
 
         totalTimeValue = new Label(totalMinutes + " min");
-        totalPriceValue = new Label(UIComponents.formatPrice(totalPrice));
+        totalPriceValue = new Label(PriceFormatter.formatPrice(totalPrice));
 
         VBox timeCard = UIComponents.createSummaryCard("fa-clock-o", totalTimeTitle, totalTimeValue);
         VBox priceCard = UIComponents.createSummaryCard("fa-money", totalPriceTitle, totalPriceValue);

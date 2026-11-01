@@ -2,6 +2,7 @@ package com.wac.autocore.view.invoice;
 
 import com.wac.autocore.model.*;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -138,7 +139,7 @@ public class InvoiceDetailsView {
         totalAmount = new TableColumn<>(languageManager.getString("totalPriceColumn"));
 
         totalTitle = new Label(languageManager.getString("totalPriceColumn"));
-        Label totalValue = new Label(UIComponents.formatPrice(invoice.getTotalAmount()));
+        Label totalValue = new Label(PriceFormatter.formatPrice(invoice.getTotalAmount()));
 
         VBox totalCard = UIComponents.createSummaryCard("fa-money", totalTitle, totalValue);
         HBox totalBox = new HBox();
@@ -151,13 +152,13 @@ public class InvoiceDetailsView {
                         .getServiceItemDescription()));
 
         priceColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getServiceItemPrice())));
+                new SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getServiceItemPrice())));
 
         discountColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getDiscount())));
+                new SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getDiscount())));
 
         totalAmount.setCellValueFactory(cellData ->
-                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getFinalPricePerServiceAfterDiscount())));
+                new SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getFinalPricePerServiceAfterDiscount())));
 
         serviceColumn.prefWidthProperty().bind(invoiceTableView.widthProperty().multiply(0.45));
         priceColumn.prefWidthProperty().bind(invoiceTableView.widthProperty().multiply(0.20));

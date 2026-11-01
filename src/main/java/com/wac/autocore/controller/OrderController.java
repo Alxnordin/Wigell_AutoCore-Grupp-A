@@ -13,6 +13,7 @@ import com.wac.autocore.model.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.service.interf.WorkOrderService;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.UIComponents;
 import com.wac.autocore.view.order.CreateWorkOrderView;
@@ -1184,7 +1185,7 @@ public class OrderController {
         String heading = languageManager.getString("invoiceConfirmationHeading");
         String subHeading = languageManager.getString("invoiceConfirmationSubHeading");
 
-        String amount = UIComponents.formatPrice(invoice.getTotalAmount());
+        String amount = PriceFormatter.formatPrice(invoice.getTotalAmount());
         Customer customer = invoiceService.findCustomerForInvoice(invoice);
 
         Map<String, String> confirmationDetails = new LinkedHashMap<>();
@@ -1245,7 +1246,7 @@ public class OrderController {
             return "--";
         }
 
-        return UIComponents.formatPrice(bookingService.calculateTotalPrice(services));
+        return PriceFormatter.formatPrice(bookingService.calculateTotalPrice(services));
     }
 
     private String getMechanicName(int mechanicId) {

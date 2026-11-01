@@ -3,6 +3,7 @@ package com.wac.autocore.view.service;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.ServicePackage;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
@@ -99,7 +100,7 @@ public class ServicePackageView {
         totalPriceColumn = new TableColumn<>(languageManager.getString("" +
                 "packageTotalPriceColumn"));
         totalPriceColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getPrice())));
+                new SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getPrice())));
 
 
         //paketets namn får mer plats än dom andra kolumnerna
@@ -151,7 +152,7 @@ public class ServicePackageView {
         priceColumn =new TableColumn<>(languageManager.getString("" +
                 "priceColumn"));
         priceColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getPrice())));
+                new SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getPrice())));
 
         serviceColumn.setPrefWidth(300);
         timeColumn.setPrefWidth(150);

@@ -2,6 +2,7 @@ package com.wac.autocore.view.invoice;
 
 import com.wac.autocore.model.Invoice;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -151,13 +152,13 @@ public class InvoiceListView {
         invoiceDateColumn.setCellValueFactory(new PropertyValueFactory<>("invoiceDate"));
 
         amountColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getAmount())));
+                new SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getAmount())));
 
         discountColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getDiscount())));
+                new SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getDiscount())));
 
         totalColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getTotalAmount())));
+                new SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getTotalAmount())));
 
         paidColumn.setCellValueFactory(cellData -> {
             Invoice invoice = cellData.getValue();

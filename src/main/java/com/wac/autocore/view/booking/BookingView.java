@@ -6,6 +6,7 @@ import com.wac.autocore.model.ServicePackage;
 import com.wac.autocore.model.Vehicle;
 import com.wac.autocore.util.LanguageManager;
 
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.UIComponents;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -258,7 +259,7 @@ public class BookingView {
         timeColumn.setCellValueFactory(cellData ->
                 new javafx.beans.property.SimpleStringProperty(cellData.getValue().getEstimatedMinutes() + " min"));
         priceColumn.setCellValueFactory(cellData ->
-                new javafx.beans.property.SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getPrice())));
+                new javafx.beans.property.SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getPrice())));
 
         //radera raden
         deleteColumn.setCellFactory(column -> new TableCell<ServiceItem, Void>() {

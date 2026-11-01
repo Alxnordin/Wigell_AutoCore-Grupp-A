@@ -2,19 +2,17 @@
 package com.wac.autocore.view.payment;
 
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.UIComponents;
 
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.text.NumberFormat;
 import java.time.LocalDate;
-import java.util.Locale;
 import java.util.Optional;
 
 public class RegisterPaymentDialog {
@@ -194,9 +192,7 @@ public class RegisterPaymentDialog {
         amountDescriptionLabel.getStyleClass().add("payment-amount-description");
 
         // Beloppet visas tydligt och formateras efter valt språk.
-        remainingAmountLabel = UIComponents.createValueLabel(
-                formatAmount(remainingAmount) + " SEK"
-        );
+        remainingAmountLabel = UIComponents.createValueLabel(PriceFormatter.formatPrice(remainingAmount));
         remainingAmountLabel.getStyleClass().add("payment-amount-value");
 
         dateLabel = UIComponents.createFormLabel(
@@ -225,15 +221,15 @@ public class RegisterPaymentDialog {
 
 
     // Formaterar belopp med samma decimalformat som användarens språk.
-    private String formatAmount(double amount) {
-        Locale locale = languageManager.localeProperty().get();
-
-        NumberFormat formatter = NumberFormat.getNumberInstance(locale);
-        formatter.setMinimumFractionDigits(2);
-        formatter.setMaximumFractionDigits(2);
-
-        return formatter.format(amount);
-    }
+//    private String formatAmount(double amount) {
+//        Locale locale = languageManager.localeProperty().get();
+//
+//        NumberFormat formatter = NumberFormat.getNumberInstance(locale);
+//        formatter.setMinimumFractionDigits(2);
+//        formatter.setMaximumFractionDigits(2);
+//
+//        return formatter.format(amount);
+//    }
 
     // Öppnar dialogen och returnerar uppgifterna om användaren bekräftar.
     public Optional<PaymentDetails> showAndWait() {

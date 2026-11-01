@@ -2,7 +2,7 @@ package com.wac.autocore.view.service;
 
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.util.LanguageManager;
-import com.wac.autocore.view.UIComponents;
+import com.wac.autocore.util.PriceFormatter;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -55,7 +55,7 @@ public class ServiceItemCell extends ListCell<ServiceItem> {
         }
 
         nameLabel.setText(serviceItem.getName());
-        priceLabel.setText(UIComponents.formatPrice(serviceItem.getPrice()));
+        priceLabel.setText(PriceFormatter.formatPrice(serviceItem.getPrice()));
 
         setGraphic(changePriceButton.getParent());
     }

@@ -2,6 +2,7 @@ package com.wac.autocore.view.service;
 
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Parent;
@@ -58,7 +59,7 @@ public class ServiceItemView {
 
         priceColumn = new TableColumn<>(languageManager.getString("price"));
         priceColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getPrice())));
+                new SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getPrice())));
         actionColumn = new TableColumn<>(languageManager.getString("changePrice"));
 
         serviceItemTableView.getColumns().addAll(nameColumn, priceColumn, actionColumn);
@@ -85,7 +86,7 @@ public class ServiceItemView {
     public TableView<ServiceItem> getServiceItemTableView() { return serviceItemTableView; }
     public Button getBackButton() { return backButton; }
     public String getPrice(ServiceItem serviceItem){
-        String price = UIComponents.formatPrice(serviceItem.getPrice());
+        String price = PriceFormatter.formatPrice(serviceItem.getPrice());
         return price;
     }
 

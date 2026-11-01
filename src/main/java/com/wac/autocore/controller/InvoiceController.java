@@ -2,9 +2,9 @@ package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.*;
-import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.UIComponents;
 import com.wac.autocore.view.invoice.InvoiceDetailsView;
@@ -213,7 +213,7 @@ public class InvoiceController {
         String heading = languageManager.getString("confirmationPaymentHeading");
         String subHeading = languageManager.getString("confirmationPaymentSubHeading");
 
-        String amount = UIComponents.formatPrice(payment.getAmount());
+        String amount = PriceFormatter.formatPrice(payment.getAmount());
         String paymentTypeText;
 
         switch (paymentTypeCode) {
@@ -255,7 +255,7 @@ public class InvoiceController {
         String heading = languageManager.getString("invoiceConfirmationHeading");
         String subHeading = languageManager.getString("invoiceConfirmationSubHeading");
 
-        String amount = UIComponents.formatPrice(invoice.getTotalAmount());
+        String amount = PriceFormatter.formatPrice(invoice.getTotalAmount());
         Customer customer = invoiceService.findCustomerForInvoice(invoice);
 
         Map<String, String> confirmationDetails = new LinkedHashMap<>();

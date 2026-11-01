@@ -8,6 +8,7 @@ import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.WorkOrder;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.UIComponents;
 import com.wac.autocore.view.mechanic.MechanicView;
@@ -16,7 +17,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -159,7 +159,7 @@ public class ServiceController {
         Map<String, String> confirmationDetails = new LinkedHashMap<>();
         confirmationDetails.put(languageManager.getString("service"), serviceItem.getName());
         confirmationDetails.put(languageManager.getString("oldPrice"), oldPrice);
-        confirmationDetails.put(languageManager.getString("newPrice"), UIComponents.formatPrice(serviceItem.getPrice()));
+        confirmationDetails.put(languageManager.getString("newPrice"), PriceFormatter.formatPrice(serviceItem.getPrice()));
 
         Alert alert = UIComponents.createConfirmationAlert(header, subheader, confirmationDetails);
         alert.showAndWait();

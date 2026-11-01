@@ -2,6 +2,7 @@ package com.wac.autocore.view.order;
 
 import com.wac.autocore.model.*;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.UIComponents;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -458,7 +459,7 @@ public class CreateWorkOrderView {
 
         priceColumn.setCellValueFactory(
                 cellData -> new javafx.beans.property.SimpleStringProperty(
-                        UIComponents.formatPrice(cellData.getValue().getPrice())
+                        PriceFormatter.formatPrice(cellData.getValue().getPrice())
                 )
         );
 
@@ -825,7 +826,7 @@ public class CreateWorkOrderView {
         }
 
         totalTimeLabel.setText(totalMinutes + " min");
-        totalPriceLabel.setText(UIComponents.formatPrice(totalPrice));
+        totalPriceLabel.setText(PriceFormatter.formatPrice(totalPrice));
     }
 
 

@@ -4,6 +4,7 @@ import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.ErrorHandler;
 import com.wac.autocore.view.UIComponents;
 import com.wac.autocore.view.booking.BookingDetailsView;
@@ -500,7 +501,7 @@ public class BookingController {
             return "--";
         }
 
-        return UIComponents.formatPrice(bookingService.calculateTotalPrice(services));
+        return PriceFormatter.formatPrice(bookingService.calculateTotalPrice(services));
     }
 
     private void refreshBookingList() {
