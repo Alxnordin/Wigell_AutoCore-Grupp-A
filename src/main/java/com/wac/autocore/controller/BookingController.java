@@ -500,7 +500,7 @@ public class BookingController {
             return "--";
         }
 
-        return String.format("%,.0f kr", bookingService.calculateTotalPrice(services));
+        return UIComponents.formatPrice(bookingService.calculateTotalPrice(services));
     }
 
     private void refreshBookingList() {

@@ -458,7 +458,7 @@ public class CreateWorkOrderView {
 
         priceColumn.setCellValueFactory(
                 cellData -> new javafx.beans.property.SimpleStringProperty(
-                        String.format("%.2f kr", cellData.getValue().getPrice())
+                        UIComponents.formatPrice(cellData.getValue().getPrice())
                 )
         );
 
@@ -825,7 +825,7 @@ public class CreateWorkOrderView {
         }
 
         totalTimeLabel.setText(totalMinutes + " min");
-        totalPriceLabel.setText(String.format("%,.0f kr", totalPrice));
+        totalPriceLabel.setText(UIComponents.formatPrice(totalPrice));
     }
 
 

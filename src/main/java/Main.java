@@ -9,7 +9,6 @@ import com.wac.autocore.model.WorkOrder;
 import com.wac.autocore.repository.*;
 import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.interf.*;
-import com.wac.autocore.exception.ValidationException;
 import com.wac.autocore.util.LanguageManager;
 import org.slf4j.MDC;
 
@@ -22,7 +21,6 @@ public class Main {
 
     private static final Scanner scanner = new Scanner(System.in);
     private static final LanguageManager languageManager = LanguageManager.getInstance();
-    //private static final GarageSystem garageSystem = new GarageSystem();
 
     public static void main(String[] args) {
 

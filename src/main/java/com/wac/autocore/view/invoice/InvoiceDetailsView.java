@@ -138,7 +138,7 @@ public class InvoiceDetailsView {
         totalAmount = new TableColumn<>(languageManager.getString("totalPriceColumn"));
 
         totalTitle = new Label(languageManager.getString("totalPriceColumn"));
-        Label totalValue = new Label(String.format("%.2f kr", invoice.getTotalAmount()));
+        Label totalValue = new Label(UIComponents.formatPrice(invoice.getTotalAmount()));
 
         VBox totalCard = UIComponents.createSummaryCard("fa-money", totalTitle, totalValue);
         HBox totalBox = new HBox();
@@ -150,14 +150,14 @@ public class InvoiceDetailsView {
                 cellData -> new SimpleStringProperty(cellData.getValue()
                         .getServiceItemDescription()));
 
-        priceColumn.setCellValueFactory(cellData -> new SimpleStringProperty(
-                        String.format("%.2f kr", cellData.getValue().getServiceItemPrice())));
+        priceColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getServiceItemPrice())));
 
         discountColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(String.format("%.2f kr", cellData.getValue().getDiscount())));
+                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getDiscount())));
 
         totalAmount.setCellValueFactory(cellData ->
-                new SimpleStringProperty(String.format("%.2f kr", cellData.getValue().getFinalPricePerServiceAfterDiscount())));
+                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getFinalPricePerServiceAfterDiscount())));
 
         serviceColumn.prefWidthProperty().bind(invoiceTableView.widthProperty().multiply(0.45));
         priceColumn.prefWidthProperty().bind(invoiceTableView.widthProperty().multiply(0.20));

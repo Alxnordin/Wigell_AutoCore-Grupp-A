@@ -3,6 +3,7 @@ package com.wac.autocore.view.service;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,7 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.TableCell;
@@ -34,7 +34,7 @@ public class ServiceItemView {
     private Button backButton;
 
     private TableColumn<ServiceItem, String> nameColumn;
-    private TableColumn<ServiceItem, Double> priceColumn;
+    private TableColumn<ServiceItem, String> priceColumn;
     private TableColumn<ServiceItem, Void> actionColumn;
 
     LanguageManager languageManager = LanguageManager.getInstance();
@@ -57,7 +57,8 @@ public class ServiceItemView {
                         getLocalizedServiceName(cell.getValue().getName())));
 
         priceColumn = new TableColumn<>(languageManager.getString("price"));
-        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        priceColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getPrice())));
         actionColumn = new TableColumn<>(languageManager.getString("changePrice"));
 
         serviceItemTableView.getColumns().addAll(nameColumn, priceColumn, actionColumn);
@@ -84,7 +85,7 @@ public class ServiceItemView {
     public TableView<ServiceItem> getServiceItemTableView() { return serviceItemTableView; }
     public Button getBackButton() { return backButton; }
     public String getPrice(ServiceItem serviceItem){
-        String price = String.valueOf(serviceItem.getPrice());
+        String price = UIComponents.formatPrice(serviceItem.getPrice());
         return price;
     }
 
@@ -155,7 +156,6 @@ public class ServiceItemView {
                 return serviceName;
         }
     }
-
 
 
     public void changeTextAllComponents() {

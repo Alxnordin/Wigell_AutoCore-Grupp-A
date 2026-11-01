@@ -295,9 +295,7 @@ public class OrderDetailsView {
                         price = serviceItem.getPrice();
                     }
 
-                    return new javafx.beans.property.SimpleStringProperty(
-                            String.format("%.2f kr", price)
-                    );
+                    return new javafx.beans.property.SimpleStringProperty(UIComponents.formatPrice(price));
                 }
         );
 
@@ -482,7 +480,7 @@ public class OrderDetailsView {
         double totalPrice = services.stream().mapToDouble(serviceItem ->
                 workOrder.getServiceItemPrices().getOrDefault(serviceItem.getId(), serviceItem.getPrice())).sum();
 
-        showSummary(totalMinutes + " min", String.format("%.0f kr", totalPrice));
+        showSummary(totalMinutes + " min", UIComponents.formatPrice(totalPrice));
     }
 
 

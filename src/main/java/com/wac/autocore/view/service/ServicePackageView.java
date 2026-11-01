@@ -99,7 +99,7 @@ public class ServicePackageView {
         totalPriceColumn = new TableColumn<>(languageManager.getString("" +
                 "packageTotalPriceColumn"));
         totalPriceColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(String.format("%,.0f kr",cellData.getValue().getPrice())));
+                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getPrice())));
 
 
         //paketets namn får mer plats än dom andra kolumnerna
@@ -151,7 +151,7 @@ public class ServicePackageView {
         priceColumn =new TableColumn<>(languageManager.getString("" +
                 "priceColumn"));
         priceColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(String.format("%.2f kr", cellData.getValue().getPrice())));
+                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getPrice())));
 
         serviceColumn.setPrefWidth(300);
         timeColumn.setPrefWidth(150);

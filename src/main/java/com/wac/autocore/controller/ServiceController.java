@@ -97,10 +97,6 @@ public class ServiceController {
                 event -> app.showServiceOverviewView());
 
         serviceItemView.setOnChangePrice(serviceItem -> {
-//            TextInputDialog dialog = new TextInputDialog(String.valueOf(serviceItem.getPrice()));
-//            dialog.setTitle(languageManager.getString("changePrice"));
-//            dialog.setHeaderText(serviceItem.getName());
-//            dialog.setContentText(languageManager.getString("newPrice"));
             TextInputDialog dialog = UIComponents.createPriceInputDialog(
                     languageManager.getString("changePrice"), serviceItem.getName(),
                     languageManager.getString("newPrice"), String.valueOf(serviceItem.getPrice()));
@@ -110,11 +106,18 @@ public class ServiceController {
             //(tidigare skrevs felet bara ut i konsolen och användaren såg ingenting)
             dialog.showAndWait().ifPresent(input -> {
                 try {
+
+                    String oldPrice = serviceItemView.getPrice(serviceItem);
+
                     serviceItemService.changeServicePrice(serviceItem.getId(), input);
                     refreshLists();
 
-                    String oldPrice = serviceItemView.getPrice(serviceItem);
-                    showConfirmation(serviceItem, oldPrice);
+                    ServiceItem updatedServiceItem = serviceItemService.getServiceItems().stream()
+                            .filter(item -> item.getId() == serviceItem.getId())
+                            .findFirst()
+                            .orElse(serviceItem);
+
+                    showConfirmation(updatedServiceItem, oldPrice);
 
                 } catch (Exception e) {
                     ErrorHandler.show(e);
@@ -156,7 +159,7 @@ public class ServiceController {
         Map<String, String> confirmationDetails = new LinkedHashMap<>();
         confirmationDetails.put(languageManager.getString("service"), serviceItem.getName());
         confirmationDetails.put(languageManager.getString("oldPrice"), oldPrice);
-        confirmationDetails.put(languageManager.getString("newPrice"), String.valueOf(serviceItem.getPrice()));
+        confirmationDetails.put(languageManager.getString("newPrice"), UIComponents.formatPrice(serviceItem.getPrice()));
 
         Alert alert = UIComponents.createConfirmationAlert(header, subheader, confirmationDetails);
         alert.showAndWait();

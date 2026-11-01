@@ -333,7 +333,7 @@ public class BookingDetailsView {
                 new SimpleStringProperty(cellData.getValue().getEstimatedMinutes() + " min"));
 
         priceColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(String.format("%.2f kr", cellData.getValue().getPrice())));
+                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getPrice())));
 
         serviceColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.48));
         timeColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.24));
@@ -401,7 +401,7 @@ public class BookingDetailsView {
         }
 
         totalTimeValue = new Label(totalMinutes + " min");
-        totalPriceValue = new Label(String.format("%,.0f kr", totalPrice));
+        totalPriceValue = new Label(UIComponents.formatPrice(totalPrice));
 
         VBox timeCard = UIComponents.createSummaryCard("fa-clock-o", totalTimeTitle, totalTimeValue);
         VBox priceCard = UIComponents.createSummaryCard("fa-money", totalPriceTitle, totalPriceValue);

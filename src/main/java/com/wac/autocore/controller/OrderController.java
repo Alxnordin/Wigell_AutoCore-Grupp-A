@@ -1184,7 +1184,7 @@ public class OrderController {
         String heading = languageManager.getString("invoiceConfirmationHeading");
         String subHeading = languageManager.getString("invoiceConfirmationSubHeading");
 
-        String amount = String.format("%.2f", invoice.getTotalAmount());
+        String amount = UIComponents.formatPrice(invoice.getTotalAmount());
         Customer customer = invoiceService.findCustomerForInvoice(invoice);
 
         Map<String, String> confirmationDetails = new LinkedHashMap<>();
@@ -1245,13 +1245,7 @@ public class OrderController {
             return "--";
         }
 
-
-        return String.format(
-                "%,.0f kr",
-                bookingService.calculateTotalPrice(
-                        services
-                )
-        );
+        return UIComponents.formatPrice(bookingService.calculateTotalPrice(services));
     }
 
     private String getMechanicName(int mechanicId) {

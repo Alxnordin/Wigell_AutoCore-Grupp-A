@@ -4,6 +4,9 @@ import com.wac.autocore.model.Invoice;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -11,6 +14,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class InvoiceListView {
@@ -23,15 +30,22 @@ public class InvoiceListView {
     private Label title;
     private Label subtitle;
 
-    private final TableView<Invoice> invoiceTable;
-    private final TableColumn<Invoice, Integer> invoiceIdColumn;
-    private final TableColumn<Invoice, Integer> workOrderIdColumn;
-    private final TableColumn<Invoice, String> invoiceDateColumn;
-    private final TableColumn<Invoice, Double> amountColumn;
-    private final TableColumn<Invoice, Double> discountColumn;
-    private final TableColumn<Invoice, Double> totalColumn;
-    private final TableColumn<Invoice, String> paidColumn;
-    private final TableColumn<Invoice, Void> actionColumn;
+    private TextField searchField;
+    private ObservableList<Invoice> observableInvoiceList;
+    private FilteredList<Invoice> filteredInvoiceList;
+
+    private TableView<Invoice> invoiceTable;
+    private TableColumn<Invoice, Integer> invoiceIdColumn;
+    private TableColumn<Invoice, Integer> workOrderIdColumn;
+    private TableColumn<Invoice, String> customerNameColumn;
+    private TableColumn<Invoice, String> invoiceDateColumn;
+    private TableColumn<Invoice, String> amountColumn;
+    private TableColumn<Invoice, String> discountColumn;
+    private TableColumn<Invoice, String> totalColumn;
+    private TableColumn<Invoice, String> paidColumn;
+    private TableColumn<Invoice, Void> actionColumn;
+
+    private Map<Integer, String> customerNames = new HashMap<>();
 
     private Consumer<Invoice> onViewInvoice;
     private Consumer<Invoice> onRegisterPayment;
@@ -64,10 +78,60 @@ public class InvoiceListView {
                 createInvoiceButton
         );
 
+        TableView<Invoice> invoiceTable = buildTable();
+        HBox searchBox = buildSearchSection();
+
+        backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
+
+        box.getChildren().addAll(header, subtitle, searchBox, invoiceTable, backButton);
+
+        this.root = box;
+
+        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
+            changeTextAllComponents();
+        });
+    }
+
+    private HBox buildSearchSection() {
+        searchField = new TextField();
+        HBox searchBox = UIComponents.createSearchBox(searchField);
+        searchField.setPromptText(languageManager.getString("searchTextField"));
+
+        searchField.textProperty().addListener((
+                observable, oldValue, newValue) -> {
+            filteredInvoiceList.setPredicate(invoice -> {
+
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
+        String search = newValue.toLowerCase().trim();
+
+                return String.valueOf(invoice.getId()).contains(search)
+                        || String.valueOf(invoice.getWorkOrderId()).contains(search)
+                        || customerNames.getOrDefault(invoice.getId(), "").
+                        toLowerCase().contains(search)
+                        || invoice.getInvoiceDate().toString().contains(search)
+                        || (invoice.isPaid()
+                        ? languageManager.getString("paid")
+                        : languageManager.getString("unpaid"))
+                        .toLowerCase().contains(search);
+            });
+        });
+
+        observableInvoiceList = FXCollections.observableArrayList();
+        filteredInvoiceList = new FilteredList<>(observableInvoiceList, invoice -> true);
+        invoiceTable.setItems(filteredInvoiceList);
+
+        return searchBox;
+    }
+
+    private TableView<Invoice> buildTable() {
         invoiceTable = UIComponents.createTable();
 
         invoiceIdColumn = new TableColumn<>(languageManager.getString("invoiceIdInTable"));
         workOrderIdColumn = new TableColumn<>(languageManager.getString("workOrderIdInTable"));
+        customerNameColumn = new TableColumn<>(languageManager.getString("customer"));
         invoiceDateColumn = new TableColumn<>(languageManager.getString("dateInTable"));
         amountColumn = new TableColumn<>(languageManager.getString("amountInTable"));
         discountColumn = new TableColumn<>(languageManager.getString("discountInTable"));
@@ -77,10 +141,24 @@ public class InvoiceListView {
 
         invoiceIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         workOrderIdColumn.setCellValueFactory(new PropertyValueFactory<>("workOrderId"));
+
+        customerNameColumn.setCellValueFactory(cellData -> {
+            int invoiceId = cellData.getValue().getId();
+            String customerName = customerNames.getOrDefault(invoiceId, "");
+            return new SimpleStringProperty(customerName);
+        });
+
         invoiceDateColumn.setCellValueFactory(new PropertyValueFactory<>("invoiceDate"));
-        amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
-        discountColumn.setCellValueFactory(new PropertyValueFactory<>("discount"));
-        totalColumn.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
+
+        amountColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getAmount())));
+
+        discountColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getDiscount())));
+
+        totalColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getTotalAmount())));
+
         paidColumn.setCellValueFactory(cellData -> {
             Invoice invoice = cellData.getValue();
             String text;
@@ -95,31 +173,33 @@ public class InvoiceListView {
         });
 
         // Fördelar tabellens utrymme jämnare mellan kolumnerna
-        invoiceIdColumn.setPrefWidth(65);
-        invoiceIdColumn.setMinWidth(55);
+        invoiceIdColumn.setPrefWidth(78);
+        invoiceIdColumn.setMinWidth(70);
 
-        workOrderIdColumn.setPrefWidth(70);
-        workOrderIdColumn.setMinWidth(60);
+        workOrderIdColumn.setPrefWidth(65);
+        workOrderIdColumn.setMinWidth(55);
 
-        invoiceDateColumn.setPrefWidth(125);
-        invoiceDateColumn.setMinWidth(110);
+        customerNameColumn.setPrefWidth(150);
+        customerNameColumn.setMinWidth(130);
 
-        amountColumn.setPrefWidth(105);
-        amountColumn.setMinWidth(90);
+        invoiceDateColumn.setPrefWidth(100);
+        invoiceDateColumn.setMinWidth(90);
+
+        amountColumn.setPrefWidth(85);
+        amountColumn.setMinWidth(75);
 
         discountColumn.setPrefWidth(75);
-        discountColumn.setMinWidth(65);
+        discountColumn.setMinWidth(70);
 
-        totalColumn.setPrefWidth(105);
-        totalColumn.setMinWidth(90);
+        totalColumn.setPrefWidth(90);
+        totalColumn.setMinWidth(80);
 
         paidColumn.setPrefWidth(125);
-        paidColumn.setMinWidth(110);
+        paidColumn.setMinWidth(115);
 
         // Behåller den bredare kolumnen för de två knapparna
-        actionColumn.setPrefWidth(270);
-        actionColumn.setMinWidth(250);
-
+        actionColumn.setPrefWidth(290);
+        actionColumn.setMinWidth(270);
 
         actionColumn.setCellFactory(column -> new TableCell<Invoice, Void>() {
             // Knappen som visar fakturans detaljer
@@ -250,20 +330,12 @@ public class InvoiceListView {
             }
         });
 
-        invoiceTable.getColumns().addAll(invoiceIdColumn, workOrderIdColumn,
+        invoiceTable.getColumns().addAll(invoiceIdColumn, workOrderIdColumn, customerNameColumn,
                 invoiceDateColumn, amountColumn, discountColumn, totalColumn,
                 paidColumn, actionColumn);
         invoiceTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        backButton = UIComponents.createBackButton(languageManager.getString("backButton"));
-
-        box.getChildren().addAll(header, subtitle, invoiceTable, backButton);
-
-        this.root = box;
-
-        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
-            changeTextAllComponents();
-        });
+        return  invoiceTable;
     }
 
     public Parent getView() { return root; }
@@ -274,6 +346,15 @@ public class InvoiceListView {
 
     public void setOnViewInvoice(Consumer<Invoice> onViewInvoice) {
         this.onViewInvoice = onViewInvoice;
+    }
+
+    public void setInvoices(List<Invoice> invoices) {
+        observableInvoiceList.setAll(invoices);
+    }
+
+    public void setCustomerNames(Map<Integer, String> customerNames) {
+        this.customerNames = customerNames;
+        invoiceTable.refresh();
     }
 
     // Gör det möjligt för controllern att hantera betalningsknappen
@@ -297,6 +378,7 @@ public class InvoiceListView {
 
         invoiceIdColumn.setText(languageManager.getString("invoiceIdInTable"));
         workOrderIdColumn.setText(languageManager.getString("workOrderIdInTable"));
+        customerNameColumn.setText(languageManager.getString("customer"));
         invoiceDateColumn.setText(languageManager.getString("dateInTable"));
         amountColumn.setText(languageManager.getString("amountInTable"));
         discountColumn.setText(languageManager.getString("discountInTable"));

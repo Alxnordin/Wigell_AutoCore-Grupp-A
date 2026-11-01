@@ -253,9 +253,12 @@ public class BookingView {
         deleteColumn = new TableColumn<>();
         deleteColumn.setPrefWidth(60);
 
-        serviceColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getName()));
-        timeColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getEstimatedMinutes() + " min"));
-        priceColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(String.format("%.2f kr", cellData.getValue().getPrice())));
+        serviceColumn.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleStringProperty(cellData.getValue().getName()));
+        timeColumn.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleStringProperty(cellData.getValue().getEstimatedMinutes() + " min"));
+        priceColumn.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleStringProperty(UIComponents.formatPrice(cellData.getValue().getPrice())));
 
         //radera raden
         deleteColumn.setCellFactory(column -> new TableCell<ServiceItem, Void>() {

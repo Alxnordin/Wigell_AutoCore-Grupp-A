@@ -6,7 +6,6 @@ import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.ErrorHandler;
-import com.wac.autocore.view.InfoDialog;
 import com.wac.autocore.view.UIComponents;
 import com.wac.autocore.view.invoice.InvoiceDetailsView;
 import com.wac.autocore.view.invoice.InvoiceListView;
@@ -15,6 +14,7 @@ import com.wac.autocore.view.payment.RegisterPaymentDialog;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -209,55 +209,11 @@ public class InvoiceController {
         return availableWorkOrders;
     }
 
-    // Visar en bekräftelse efter att betalningen har registrerats.
-//    private void showPaymentConfirmation(Payment payment, String paymentTypeCode) {
-//        String amount = String.format("%.2f", payment.getAmount());
-//
-//        String paymentTypeText;
-//
-//        switch (paymentTypeCode) {
-//            case "CARD":
-//                paymentTypeText = com.wac.autocore.util.LanguageManager
-//                        .getInstance().getString("paymentTypeCard");
-//                break;
-//            case "SWISH":
-//                paymentTypeText = com.wac.autocore.util.LanguageManager
-//                        .getInstance().getString("paymentTypeSwish");
-//                break;
-//            case "CASH":
-//                paymentTypeText = com.wac.autocore.util.LanguageManager
-//                        .getInstance().getString("paymentTypeCash");
-//                break;
-//            default:
-//                paymentTypeText = paymentTypeCode;
-//        }
-//
-//        Customer customer = paymentService.findCustomerForPayment(payment);
-//
-//        if (customer != null) {
-//            InfoDialog.show(
-//                    "paymentConfirmation",
-//                    String.valueOf(payment.getInvoiceId()),
-//                    amount,
-//                    paymentTypeText,
-//                    customer.getName(),
-//                    customer.getEmail()
-//            );
-//        } else {
-//            InfoDialog.show(
-//                    "paymentConfirmationNoCustomer",
-//                    String.valueOf(payment.getInvoiceId()),
-//                    amount,
-//                    paymentTypeText
-//            );
-//        }
-//    }
-
     private void showPaymentConfirmation(Payment payment, String paymentTypeCode) {
         String heading = languageManager.getString("confirmationPaymentHeading");
         String subHeading = languageManager.getString("confirmationPaymentSubHeading");
 
-        String amount = String.format("%.2f", payment.getAmount());
+        String amount = UIComponents.formatPrice(payment.getAmount());
         String paymentTypeText;
 
         switch (paymentTypeCode) {
@@ -295,25 +251,11 @@ public class InvoiceController {
         alert.showAndWait();
     }
 
-    //Alexander
-    //bekräftelse till användaren: fakturan är skapad och vem aviseringen skickades till
-//    private void showInvoiceConfirmation(Invoice invoice) {
-//        String amount = String.format("%.2f", invoice.getTotalAmount());
-//        Customer customer = invoiceService.findCustomerForInvoice(invoice);
-//
-//        if (customer != null) {
-//            InfoDialog.show("invoiceCreatedConfirmation", String.valueOf(invoice.getId()), amount,
-//                    customer.getName(), customer.getEmail());
-//        } else {
-//            InfoDialog.show("invoiceCreatedConfirmationNoCustomer", String.valueOf(invoice.getId()), amount);
-//        }
-//    }
-
     private void showInvoiceConfirmation(Invoice invoice) {
         String heading = languageManager.getString("invoiceConfirmationHeading");
         String subHeading = languageManager.getString("invoiceConfirmationSubHeading");
 
-        String amount = String.format("%.2f", invoice.getTotalAmount());
+        String amount = UIComponents.formatPrice(invoice.getTotalAmount());
         Customer customer = invoiceService.findCustomerForInvoice(invoice);
 
         Map<String, String> confirmationDetails = new LinkedHashMap<>();
@@ -325,13 +267,42 @@ public class InvoiceController {
         alert.showAndWait();
     }
 
-
     private void refreshLists() {
-        // Uppdaterar översikten med befintliga fakturor.
-        invoiceListView.getInvoiceTable().getItems()
-                .setAll(invoiceService.findAll());
+        List<Invoice> invoices = invoiceService.findAll();
+        Map<Integer, String> customerNames = new HashMap<>();
 
-        // Visar bara arbetsordrar som är färdigställda och ännu inte fakturerade.
+        for (Invoice invoice : invoices) {
+            WorkOrder workOrder = workOrderService.findWorkOrder(invoice.getWorkOrderId());
+
+            if (workOrder == null) {
+                continue;
+            }
+
+            Customer customer = null;
+
+            if (workOrder.getBookingId() != null) {
+                Booking booking = bookingService.findBooking(workOrder.getBookingId());
+
+                if (booking != null) {
+                    Vehicle vehicle = vehicleService.findVehicle(booking.getVehicleId());
+
+                    if (vehicle != null) {
+                        customer = customerService.findCustomer(vehicle.getCustomerId());
+                    }
+                }
+
+            } else {
+                customer = customerService.findCustomer(workOrder.getCustomerId());
+            }
+
+            if (customer != null) {
+                customerNames.put(invoice.getId(), customer.getName());
+            }
+        }
+
+        invoiceListView.setCustomerNames(customerNames);
+        invoiceListView.setInvoices(invoices);
+
         invoiceView.getWorkOrderComboBox().getItems()
                 .setAll(getAvailableWorkOrdersForInvoice());
     }

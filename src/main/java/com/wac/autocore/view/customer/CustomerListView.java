@@ -56,9 +56,6 @@ public class CustomerListView {
         box.getChildren().addAll(headerHBox, subtitle, searchBox,
                 customerTable, backButton);
 
-//        ScrollPane scrollPane = new ScrollPane(box);
-//        this.root = scrollPane;
-
         this.root = box;
 
         languageManager.localeProperty().addListener(

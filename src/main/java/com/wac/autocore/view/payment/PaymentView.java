@@ -3,14 +3,11 @@ package com.wac.autocore.view.payment;
 import com.wac.autocore.model.Payment;
 import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.view.UIComponents;
-import javafx.collections.FXCollections;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.time.format.DateTimeFormatter;
@@ -23,7 +20,6 @@ public class PaymentView {
 
     private Label title;
     private Label subtitle;
-
 
     private TableView<Payment> paymentTable;
 
