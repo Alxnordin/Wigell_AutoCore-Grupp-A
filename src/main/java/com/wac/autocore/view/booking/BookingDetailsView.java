@@ -2,6 +2,7 @@ package com.wac.autocore.view.booking;
 
 import com.wac.autocore.model.*;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -183,18 +184,18 @@ public class BookingDetailsView {
 
         bookingInformationTitle.setText("1. " + languageManager.getString("bookingInformationTitle"));
         bookingIdTitle.setText(languageManager.getString("bookingIdInTable"));
-        customerTitle.setText(languageManager.getString("customerLabel"));
+        customerTitle.setText(languageManager.getString("customer"));
         vehicleRegistrationNumberTitle.setText(languageManager.getString("vehicleRegistrationNumber"));
-        dateTitle.setText(languageManager.getString("dateLabel"));
-        statusTitle.setText(languageManager.getString("statusInTable"));
+        dateTitle.setText(languageManager.getString("date"));
+        statusTitle.setText(languageManager.getString("status"));
         statusValue.setText(languageManager.getString(booking.getStatus()));
-        descriptionTitle.setText(languageManager.getString("descriptionLabel"));
+        descriptionTitle.setText(languageManager.getString("description"));
 
-        servicesTitle.setText("2. " + languageManager.getString("servicesTitle"));
+        servicesTitle.setText("2. " + languageManager.getString("services"));
         noServicesLabel.setText(languageManager.getString("noServices"));
-        serviceColumn.setText(languageManager.getString("serviceColumn"));
+        serviceColumn.setText(languageManager.getString("service"));
         timeColumn.setText(languageManager.getString("timeColumn"));
-        priceColumn.setText(languageManager.getString("priceColumn"));
+        priceColumn.setText(languageManager.getString("price"));
 
         summaryTitle.setText("3. " + languageManager.getString("summaryTitle"));
         totalTimeTitle.setText(languageManager.getString("estimatedTotalTime"));
@@ -272,7 +273,7 @@ public class BookingDetailsView {
         VBox bookingIdBox = UIComponents.createVBoxWithSpacing6();
         bookingIdBox.getChildren().addAll(bookingIdTitle, bookingIdValue);
 
-        customerTitle = UIComponents.createInfoLabel(languageManager.getString("customerLabel"));
+        customerTitle = UIComponents.createInfoLabel(languageManager.getString("customer"));
         Label customerValue = UIComponents.createValueLabel(customer.getName());
         VBox customerBox = UIComponents.createVBoxWithSpacing6();
         customerBox.getChildren().addAll(customerTitle, customerValue);
@@ -282,12 +283,12 @@ public class BookingDetailsView {
         VBox vehicleBox = UIComponents.createVBoxWithSpacing6();
         vehicleBox.getChildren().addAll(vehicleRegistrationNumberTitle, vehicleRegistrationNumberValue);
 
-        dateTitle = UIComponents.createInfoLabel(languageManager.getString("dateLabel"));
+        dateTitle = UIComponents.createInfoLabel(languageManager.getString("date"));
         Label dateValue = UIComponents.createValueLabel(String.valueOf(booking.getDate()));
         VBox dateBox = UIComponents.createVBoxWithSpacing6();
         dateBox.getChildren().addAll(dateTitle, dateValue);
 
-        statusTitle = UIComponents.createInfoLabel(languageManager.getString("statusInTable"));
+        statusTitle = UIComponents.createInfoLabel(languageManager.getString("status"));
         statusValue = UIComponents.createValueLabel(languageManager.getString(booking.getStatus()));
         VBox statusBox = UIComponents.createVBoxWithSpacing6();
         statusBox.getChildren().addAll(statusTitle, statusValue);
@@ -295,7 +296,7 @@ public class BookingDetailsView {
         HBox bookingFields = new HBox(45);
         bookingFields.getChildren().addAll(bookingIdBox, customerBox, vehicleBox, dateBox, statusBox);
 
-        descriptionTitle = UIComponents.createInfoLabel(languageManager.getString("descriptionLabel"));
+        descriptionTitle = UIComponents.createInfoLabel(languageManager.getString("description"));
 
         String description = booking.getDescription();
         if (description == null || description.trim().isEmpty()) {
@@ -315,16 +316,16 @@ public class BookingDetailsView {
     }
 
     private VBox buildServicesSection(List<ServiceItem> services) {
-        servicesTitle = UIComponents.createSectionTitle("2. " + languageManager.getString("servicesTitle"));
+        servicesTitle = UIComponents.createSectionTitle("2. " + languageManager.getString("services"));
 
         servicesTable = UIComponents.createTable();
 
         noServicesLabel = UIComponents.createPlaceholderLabel(languageManager.getString("noServices"));
         servicesTable.setPlaceholder(noServicesLabel);
 
-        serviceColumn = new TableColumn<>(languageManager.getString("serviceColumn"));
+        serviceColumn = new TableColumn<>(languageManager.getString("service"));
         timeColumn = new TableColumn<>(languageManager.getString("timeColumn"));
-        priceColumn = new TableColumn<>(languageManager.getString("priceColumn"));
+        priceColumn = new TableColumn<>(languageManager.getString("price"));
 
         serviceColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getName()));
@@ -333,7 +334,7 @@ public class BookingDetailsView {
                 new SimpleStringProperty(cellData.getValue().getEstimatedMinutes() + " min"));
 
         priceColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(String.format("%.2f kr", cellData.getValue().getPrice())));
+                new SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getPrice())));
 
         serviceColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.48));
         timeColumn.prefWidthProperty().bind(servicesTable.widthProperty().multiply(0.24));
@@ -401,7 +402,7 @@ public class BookingDetailsView {
         }
 
         totalTimeValue = new Label(totalMinutes + " min");
-        totalPriceValue = new Label(String.format("%,.0f kr", totalPrice));
+        totalPriceValue = new Label(PriceFormatter.formatPrice(totalPrice));
 
         VBox timeCard = UIComponents.createSummaryCard("fa-clock-o", totalTimeTitle, totalTimeValue);
         VBox priceCard = UIComponents.createSummaryCard("fa-money", totalPriceTitle, totalPriceValue);

@@ -3,6 +3,8 @@ package com.wac.autocore.dao;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.repository.CustomerRepository;
+import org.springframework.stereotype.Repository;
+import com.wac.autocore.exception.DataAccessException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +13,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class CustomerDAO implements CustomerRepository {
     @Override
     public List<Customer> findAll(){
@@ -27,14 +30,14 @@ public class CustomerDAO implements CustomerRepository {
                         resultSet.getInt("id"),
                         resultSet.getString("name"),
                         resultSet.getString("phone"),
-                        resultSet.getString("email")
-
+                        resultSet.getString("email"),
+                        resultSet.getBoolean("vip")
                 );
-                customer.setVip(resultSet.getBoolean("vip"));
+
                 customers.add(customer);
             }
         }catch(Exception e){
-            throw new RuntimeException("Could not fetch customers.", e);
+            throw new DataAccessException("Could not fetch customers.", e);
         }
         return customers;
     }
@@ -60,7 +63,7 @@ public class CustomerDAO implements CustomerRepository {
             }
 
         }catch (Exception e){
-            throw new RuntimeException("Could not save customer.", e);
+            throw new DataAccessException("Could not save customer.", e);
         }
         return customer;
     }

@@ -56,9 +56,6 @@ public class CustomerListView {
         box.getChildren().addAll(headerHBox, subtitle, searchBox,
                 customerTable, backButton);
 
-//        ScrollPane scrollPane = new ScrollPane(box);
-//        this.root = scrollPane;
-
         this.root = box;
 
         languageManager.localeProperty().addListener(
@@ -75,7 +72,7 @@ public class CustomerListView {
     public ObservableList<Customer> getObservableCustomersList() {return observableCustomersList;}
 
     private HBox buildHeaderSection() {
-        title = new Label(languageManager.getString("customerListViewTitle"));
+        title = new Label(languageManager.getString("customers"));
         HBox titleHBox = UIComponents.createPageTitle(title, "fa-address-book");
 
         createCustomerButton = UIComponents.createCreateButton(
@@ -93,7 +90,7 @@ public class CustomerListView {
     private TableView<Customer> buildTable() {
         customerTable = UIComponents.createTable();
 
-        customerIdColumn = new TableColumn<>(languageManager.getString("customerIdInTable"));
+        customerIdColumn = new TableColumn<>("ID");
         nameColumn = new TableColumn<>(languageManager.getString("nameInTable"));
         phoneColumn = new TableColumn<>(languageManager.getString("phoneInTable"));
         emailColumn = new TableColumn<>(languageManager.getString("emailInTable"));
@@ -117,7 +114,6 @@ public class CustomerListView {
         });
 
         customerTable.getColumns().addAll(customerIdColumn, nameColumn, phoneColumn, emailColumn, vipColumn);
-        customerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         return customerTable;
     }
 
@@ -148,10 +144,10 @@ public class CustomerListView {
     }
 
     public void changeTextAllComponents() {
-        title.setText(languageManager.getString("customerListViewTitle"));
+        title.setText(languageManager.getString("customers"));
         subtitle.setText(languageManager.getString("customerListViewSubtitle"));
         createCustomerButton.setText(languageManager.getString("addCustomerButton"));
-        searchField.setText(languageManager.getString("searchTextField"));
+        searchField.setPromptText(languageManager.getString("searchTextField"));
 
         customerIdColumn.setText(languageManager.getString("customerIdInTable"));
         nameColumn.setText(languageManager.getString("nameInTable"));

@@ -3,6 +3,8 @@ package com.wac.autocore.dao;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.InvoiceLine;
 import com.wac.autocore.repository.InvoiceLineRepository;
+import org.springframework.stereotype.Repository;
+import com.wac.autocore.exception.DataAccessException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +12,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class InvoiceLineDAO implements InvoiceLineRepository {
     @Override
     public List<InvoiceLine> findAll() {
@@ -39,7 +42,7 @@ public class InvoiceLineDAO implements InvoiceLineRepository {
             }
 
         } catch (Exception e) {
-            throw new RuntimeException("Could not fetch invoice lines.", e);
+            throw new DataAccessException("Could not fetch invoice lines.", e);
         }
 
         return invoiceLines;
@@ -72,7 +75,7 @@ public class InvoiceLineDAO implements InvoiceLineRepository {
             }
 
         } catch (Exception e) {
-            throw new RuntimeException("Could not save invoice line.", e);
+            throw new DataAccessException("Could not save invoice line.", e);
         }
 
         return invoiceLine;

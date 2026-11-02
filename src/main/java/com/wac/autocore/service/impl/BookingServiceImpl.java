@@ -7,13 +7,21 @@ import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.service.interf.BookingService;
 import com.wac.autocore.service.interf.ServiceItemService;
 import com.wac.autocore.service.interf.VehicleService;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.wac.autocore.repository.BookingRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class BookingServiceImpl implements BookingService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BookingServiceImpl.class);
 
     private final BookingRepository bookingRepository;
 
@@ -43,6 +51,7 @@ public class BookingServiceImpl implements BookingService {
     //Alexander
     //validerar bokningen och kastar exception vid fel, så att controllern bara visar felet via ErrorHandler.
     //ValidationException = något saknas i formuläret, NotFoundException = fordon/tjänst finns inte
+    @PreAuthorize("hasRole('ADMIN')")
     public Booking createBooking(Integer vehicleId,
                                  LocalDate date,
                                  String description,
@@ -79,12 +88,14 @@ public class BookingServiceImpl implements BookingService {
             }
         }
         bookingRepository.save(booking); //sparar bokning + tjänster i en transaktion (commit/rollback);
+        LOG.info("createBooking: bokning {} skapad (fordon {})", booking.getId(), vehicleId);
 
         return booking;
     }
 
     //arbetet räknas som påbörjat när arbetsordern har startats
     // startWorkOrder/completeWorkOrder sparar då bokningens status som IN_PROGRESS/COMPLETED
+    @PreAuthorize("hasRole('ADMIN')")
     public boolean isWorkStarted(Booking booking) {
         return "IN_PROGRESS".equals(booking.getStatus())
                 || "COMPLETED".equals(booking.getStatus());
@@ -92,6 +103,7 @@ public class BookingServiceImpl implements BookingService {
 
     //lägg till en tjänst i en bokning, bara innan arbetet har påbörjats
     //Alexander: verksamhetsregler bryts -> BusinessRuleException
+    @PreAuthorize("hasRole('ADMIN')")
     public void addServiceToBooking(int bookingId, int serviceItemId) {
         Booking booking = requireEditableBooking(bookingId);
         requireServiceItem(serviceItemId);
@@ -101,12 +113,13 @@ public class BookingServiceImpl implements BookingService {
         }
 
         bookingRepository.addServiceItem(bookingId, serviceItemId);
-        System.out.println("Service item " + serviceItemId + " added to booking " + bookingId + ".");
+        LOG.info("addServiceToBooking: tjänst {} tillagd i bokning {}", serviceItemId, bookingId);
 
     }
 
     //ta bort en tjänst från en bokning, bara innan arbetet har påbörjats
     //en bokning ska innehålla minst en tjänst, så den sista kan inte tas bort
+    @PreAuthorize("hasRole('ADMIN')")
     public void removeServiceFromBooking(int bookingId, int serviceItemId) {
         Booking booking = requireEditableBooking(bookingId);
 
@@ -119,10 +132,11 @@ public class BookingServiceImpl implements BookingService {
         }
 
         bookingRepository.removeServiceItem(bookingId, serviceItemId);
-        System.out.println("Service item " + serviceItemId + " removed from booking " + bookingId + ".");
+        LOG.info("removeServiceFromBooking: tjänst {} borttagen från bokning {}", serviceItemId, bookingId);
     }
 
     //gör om bokningens tjänste-ID:n till hela ServiceItem-objekt (namn, pris, tid)
+    @PreAuthorize("hasRole('ADMIN')")
     public List<ServiceItem> getServicesForBooking(int bookingId) {
         List<ServiceItem> result = new ArrayList<>();
         Booking booking = findBooking(bookingId);
@@ -141,6 +155,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     //total beräknad arbetstid i minuter för en lista av tjänster
+    @PreAuthorize("hasRole('ADMIN')")
     public int calculateTotalMinutes(List<ServiceItem> serviceItems) {
         int totalMinutes = 0;
 
@@ -151,6 +166,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     //totalt pris för en lista av tjänster
+    @PreAuthorize("hasRole('ADMIN')")
     public double calculateTotalPrice(List<ServiceItem> serviceItems) {
         double totalPrice = 0;
 
@@ -159,11 +175,12 @@ public class BookingServiceImpl implements BookingService {
         }
         return totalPrice;
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     public void updateStatus(Booking booking) {
         bookingRepository.updateStatus(booking);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Booking createBookingFromPreviousBooking(int originalBookingId, LocalDate newDate) {
 
         Booking original = findBooking(originalBookingId);
@@ -189,6 +206,8 @@ public class BookingServiceImpl implements BookingService {
         newBooking.setOriginalBookingId(original.getId());
 
         bookingRepository.save(newBooking);
+        LOG.info("createBookingFromPreviousBooking: bokning {} skapad från bokning {}",
+                newBooking.getId(), original.getId());
 
         return newBooking;
     }

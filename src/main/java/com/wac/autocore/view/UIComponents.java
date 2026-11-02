@@ -1,17 +1,20 @@
 package com.wac.autocore.view;
 
+import com.wac.autocore.model.WorkOrderType;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
+
+import java.net.URL;
+import java.util.Map;
 
 public class UIComponents {
 
@@ -114,12 +117,43 @@ public class UIComponents {
 
     //Visa knapp i tabeller
     public static Button createViewButton(String text) {
-
         Button button = new Button(text);
-        button.getStyleClass().add("view-button");
+
+        button.getStyleClass().addAll("action-button", "view-button");
+        button.setGraphic(new FontIcon("fa-eye"));
 
         return button;
     }
+
+    // Skapar en knapp för att registrera en betalning.
+    public static Button createRegisterPaymentButton(String text) {
+        Button button = new Button(text);
+
+        button.getStyleClass().add("register-payment-button");
+
+        FontIcon icon = new FontIcon("fa-credit-card");
+        icon.setIconColor(Color.WHITE);
+        button.setGraphic(icon);
+
+        button.setStyle("-fx-font-weight: bold;");
+
+        return button;
+    }
+
+//    // Skapar en inaktiv knapp som visar att fakturan redan är betald.
+//    public static Button createPaidButton(String text) {
+//        Button button = new Button(text);
+//
+//        button.getStyleClass().add("paid-button");
+//
+//        FontIcon icon = new FontIcon("fa-check");
+//        icon.setIconColor(javafx.scene.paint.Color.web("#294A32"));
+//        button.setGraphic(icon);
+//
+//        button.setDisable(true);
+//
+//        return button;
+//    }
 
     //Skapa vBox som är grunden i alla viewklasser.
     public static VBox createVBoxForViews() {
@@ -233,6 +267,14 @@ public class UIComponents {
     public static Label createInvoiceStatusValueLabel(String text, boolean paid) {
         Label label = createStatusValueLabel(text);
 
+        // Centrerar texten och låter etiketten fylla tillgänglig bredd.
+        label.setAlignment(Pos.CENTER);
+        label.setMaxWidth(Double.MAX_VALUE);
+
+        // Befintlig logik för statusens färg behålls här.
+        label.getStyleClass().add("status-value");
+        label.getStyleClass().add(paid ? "status-paid" : "status-unpaid");
+
         if (paid) {
             label.getStyleClass().add("status-paid");
         } else {
@@ -263,8 +305,12 @@ public class UIComponents {
         FontIcon menuIcon = new FontIcon(icon);
         menuIcon.setIconSize(18);
 
-        button.setGraphic(menuIcon);
+        // Ger utloggningsikonen en egen CSS-klass.
+        if ("fa-sign-out".equals(icon)) {
+            menuIcon.getStyleClass().add("logout-icon");
+        }
 
+        button.setGraphic(menuIcon);
         button.setGraphicTextGap(10);
 
         return button;
@@ -331,6 +377,24 @@ public class UIComponents {
         createButton.getStyleClass().add("create-order-button");
 
         return createButton;
+    }
+
+    // Skapar en knapp för att öppna betalningshistoriken.
+    public static Button createPaymentHistoryButton(String text) {
+        Button button = new Button(text);
+
+        // Återanvänder grundstilen för gemensamma åtgärdsknappar.
+        button.getStyleClass().add("payment-history-button");
+
+        // Visar en historikikon i knappen.
+        FontIcon icon = new FontIcon("fa-history");
+        icon.setIconSize(14);
+        icon.setIconColor(Color.web("#2E7D32"));
+
+        button.setGraphic(icon);
+        button.setGraphicTextGap(8);
+
+        return button;
     }
 
     public static Label createPlaceholderLabel(String text) {
@@ -604,4 +668,262 @@ public class UIComponents {
 
         sequence.play();
     }
+
+    // Centrerar statusbadgen i tabellens kolumn.
+    public static <S> void centerTableColumn(
+            TableColumn<S, ?> column) {
+
+        column.setStyle("-fx-alignment: CENTER;");
+    }
+
+    // Skapar en formulärrad med en befintlig etikett och ett fält.
+    public static HBox createFormRow(Label label, Node control) {
+        HBox row = new HBox(20);
+        row.setAlignment(Pos.CENTER_LEFT);
+
+        // Gör etiketten fetstil för tydligare läsbarhet.
+        label.setStyle("-fx-font-size: 15px; -fx-font-weight: bold;");
+
+        label.setMinWidth(230);
+        label.setPrefWidth(230);
+        label.setWrapText(true);
+
+        row.getChildren().addAll(label, control);
+
+        // Låter fältet använda tillgängligt utrymme.
+        if (control instanceof Region) {
+            Region region = (Region) control;
+            HBox.setHgrow(region, Priority.ALWAYS);
+            region.setMaxWidth(Double.MAX_VALUE);
+        }
+
+        return row;
+    }
+
+    // Lägger en ikon till vänster i en ComboBox utan att ändra dess grundstil.
+    public static StackPane createComboBoxWithIcon(
+            ComboBox<?> comboBox, String iconLiteral) {
+
+        FontIcon icon = new FontIcon(iconLiteral);
+        icon.setIconSize(18);
+        icon.setIconColor(Color.web("#287A35"));
+        icon.setMouseTransparent(true);
+
+        // Låter ComboBoxen fylla hela den tillgängliga bredden.
+        comboBox.setMaxWidth(Double.MAX_VALUE);
+
+        StackPane container = new StackPane();
+        container.setAlignment(Pos.CENTER_LEFT);
+        container.setMaxWidth(Double.MAX_VALUE);
+
+        // Ikonen placeras ovanpå ComboBoxen, till vänster.
+        container.getChildren().addAll(comboBox, icon);
+        StackPane.setAlignment(icon, Pos.CENTER_LEFT);
+        StackPane.setMargin(icon, new Insets(0, 0, 0, 12));
+
+        // Markerar ComboBoxen så att textens placering kan justeras separat.
+        comboBox.getStyleClass().add("combo-box-with-icon");
+
+        return container;
+    }
+
+    public static Alert createWarningAlert(Alert.AlertType alertType, String message, String alertHeading) {
+        Alert alert = new Alert(alertType, message);
+        alert.setTitle("AutoCore");
+        alert.setHeaderText(null);
+        alert.setGraphic(null);
+
+        Label icon = new Label("!");
+        icon.getStyleClass().add("warning-icon");
+
+        Label heading = new Label(alertHeading);
+        heading.getStyleClass().add("warning-heading");
+
+        Label messageLabel = new Label(message);
+        messageLabel.getStyleClass().add("warning-message");
+        messageLabel.setWrapText(true);
+
+        VBox textBox = new VBox(6, heading, messageLabel);
+
+        HBox content = new HBox(16, icon, textBox);
+        content.setAlignment(Pos.CENTER_LEFT);
+        content.getStyleClass().add("warning-content");
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setContent(content);
+        dialogPane.getStyleClass().add("warning-dialog");
+
+        URL stylesheet = UIComponents.class.getResource("/style.css");
+        if (stylesheet != null) {
+            dialogPane.getStylesheets().add(stylesheet.toExternalForm());
+        }
+
+        dialogPane.setMinWidth(380);
+
+        return alert;
+    }
+
+    public static Alert createConfirmationAlert(String alertHeading, String message,
+                                                Map<String, String> informationDetails) {
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("AutoCore");
+        alert.setHeaderText(null);
+        alert.setGraphic(null);
+
+        Label successIcon = new Label("✓");
+        successIcon.getStyleClass().add("information-icon");
+
+        Label heading = new Label(alertHeading);
+        heading.getStyleClass().add("information-heading");
+
+        Label messageLabel = new Label(message);
+        messageLabel.getStyleClass().add("information-message");
+        messageLabel.setWrapText(true);
+
+        VBox header = new VBox(8, successIcon, heading, messageLabel);
+        header.setAlignment(Pos.CENTER);
+        header.getStyleClass().add("information-header");
+
+        VBox detailsBox = new VBox(12);
+        detailsBox.getStyleClass().add("information-details");
+
+        informationDetails.forEach((label, value) -> {
+            Label fieldLabel = new Label(label);
+            fieldLabel.getStyleClass().add("information-field-label");
+
+            Label fieldValue = new Label(value);
+            fieldValue.getStyleClass().add("information-field-value");
+            fieldValue.setWrapText(true);
+
+            VBox field = new VBox(3, fieldLabel, fieldValue);
+            detailsBox.getChildren().add(field);
+        });
+
+        VBox content = new VBox(header, detailsBox);
+        content.getStyleClass().add("information-content");
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setContent(content);
+        dialogPane.getStyleClass().add("information-dialog");
+
+        URL stylesheet = UIComponents.class.getResource("/style.css");
+        if (stylesheet != null) {
+            dialogPane.getStylesheets().add(stylesheet.toExternalForm());
+        }
+
+        dialogPane.setMinWidth(420);
+
+        return alert;
+    }
+
+    // Skapar ett enhetligt navigeringskort med ikon, rubrik och beskrivning.
+    public static VBox createOverviewCard(
+            String icon,
+            Label titleLabel,
+            Label descriptionLabel,
+            Button actionButton) {
+
+        FontIcon cardIcon = new FontIcon(icon);
+        cardIcon.setIconSize(28);
+        cardIcon.setIconColor(Color.web("#287A35"));
+        cardIcon.getStyleClass().add("overview-card-icon");
+
+        // Centrerar rubrik och beskrivning.
+        titleLabel.getStyleClass().add("overview-card-title");
+        titleLabel.setMaxWidth(Double.MAX_VALUE);
+        titleLabel.setAlignment(Pos.CENTER);
+        titleLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        descriptionLabel.getStyleClass().add("overview-card-description");
+        descriptionLabel.setWrapText(true);
+        descriptionLabel.setMaxWidth(Double.MAX_VALUE);
+        descriptionLabel.setAlignment(Pos.CENTER);
+        descriptionLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        // Skapar en behållare som centrerar knappen i kortet.
+        HBox buttonContainer = new HBox(actionButton);
+        buttonContainer.setAlignment(Pos.CENTER);
+        buttonContainer.setMaxWidth(Double.MAX_VALUE);
+
+        // Låter knappen behålla sin storlek och centrerar den i kortet.
+        actionButton.setMaxWidth(Region.USE_PREF_SIZE);
+
+        // Samlar och centrerar kortets samtliga komponenter.
+        VBox card = new VBox(12);
+        card.getStyleClass().add("overview-card");
+        card.setMaxWidth(Double.MAX_VALUE);
+        card.setAlignment(Pos.CENTER);
+
+        // Lägger in behållaren i stället för knappen direkt.
+        card.getChildren().addAll(
+                cardIcon,
+                titleLabel,
+                descriptionLabel,
+                buttonContainer
+        );
+
+        return card;
+    }
+
+    public static TextInputDialog createPriceInputDialog(
+            String title, String heading, String label, String currentPrice) {
+
+        TextInputDialog dialog = new TextInputDialog(currentPrice);
+
+        dialog.setTitle(title);
+        dialog.setHeaderText(heading);
+        dialog.setContentText(label);
+        dialog.setGraphic(null);
+
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStyleClass().add("price-dialog");
+
+        URL stylesheet = UIComponents.class.getResource("/style.css");
+        if (stylesheet != null) {
+            dialogPane.getStylesheets().add(stylesheet.toExternalForm());
+        }
+
+        return dialog;
+    }
+
+
+    // Skapar en färgad badge beroende på arbetsorderns typ.
+    public static Label createOrderTypeBadge(WorkOrderType type, String text) {
+
+        Label badge = new Label(text);
+
+        // Gemensam utformning för alla ordertyper.
+        badge.setPadding(new Insets(6, 12, 6, 12));
+        badge.setAlignment(Pos.CENTER);
+        badge.setStyle(
+                "-fx-background-radius: 15;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        // Varje ordertyp får sin egen färg.
+        if (type == WorkOrderType.PLANNED) {
+            badge.setStyle(badge.getStyle() +
+                    "-fx-background-color: #DCE8F5;" +
+                    "-fx-text-fill: #315B85;");
+
+        } else if (type == WorkOrderType.DROP_IN) {
+            badge.setStyle(badge.getStyle() +
+                    "-fx-background-color: #FBE7D8;" +
+                    "-fx-text-fill: #A65B26;");
+
+        } else if (type == WorkOrderType.WARRANTY) {
+            badge.setStyle(badge.getStyle() +
+                    "-fx-background-color: #E9DFF3;" +
+                    "-fx-text-fill: #704A91;");
+        }
+
+        return badge;
+    }
+
+
 }
+
+
+
+

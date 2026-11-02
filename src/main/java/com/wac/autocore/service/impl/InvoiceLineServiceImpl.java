@@ -3,9 +3,13 @@ package com.wac.autocore.service.impl;
 import com.wac.autocore.model.InvoiceLine;
 import com.wac.autocore.service.interf.InvoiceLineService;
 import com.wac.autocore.repository.InvoiceLineRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class InvoiceLineServiceImpl implements InvoiceLineService {
 
      private final InvoiceLineRepository invoiceLineRepository;
@@ -13,7 +17,7 @@ public class InvoiceLineServiceImpl implements InvoiceLineService {
     public InvoiceLineServiceImpl(InvoiceLineRepository invoiceLineRepository) {
         this.invoiceLineRepository = invoiceLineRepository;
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'READ_ONLY')")
     public List<InvoiceLine> findInvoiceLinesByInvoiceId(int invoiceId) {
 
         List<InvoiceLine> invoiceLines = new ArrayList<>();

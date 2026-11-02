@@ -22,6 +22,8 @@ public class WorkOrder {
     //reklamation
     private boolean complaint;
     private Integer originalWorkOrderId;
+    //används vid drop-in
+    private LocalDate workOrderDate;
 
     public WorkOrder(int id, Integer bookingId, int mechanicId) {
         this.id = id;
@@ -68,6 +70,25 @@ public class WorkOrder {
 
     public void setBookingId(Integer bookingId) {
         this.bookingId = bookingId;
+    }
+
+    // Avgör vilken typ av arbetsorder det är.
+    public WorkOrderType getWorkOrderType() {
+
+        // Utkast har ännu ingen fastställd ordertyp.
+        if ("DRAFT".equals(status)) {
+            return null;
+        }
+
+        if (complaint) {
+            return WorkOrderType.WARRANTY;
+        }
+
+        if (bookingId != null) {
+            return WorkOrderType.PLANNED;
+        }
+
+        return WorkOrderType.DROP_IN;
     }
 
     public int getMechanicId() {
@@ -119,6 +140,13 @@ public class WorkOrder {
     }
     public void setVehicleId(int vehicleId){
         this.vehicleId = vehicleId;
+    }
+
+    public LocalDate getWorkOrderDate(){
+        return workOrderDate;
+    }
+    public void setWorkOrderDate(LocalDate workOrderDate){
+        this.workOrderDate = workOrderDate;
     }
 
     public String getDescription() {

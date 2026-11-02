@@ -1,15 +1,22 @@
 package com.wac.autocore.service.impl;
 
-import com.wac.autocore.dao.CustomerDAO;
 import com.wac.autocore.exception.BusinessRuleException;
+import com.wac.autocore.exception.ValidationException;
 import com.wac.autocore.model.Customer;
 import com.wac.autocore.repository.CustomerRepository;
 import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.validation.Validator;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class CustomerServiceImpl implements CustomerService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CustomerServiceImpl.class);
 
     private final CustomerRepository customerRepository;
 
@@ -35,12 +42,22 @@ public class CustomerServiceImpl implements CustomerService {
     //servicen avgör nu själv vad som är giltigt, inte controllern.
     //saknas en uppgift kastas ValidationException med en språknyckel som säger vad som saknas.
     //samma regler gäller oavsett om kunden skapas från appen, ett test eller ett annat system.
-    public Customer createCustomer(String firstName, String lastName, String phone, String email) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
+    public Customer createCustomer(String firstName, String lastName, String phone,
+                                   String email, Boolean vip) {
 
         Validator.requireText(firstName, "customerFirstNameRequiredError");
         Validator.requireText(lastName, "customerLastNameRequiredError");
         Validator.requireText(phone, "customerPhoneRequiredError");
         Validator.requireText(email, "customerEmailRequiredError");
+
+        if (!phone.trim().matches("^0\\d(?:[\\s-]?\\d){6,9}$")) {
+            throw new ValidationException("invalidPhoneNrInput");
+        }
+
+        if (!email.trim().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)+$")) {
+            throw new ValidationException("invalidEmailInput");
+        }
 
         //Alexander
         //samma e-post får inte användas av två kunder (verksamhetsregel -> BusinessRuleException)
@@ -48,13 +65,18 @@ public class CustomerServiceImpl implements CustomerService {
             throw new BusinessRuleException("customerEmailExistsError", email.trim());
         }
 
+        if (vip == null) {
+            throw new BusinessRuleException("customerVipRequiredError");
+        }
+
         String fullName = firstName.trim() + " " + lastName.trim();
-        Customer customer = new Customer(0, fullName, phone.trim(), email.trim());
+        Customer customer = new Customer(0, fullName, phone, email.trim(), vip);
 
         customerRepository.save(customer);
+        //bara id loggas, inte namn eller e-post (personuppgifter)
+        LOG.info("createCustomer: kund {} skapad", customer.getId());
 
         return customer;
-
     }
 
     private boolean emailAlreadyExists(String email) {

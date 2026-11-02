@@ -29,6 +29,8 @@ public interface WorkOrderService {
 
     List<ServiceItem> getServicesForWorkOrder(WorkOrder workOrder);
 
+    boolean isAllowedStatusTransition(WorkOrder workOrder, String newStatus);
+
     void startWorkOrder(int workOrderId);
 
     void completeWorkOrder(int workOrderId);

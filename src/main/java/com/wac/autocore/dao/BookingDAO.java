@@ -3,6 +3,8 @@ package com.wac.autocore.dao;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Booking;
 import com.wac.autocore.repository.BookingRepository;
+import org.springframework.stereotype.Repository;
+import com.wac.autocore.exception.DataAccessException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +12,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class BookingDAO implements BookingRepository {
     @Override
     public List<Booking> findAll() {
@@ -34,7 +37,7 @@ public class BookingDAO implements BookingRepository {
                 bookings.add(booking);
             }
         }catch (Exception e) {
-            throw new RuntimeException("Could not fetch bookings.", e);
+            throw new DataAccessException("Could not fetch bookings.", e);
         }
         return bookings;
     }
@@ -64,7 +67,7 @@ public class BookingDAO implements BookingRepository {
                 }
             }
         }catch(Exception e){
-            throw new RuntimeException("Could not fetch booking.", e);
+            throw new DataAccessException("Could not fetch booking.", e);
         }
         return null;
     }
@@ -129,7 +132,7 @@ public class BookingDAO implements BookingRepository {
             }
 
         } catch (Exception e) {
-            throw new RuntimeException("Could not save booking.", e);
+            throw new DataAccessException("Could not save booking.", e);
         }
         return booking;
     }
@@ -156,7 +159,7 @@ public class BookingDAO implements BookingRepository {
         try (Connection connection = DatabaseConnection.getConnection()) {
             insertServiceItem(connection, bookingId, serviceItemId);   // återanvänder hjälpmetoden från 3b
         } catch (Exception e) {
-            throw new RuntimeException("Could not add service item to booking.", e);
+            throw new DataAccessException("Could not add service item to booking.", e);
         }
     }
 
@@ -174,7 +177,7 @@ public class BookingDAO implements BookingRepository {
 
             statement.executeUpdate();
         } catch (Exception e) {
-            throw new RuntimeException("Could not remove service item from booking.", e);
+            throw new DataAccessException("Could not remove service item from booking.", e);
         }
     }
     @Override
@@ -188,7 +191,7 @@ public class BookingDAO implements BookingRepository {
 
             statement.executeUpdate();
         } catch(Exception e) {
-            throw new RuntimeException("Could not update booking", e);
+            throw new DataAccessException("Could not update booking", e);
         }
     }
 

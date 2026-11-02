@@ -4,6 +4,8 @@ import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.ServicePackage;
 import com.wac.autocore.repository.ServicePackageRepository;
+import org.springframework.stereotype.Repository;
+import com.wac.autocore.exception.DataAccessException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,6 +16,7 @@ import java.util.List;
 
 //Alexander
 //läser och sparar servicepaket (tabellerna service_package & service_package_item)
+@Repository
 public class ServicePackageDAO implements ServicePackageRepository {
 
     //hämtar alla paket med dess tjänster
@@ -37,7 +40,7 @@ public class ServicePackageDAO implements ServicePackageRepository {
                 servicePackages.add(servicePackage);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Could not fetch servicePackages.", e);
+            throw new DataAccessException("Could not fetch servicePackages.", e);
         }
         return servicePackages;
     }
@@ -87,7 +90,7 @@ public class ServicePackageDAO implements ServicePackageRepository {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Could not save servicePackage.", e);
+            throw new DataAccessException("Could not save servicePackage.", e);
         }
         return servicePackage;
     }
@@ -106,7 +109,7 @@ public class ServicePackageDAO implements ServicePackageRepository {
 
             statement.executeUpdate();
         } catch (Exception e) {
-            throw new RuntimeException("Could not add service item to servicePackage.", e);
+            throw new DataAccessException("Could not add service item to servicePackage.", e);
 
         }
     }
@@ -124,7 +127,7 @@ public class ServicePackageDAO implements ServicePackageRepository {
 
             statement.executeUpdate();
         } catch (Exception e) {
-            throw new RuntimeException("Could not remove service item from servicePackage.", e);
+            throw new DataAccessException("Could not remove service item from servicePackage.", e);
         }
     }
 }

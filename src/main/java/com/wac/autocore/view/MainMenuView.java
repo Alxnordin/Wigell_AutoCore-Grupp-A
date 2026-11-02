@@ -18,11 +18,6 @@ public class MainMenuView {
     private final Parent root;
     private final List<VBox> allSubMenus = new ArrayList<>();
 
-    private Button showVehiclesButton, addVehicleButton;
-    private Button showBookingsButton, addBookingButton;
-    private Button showServicesButton, showMechanicsButton;
-
-    private Button showInvoicesButton, addInvoiceButton, showPaymentsButton, addPaymentButton;
 
     private Button customersButton;
     private Button vehiclesButton;
@@ -31,6 +26,7 @@ public class MainMenuView {
     private Button ordersButton;
     private Button paymentsButton;
 
+    private Button logoutButton;
     private Button exitButton;
 
     LanguageManager languageManager = LanguageManager.getInstance();
@@ -40,44 +36,50 @@ public class MainMenuView {
         VBox menu = new VBox();
         menu.getStyleClass().add("main-menu");
 
-        customersButton = UIComponents.createMenuButton(languageManager.getString("customersButton"), "fa-user");
+        customersButton = UIComponents.createMenuButton(languageManager.getString("customers"), "fa-user");
         menu.getChildren().add(buildSection(customersButton));
 
-        showVehiclesButton = new Button(languageManager.getString("showVehicles"));
-        addVehicleButton = new Button(languageManager.getString("addVehicle"));
         vehiclesButton = UIComponents.createMenuButton(languageManager.getString("vehiclesButton"), "fa-car");
-        menu.getChildren().add(buildSection(vehiclesButton, showVehiclesButton, addVehicleButton));
+        menu.getChildren().add(buildSection(vehiclesButton));
 
-        showBookingsButton = new Button(languageManager.getString("showBookings"));
-        addBookingButton = new Button(languageManager.getString("addBooking"));
-        bookingsButton = UIComponents.createMenuButton(languageManager.getString("bookingsButton"), "fa-calendar");
-        menu.getChildren().add(buildSection(bookingsButton, showBookingsButton, addBookingButton));
+        // Skapar Booking-knappen utan undermeny.
+        bookingsButton = UIComponents.createMenuButton(
+                languageManager.getString("bookingsButton"),
+                "fa-calendar");
+        menu.getChildren().add(buildSection(bookingsButton));
 
-        showServicesButton = new Button(languageManager.getString("showServices"));
-        showMechanicsButton = new Button(languageManager.getString("showMechanicsButton"));
-        servicesButton = UIComponents.createMenuButton(languageManager.getString("servicesButton"), "fa-wrench");
-        menu.getChildren().add(buildSection(servicesButton, showServicesButton, showMechanicsButton));
+        // Skapar Service-knappen utan undermeny.
+        servicesButton = UIComponents.createMenuButton(
+                languageManager.getString("service"),
+                "fa-wrench");
+        menu.getChildren().add(buildSection(servicesButton));
 
         ordersButton = new Button(languageManager.getString("ordersButton"));
         ordersButton = UIComponents.createMenuButton(languageManager.getString("ordersButton"), "fa-clipboard");
-
         menu.getChildren().add(buildSection(ordersButton));
 
-        showInvoicesButton = new Button(languageManager.getString("showInvoices"));
-        addInvoiceButton = new Button(languageManager.getString("addInvoice"));
-        showPaymentsButton = new Button(languageManager.getString("showPayments"));
-        addPaymentButton = new Button(languageManager.getString("addPayment"));
+        //skapar payment-knappen utan en undermeny
         paymentsButton = UIComponents.createMenuButton(languageManager.getString("paymentsButton"), "fa-credit-card");
-        menu.getChildren().add(buildSection(paymentsButton, showInvoicesButton, addInvoiceButton, showPaymentsButton, addPaymentButton));
+        menu.getChildren().add(buildSection(paymentsButton));
 
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
+
+        // Skapar en utloggningsknapp med ikon framför texten.
+        logoutButton = UIComponents.createMenuButton(
+                languageManager.getString("logoutButton"),
+                "fa-sign-out"
+        );
+
+        logoutButton.setMaxWidth(Double.MAX_VALUE);
+        logoutButton.getStyleClass().add("logout-button");
 
         exitButton = new Button(languageManager.getString("quit"));
         exitButton.getStyleClass().add("exit-button");
         exitButton.setMaxWidth(Double.MAX_VALUE);
 
         menu.getChildren().add(spacer);
+        menu.getChildren().add(logoutButton);
         menu.getChildren().add(exitButton);
 
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
@@ -88,28 +90,23 @@ public class MainMenuView {
     }
 
     public void changeTextAllComponents() {
-        customersButton.setText(languageManager.getString("customersButton"));
+        customersButton.setText(languageManager.getString("customers"));
 
         vehiclesButton.setText(languageManager.getString("vehiclesButton"));
-        showVehiclesButton.setText(languageManager.getString("showVehicles"));
-        addVehicleButton.setText(languageManager.getString("addVehicle"));
+//        showVehiclesButton.setText(languageManager.getString("showVehicles"));
+//        addVehicleButton.setText(languageManager.getString("addVehicle"));
 
         bookingsButton.setText(languageManager.getString("bookingsButton"));
-        showBookingsButton.setText(languageManager.getString("showBookings"));
-        addBookingButton.setText(languageManager.getString("addBooking"));
+//        showBookingsButton.setText(languageManager.getString("showBookings"));
+//        addBookingButton.setText(languageManager.getString("addBooking"));
 
-        servicesButton.setText(languageManager.getString("servicesButton"));
-        showServicesButton.setText(languageManager.getString("showServices"));
-        showMechanicsButton.setText(languageManager.getString("showMechanicsButton"));
+        servicesButton.setText(languageManager.getString("service"));
 
         ordersButton.setText(languageManager.getString("ordersButton"));
 
         paymentsButton.setText(languageManager.getString("paymentsButton"));
-        showInvoicesButton.setText(languageManager.getString("showInvoices"));
-        addInvoiceButton.setText(languageManager.getString("addInvoice"));
-        showPaymentsButton.setText(languageManager.getString("showPayments"));
-        addPaymentButton.setText(languageManager.getString("addPayment"));
 
+        logoutButton.setText(languageManager.getString("logoutButton"));
         exitButton.setText(languageManager.getString("quit"));
     }
 
@@ -128,7 +125,10 @@ public class MainMenuView {
             sub.setMaxWidth(Double.MAX_VALUE);
         }
 
-        mainButton.setOnAction(e -> toggleSubMenu(subMenu));
+        // Öppnar undermenyn endast om sektionen faktiskt har undermenyknappar.
+        if (subButtons.length > 0) {
+            mainButton.setOnAction(e -> toggleSubMenu(subMenu));
+        }
 
         VBox section = new VBox(mainButton, subMenu);
         return section;
@@ -148,18 +148,16 @@ public class MainMenuView {
 
     public Parent getView() { return root; }
 
-    public Button getCustomersButton() { return customersButton; }
-    public Button getShowVehiclesButton() { return showVehiclesButton; }
-    public Button getAddVehicleButton() { return addVehicleButton; }
-    public Button getShowBookingsButton() { return showBookingsButton; }
-    public Button getAddBookingButton() { return addBookingButton; }
-    public Button getShowServicesButton() { return showServicesButton; }
-    public Button getShowMechanicsButton() { return showMechanicsButton; }
-    public Button getOrdersButton() { return ordersButton; }
-    public Button getShowInvoicesButton() { return showInvoicesButton; }
-    public Button getAddInvoiceButton() { return addInvoiceButton; }
-    public Button getShowPaymentsButton() { return showPaymentsButton; }
-    public Button getAddPaymentButton() { return addPaymentButton; }
+    public Button getServicesButton() {return servicesButton;}
 
+    public Button getCustomersButton() { return customersButton; }
+    public Button getVehiclesButton() {return vehiclesButton;}
+
+    public Button getBookingsButton() {return bookingsButton;}
+
+    public Button getOrdersButton() { return ordersButton; }
+    public Button getPaymentsButton() {return paymentsButton;}
+
+    public Button getLogoutButton(){return logoutButton;}
     public Button getExitButton() {return exitButton;}
 }

@@ -40,12 +40,12 @@ public class WorkOrderServiceIntegrationTest {
                 serviceItemService, customerService, vehicleService);
     }
 
-    //*** OM SERVICEKLASS - > DAO -> DATABAS (integrationstest) *******
+    //*** OM SERVICEKLASS - > REPOSITORY -> DATABAS (integrationstest) *******
 
     @Test
     //"arbetsorder ska kunna registreras"
     void createWorkOrder() {
-        WorkOrder workOrder = workOrderService.createWorkOrder(24, 4, 1);
+        WorkOrder workOrder = workOrderService.createWorkOrder(53, 4, 1);
         WorkOrder savedWorkOrder = workOrderService.findWorkOrder(workOrder.getId());
         assertEquals(workOrder.getId(), savedWorkOrder.getId());
     }
@@ -62,9 +62,9 @@ public class WorkOrderServiceIntegrationTest {
     @Test
     //"arbetsorder ska kunna avslutas"
     void completeWorkOrder() {
-       workOrderService.startWorkOrder(21);
-       workOrderService.completeWorkOrder(21);
-       WorkOrder updatedWorkOrder = workOrderService.findWorkOrder(21);
+       workOrderService.startWorkOrder(34);
+       workOrderService.completeWorkOrder(34);
+       WorkOrder updatedWorkOrder = workOrderService.findWorkOrder(34);
        assertEquals("COMPLETED",  updatedWorkOrder.getStatus());
     }
 

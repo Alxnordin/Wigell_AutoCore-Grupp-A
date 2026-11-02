@@ -8,11 +8,17 @@ import com.wac.autocore.util.LanguageManager;
 import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.WorkOrder;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.ErrorHandler;
+import com.wac.autocore.view.UIComponents;
 import com.wac.autocore.view.mechanic.MechanicView;
 import com.wac.autocore.view.service.ServiceItemView;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ServiceController {
 
@@ -24,6 +30,8 @@ public class ServiceController {
     private final ServiceItemView serviceItemView;
     private final MechanicView mechanicView;
 
+    private Integer selectedMechanicId;
+
     LanguageManager languageManager = LanguageManager.getInstance();
 
     public ServiceController(ServiceItemService serviceItemService, MechanicService mechanicService, WorkOrderService workOrderService, AutoCoreApplication app,
@@ -34,16 +42,28 @@ public class ServiceController {
         this.app = app;
         this.serviceItemView = serviceItemView;
         this.mechanicView = mechanicView;
+        this.mechanicView.setServiceNamesProvider(this::getServiceNames);
         wireEvents();
         refreshLists();
 
-        languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
-            refreshLists();
-        });
+        languageManager.localeProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    // Uppdaterar tabellerna efter språkbytet.
+                    refreshLists();
+
+                    // Återställer arbetet utifrån det sparade mekaniker-ID:t.
+                    if (selectedMechanicId != null) {
+                        mechanicService.getMechanics().stream()
+                                .filter(mechanic ->
+                                        mechanic.getId() == selectedMechanicId)
+                                .findFirst()
+                                .ifPresent(this::showMechanicWork);
+                    }
+                }
+        );
     }
 
     public void refreshLists() {
-
         serviceItemView.getServiceItemTableView().getItems().clear();
 
         for (ServiceItem item : serviceItemService.getServiceItems())   {
@@ -54,36 +74,51 @@ public class ServiceController {
         mechanicView.getMechanicListView().getItems().setAll(
                 mechanicService.getMechanics()
         );
-
-        mechanicView.getMechanicWorkListView().getItems().clear();
     }
 
     private void wireEvents() {
-        // Hämtar den valda mekanikern direkt från tabellen.
+        // Sparar mekanikerns ID och visar dennes arbetsordrar.
         mechanicView.getMechanicListView()
                 .getSelectionModel()
                 .selectedItemProperty()
-                .addListener((observable, oldMechanic, selectedMechanic) ->
-                        showMechanicWork(selectedMechanic)
-                );
+                .addListener((observable, oldMechanic, selectedMechanic) -> {
+                    if (selectedMechanic != null) {
+                        selectedMechanicId = selectedMechanic.getId();
+                        showMechanicWork(selectedMechanic);
+                    }
+                });
 
-        serviceItemView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
-        mechanicView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+        // Tillbaka från tjänster går till serviceöversikten.
+        serviceItemView.getBackButton().setOnAction(
+                event -> app.showServiceOverviewView());
+
+        // Tillbaka från mekaniker går till serviceöversikten.
+        mechanicView.getBackButton().setOnAction(
+                event -> app.showServiceOverviewView());
 
         serviceItemView.setOnChangePrice(serviceItem -> {
-            TextInputDialog dialog = new TextInputDialog(String.valueOf(serviceItem.getPrice()));
-
-            dialog.setTitle(languageManager.getString("changePrice"));
-            dialog.setHeaderText(serviceItem.getName());
-            dialog.setContentText(languageManager.getString("newPrice"));
+            TextInputDialog dialog = UIComponents.createPriceInputDialog(
+                    languageManager.getString("changePrice"), serviceItem.getName(),
+                    languageManager.getString("newPrice"), String.valueOf(serviceItem.getPrice()));
 
             //Alexander
             //servicen tolkar och kontrollerar priset. Vid fel visas orsaken via ErrorHandler
             //(tidigare skrevs felet bara ut i konsolen och användaren såg ingenting)
             dialog.showAndWait().ifPresent(input -> {
                 try {
+
+                    String oldPrice = serviceItemView.getPrice(serviceItem);
+
                     serviceItemService.changeServicePrice(serviceItem.getId(), input);
                     refreshLists();
+
+                    ServiceItem updatedServiceItem = serviceItemService.getServiceItems().stream()
+                            .filter(item -> item.getId() == serviceItem.getId())
+                            .findFirst()
+                            .orElse(serviceItem);
+
+                    showConfirmation(updatedServiceItem, oldPrice);
+
                 } catch (Exception e) {
                     ErrorHandler.show(e);
                 }
@@ -91,8 +126,19 @@ public class ServiceController {
         });
     }
 
+    // Hämtar tjänsternas namn utifrån arbetsorderns tjänste-ID:n.
+    public String getServiceNames(WorkOrder workOrder) {
+        return workOrder.getServiceItemIds().stream()
+                .map(serviceId -> serviceItemService.getServiceItems().stream()
+                        .filter(service -> service.getId() == serviceId)
+                        .map(ServiceItem::getName)
+                        .findFirst()
+                        .orElse("ID: " + serviceId))
+                .collect(java.util.stream.Collectors.joining(", "));
+    }
+
     private void showMechanicWork(Mechanic selectedMechanic) {
-        mechanicView.getMechanicWorkListView().getItems().clear();
+        mechanicView.getMechanicWorkTable().getItems().clear();
 
         // Avslutar om ingen mekaniker är vald.
         if (selectedMechanic == null) {
@@ -101,36 +147,22 @@ public class ServiceController {
 
         for (WorkOrder workOrder : workOrderService.findAllWorkOrders()) {
             if (workOrder.getMechanicId() == selectedMechanic.getId()) {
-
-                String workOrderStatus;
-
-                if (workOrder.getStatus().equals("CREATED")) {
-                    workOrderStatus = languageManager.getString("statusCreated");
-
-                } else if (workOrder.getStatus().equals("IN_PROGRESS")) {
-                    workOrderStatus = languageManager.getString("statusInProgress");
-
-                } else if (workOrder.getStatus().equals("COMPLETED")) {
-                    workOrderStatus = languageManager.getString("statusCompleted");
-
-                } else {
-                    workOrderStatus = workOrder.getStatus();
-                }
-
-                String workOrderInfo =
-                        workOrder.getId() + " | "
-                                + languageManager.getString("workOrderBookingId")
-                                + ": " + workOrder.getBookingId() + " | "
-                                + languageManager.getString("workOrderMechanicId")
-                                + ": " + workOrder.getMechanicId() + " | "
-                                + languageManager.getString("workOrderServices")
-                                + ": " + workOrder.getServiceItemIds() + " | "
-                                + languageManager.getString("workOrderStatus")
-                                + ": " + workOrderStatus;
-
-                mechanicView.getMechanicWorkListView().getItems().add(workOrderInfo);
+                mechanicView.getMechanicWorkTable().getItems().add(workOrder);
             }
         }
+    }
+
+    private void showConfirmation(ServiceItem serviceItem, String oldPrice) {
+        String header = languageManager.getString("confirmationPriceChangedHeader");
+        String subheader = languageManager.getString("confirmationPriceChangedSubheader");
+
+        Map<String, String> confirmationDetails = new LinkedHashMap<>();
+        confirmationDetails.put(languageManager.getString("service"), serviceItem.getName());
+        confirmationDetails.put(languageManager.getString("oldPrice"), oldPrice);
+        confirmationDetails.put(languageManager.getString("newPrice"), PriceFormatter.formatPrice(serviceItem.getPrice()));
+
+        Alert alert = UIComponents.createConfirmationAlert(header, subheader, confirmationDetails);
+        alert.showAndWait();
     }
 
     public Parent getServiceItemView() {

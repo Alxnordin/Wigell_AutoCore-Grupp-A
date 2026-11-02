@@ -2,7 +2,9 @@ package com.wac.autocore.view.service;
 
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.UIComponents;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,7 +12,6 @@ import javafx.scene.control.Label;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.TableCell;
@@ -34,7 +35,7 @@ public class ServiceItemView {
     private Button backButton;
 
     private TableColumn<ServiceItem, String> nameColumn;
-    private TableColumn<ServiceItem, Double> priceColumn;
+    private TableColumn<ServiceItem, String> priceColumn;
     private TableColumn<ServiceItem, Void> actionColumn;
 
     LanguageManager languageManager = LanguageManager.getInstance();
@@ -43,16 +44,22 @@ public class ServiceItemView {
 
         box = UIComponents.createVBoxForViews();
 
-        title = new Label(languageManager.getString("serviceLabel"));
+        title = new Label(languageManager.getString("services"));
         HBox titleBox = UIComponents.createPageTitle(title, "fa-wrench");
         subtitle = UIComponents.createSubtitle(
                 languageManager.getString("serviceItemSubtitle"));
 
         serviceItemTableView = UIComponents.createTable();
-        nameColumn = new TableColumn<>(languageManager.getString("serviceItemName"));
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        priceColumn = new TableColumn<>(languageManager.getString("serviceItemPrice"));
-        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        nameColumn = new TableColumn<>(
+                languageManager.getString("service"));
+        // Hämtar tjänstens namn på det aktiva gränssnittsspråket.
+        nameColumn.setCellValueFactory(cell ->
+                new javafx.beans.property.SimpleStringProperty(
+                        getLocalizedServiceName(cell.getValue().getName())));
+
+        priceColumn = new TableColumn<>(languageManager.getString("price"));
+        priceColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getPrice())));
         actionColumn = new TableColumn<>(languageManager.getString("changePrice"));
 
         serviceItemTableView.getColumns().addAll(nameColumn, priceColumn, actionColumn);
@@ -78,6 +85,10 @@ public class ServiceItemView {
     public Parent getView() { return root; }
     public TableView<ServiceItem> getServiceItemTableView() { return serviceItemTableView; }
     public Button getBackButton() { return backButton; }
+    public String getPrice(ServiceItem serviceItem){
+        String price = PriceFormatter.formatPrice(serviceItem.getPrice());
+        return price;
+    }
 
     //Alexander
     //lägger in en sektion till på sidan (servicepaketen), ovanför tillbaka-knappen
@@ -96,12 +107,9 @@ public class ServiceItemView {
                     private final Button button = new Button();
 
                     {
-                        button.setText(
-                                languageManager.getString("changePrice")
-                        );
+                        button.setText(languageManager.getString("changePrice"));
 
                         button.setOnAction(event -> {
-
                             ServiceItem serviceItem =
                                     getTableView()
                                             .getItems()
@@ -121,6 +129,7 @@ public class ServiceItemView {
                         if (empty) {
                             setGraphic(null);
                         } else {
+                            button.setText(languageManager.getString("changePrice"));
                             setGraphic(button);
                         }
                     }
@@ -129,12 +138,35 @@ public class ServiceItemView {
     }
 
 
+    private String getLocalizedServiceName(String serviceName) {
+        if (serviceName == null) {
+            return "";
+        }
+
+        switch (serviceName.trim().toLowerCase(java.util.Locale.ROOT)) {
+            case "oil change":
+                return languageManager.getString("serviceOil");
+            case "brake service":
+                return languageManager.getString("serviceBrake");
+            case "diagnostics":
+                return languageManager.getString("serviceDiagnostics");
+            case "annual service":
+                return languageManager.getString("serviceAnnual");
+
+            default:
+                return serviceName;
+        }
+    }
+
+
     public void changeTextAllComponents() {
-        title.setText(languageManager.getString("serviceLabel"));
+        title.setText(languageManager.getString("services"));
         subtitle.setText(languageManager.getString("serviceItemSubtitle"));
-        nameColumn.setText(languageManager.getString("serviceItemName"));
-        priceColumn.setText(languageManager.getString("serviceItemPrice"));
+        nameColumn.setText(languageManager.getString("service"));
+        priceColumn.setText(languageManager.getString("price"));
         actionColumn.setText(languageManager.getString("changePrice"));
         backButton.setText(languageManager.getString("backButton"));
+
+        serviceItemTableView.refresh();
     }
 }

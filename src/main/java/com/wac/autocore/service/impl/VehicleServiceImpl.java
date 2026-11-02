@@ -9,10 +9,13 @@ import com.wac.autocore.repository.VehicleRepository;
 import com.wac.autocore.service.interf.CustomerService;
 import com.wac.autocore.service.interf.VehicleService;
 import com.wac.autocore.validation.Validator;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
 
 import java.time.Year;
 import java.util.List;
 
+@Service
 public class VehicleServiceImpl implements VehicleService {
 
     private final VehicleRepository vehicleRepository;
@@ -44,6 +47,7 @@ public class VehicleServiceImpl implements VehicleService {
     //Alexander
     //servicen avgör nu själv vad som är giltigt, inte controllern.
     //årsmodellen tas emot som text och tolkas här, så att samma regel gäller oavsett vem som anropar.
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public Vehicle createVehicle(String registrationNumber,
                                  String brand,
                                  String model,
@@ -58,9 +62,9 @@ public class VehicleServiceImpl implements VehicleService {
         Validator.requireText(brand, "missingVehicleDetailsWarning");
         Validator.requireText(model, "missingVehicleDetailsWarning");
 
-//        if (vehicleRepository.existsByRegistrationNumber(registrationNumber)) {
-//            throw new BusinessRuleException("Registration number already exists");
-//        }
+        if (vehicleAlreadyExists(registrationNumber)) {
+            throw new BusinessRuleException("vehicleAlreadyExistsError", registrationNumber.trim());
+        }
 
         int year = Validator.requireInteger(yearText, "invalidYearWarning");
         Validator.requireRange(year, FIRST_MODEL_YEAR, Year.now().getValue() + 1, "invalidYearRangeError");
@@ -74,5 +78,16 @@ public class VehicleServiceImpl implements VehicleService {
         vehicleRepository.save(vehicle);
 
         return vehicle;
+    }
+
+    private boolean vehicleAlreadyExists(String registrationNumber) {
+
+        for (Vehicle vehicle : vehicleRepository.findAll()) {
+            if (registrationNumber.trim().equalsIgnoreCase(vehicle.getRegistrationNumber().trim())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

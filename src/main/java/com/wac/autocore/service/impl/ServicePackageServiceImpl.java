@@ -7,12 +7,15 @@ import com.wac.autocore.model.ServicePackage;
 import com.wac.autocore.service.interf.ServiceItemService;
 import com.wac.autocore.service.interf.ServicePackageService;
 import com.wac.autocore.repository.ServicePackageRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 //Alexander'
 //Servicepaket: hämtar, skapar och ändrar paket
 //paketet är en mall. Bokningar som redan skapats från ett paket påverkas inte när paketet ändras
+@Service
 public class ServicePackageServiceImpl implements ServicePackageService {
 
     //private final ServicePackageDAO servicePackageDAO = new ServicePackageDAO();
@@ -25,7 +28,7 @@ public class ServicePackageServiceImpl implements ServicePackageService {
         this.serviceItemService = serviceItemService;
     }
 
-    public List<ServicePackage> servicePackages() {
+    public List<ServicePackage> getServicePackages() {
         return servicePackageRepository.findAll();
     }
 
@@ -41,6 +44,7 @@ public class ServicePackageServiceImpl implements ServicePackageService {
 
     //skapar ett nytt tomt paket. Namnet måste finnas & får ej vara tomt
     //Alexander: tomt namn -> ValidationException, namnet redan upptaget -> BusinessRuleException
+    @PreAuthorize("hasRole('ADMIN')")
     public ServicePackage createServicePackage(String name) {
         Validator.requireText(name, "packageNameRequiredError");
 
@@ -54,6 +58,7 @@ public class ServicePackageServiceImpl implements ServicePackageService {
     }
 
     //lägger till en befintlig tjänst i ett paket
+    @PreAuthorize("hasRole('ADMIN')")
     public void addServiceToPackage(int servicePackageId, int serviceItemId) {
         ServicePackage servicePackage = requireServicePackage(servicePackageId);
 
@@ -69,6 +74,7 @@ public class ServicePackageServiceImpl implements ServicePackageService {
     }
 
     //tar bort en tjänst från ett paket
+    @PreAuthorize("hasRole('ADMIN')")
     public void removeServiceFromPackage(int servicePackageId, int serviceItemId) {
         ServicePackage servicePackage = requireServicePackage(servicePackageId);
 

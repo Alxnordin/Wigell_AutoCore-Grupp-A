@@ -22,22 +22,26 @@ public class MainMenuController {
     public void wireEvents() {
         view.getCustomersButton().setOnAction(event -> app.showCustomerListView());
 
-        view.getShowVehiclesButton().setOnAction(e -> app.showVehicleListView());
-        view.getAddVehicleButton().setOnAction(e -> app.showVehicleView());
+        view.getVehiclesButton().setOnAction(event -> app.showVehicleListView());
+//        view.getShowVehiclesButton().setOnAction(e -> app.showVehicleListView());
+//        view.getAddVehicleButton().setOnAction(e -> app.showVehicleView());
 
-        view.getShowBookingsButton().setOnAction(e -> app.showBookingListView());
-        view.getAddBookingButton().setOnAction(e -> app.showBookingView());
+        view.getBookingsButton().setOnAction(event -> app.showBookingListView());
+//        view.getShowBookingsButton().setOnAction(e -> app.showBookingListView());
+//        view.getAddBookingButton().setOnAction(e -> app.showBookingView());
 
-        view.getShowServicesButton().setOnAction(e -> app.showServiceItemView());
-        view.getShowMechanicsButton().setOnAction(e -> app.showMechanicView());
+        view.getServicesButton().setOnAction(e -> app.showServiceOverviewView());
+//        view.getShowServicesButton().setOnAction(e -> app.showServiceItemView());
+//        view.getShowMechanicsButton().setOnAction(e -> app.showMechanicView());
 
         view.getOrdersButton().setOnAction(e -> app.showOrderListView());
 
-        view.getShowInvoicesButton().setOnAction(e -> app.showInvoiceListView());
-        view.getAddInvoiceButton().setOnAction(e -> app.showInvoiceView());
+        view.getPaymentsButton().setOnAction(event -> app.showInvoiceListView());
 
-        view.getShowPaymentsButton().setOnAction(e -> app.showPaymentView());
-        view.getAddPaymentButton().setOnAction(e -> app.showPaymentView());
+//        view.getShowPaymentsButton().setOnAction(e -> app.showPaymentView());
+//        view.getAddPaymentButton().setOnAction(e -> app.showPaymentView());
+
+        view.getLogoutButton().setOnAction(e -> app.logout());
 
         view.getExitButton().setOnAction(actionEvent -> app.exitApplication());
     }

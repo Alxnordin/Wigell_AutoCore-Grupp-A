@@ -3,6 +3,8 @@ package com.wac.autocore.dao;
 import com.wac.autocore.data.DatabaseConnection;
 import com.wac.autocore.model.Mechanic;
 import com.wac.autocore.repository.MechanicRepository;
+import org.springframework.stereotype.Repository;
+import com.wac.autocore.exception.DataAccessException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +13,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class MechanicDAO implements MechanicRepository {
     @Override
     public List<Mechanic> findAll() {
@@ -35,7 +38,7 @@ public class MechanicDAO implements MechanicRepository {
             mechanics.add(mechanic);
             }
         }catch(Exception e) {
-            throw new RuntimeException("Could not fetch mechanics.", e);
+            throw new DataAccessException("Could not fetch mechanics.", e);
         }
         return mechanics;
     }
@@ -59,7 +62,7 @@ public class MechanicDAO implements MechanicRepository {
                 }
             }
         }catch (Exception e) {
-            throw new RuntimeException("Could not save mechanic.", e);
+            throw new DataAccessException("Could not save mechanic.", e);
         }
         return mechanic;
     }
@@ -74,7 +77,7 @@ public class MechanicDAO implements MechanicRepository {
 
             statement.executeUpdate();
         } catch(Exception e) {
-            throw new RuntimeException("Could not update mechanic", e);
+            throw new DataAccessException("Could not update mechanic", e);
         }
     }
 }

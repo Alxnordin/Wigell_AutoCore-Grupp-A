@@ -73,7 +73,13 @@ public class VehicleView {
         modelField = createField();
         yearField = createField();
 
-        customerLabel = new Label(languageManager.getString("customerLabel"));
+        // lägger till placeholder text i fälten
+        registrationNumberField.setPromptText(languageManager.getString("registrationNumberPlaceholder"));
+        brandField.setPromptText(languageManager.getString("vehicleBrandPlaceholder"));
+        modelField.setPromptText(languageManager.getString("vehicleModelPlaceholder"));
+        yearField.setPromptText(languageManager.getString("vehicleYearPlaceholder"));
+
+        customerLabel = new Label(languageManager.getString("customer"));
         registrationNumberLabel = new Label(languageManager.getString("registrationNumber"));
         brandLabel = new Label(languageManager.getString("vehicleBrand"));
         modelLabel = new Label(languageManager.getString("vehicleModel"));
@@ -141,12 +147,17 @@ public class VehicleView {
         title.setText(languageManager.getString("vehicleTitle"));
         subtitle.setText(languageManager.getString("vehicleSubtitle"));
         vehicleInformationTitle.setText(languageManager.getString("vehicleInformationTitle"));
-        customerLabel.setText(languageManager.getString("customerLabel"));
+        customerLabel.setText(languageManager.getString("customer"));
         registrationNumberLabel.setText(languageManager.getString("registrationNumber"));
         brandLabel.setText(languageManager.getString("vehicleBrand"));
         modelLabel.setText(languageManager.getString("vehicleModel"));
         yearLabel.setText(languageManager.getString("vehicleYear"));
         createVehicleButton.setText(languageManager.getString("createVehicleButton"));
+
+        registrationNumberField.setPromptText(languageManager.getString("registrationNumberPlaceholder"));
+        brandField.setPromptText(languageManager.getString("vehicleBrandPlaceholder"));
+        modelField.setPromptText(languageManager.getString("vehicleModelPlaceholder"));
+        yearField.setPromptText(languageManager.getString("vehicleYearPlaceholder"));
         backButton.setText(languageManager.getString("backButton"));
     }
 }

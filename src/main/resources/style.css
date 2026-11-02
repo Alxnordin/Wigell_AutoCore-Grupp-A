@@ -758,3 +758,647 @@ ListView .list-cell:filled:selected {
     -fx-background-color: #E8DDF5;
     -fx-text-fill: #563C78;
 }
+
+
+/* Själva dialogrutans bakgrund och kant. */
+.payment-dialog {
+    -fx-background-color: #F5F7F4;
+    -fx-border-color: #CFE0D6;
+    -fx-border-width: 1px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+/* Dialogens rubrikpanel. */
+.payment-dialog > .header-panel {
+    -fx-background-color: #E8F0EB;
+    -fx-padding: 16px 20px;
+}
+
+/* Rubriken i dialogen. */
+.payment-dialog-title {
+    -fx-text-fill: #10182B;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* Innehållsområdet, inklusive formuläret. */
+.payment-dialog > .content {
+    -fx-background-color: #F5F7F4;
+    -fx-padding: 20px;
+}
+
+/* Grön knapp för att genomföra betalningen. */
+.payment-dialog .payment-confirm-button {
+    -fx-background-color: #2E7D32;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-border-color: transparent;
+    -fx-padding: 10px 18px;
+    -fx-cursor: hand;
+}
+
+/* Mörkare grön när muspekaren ligger över Pay. */
+.payment-dialog .payment-confirm-button:hover {
+    -fx-background-color: #256628;
+}
+
+/* Tydlig men diskret avbrytknapp. */
+.payment-dialog .cancel-editing-button {
+    -fx-background-color: #E8F0EB;
+    -fx-text-fill: #263238;
+    -fx-border-color: #CFE0D6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 18px;
+}
+
+/* Samma ljusa gröna ton vid hovring. */
+.payment-dialog .cancel-editing-button:hover {
+    -fx-background-color: #DCE9DF;
+}
+
+/* Skrivskyddat belopp med en diskret grön markering. */
+.payment-dialog .payment-amount-field {
+    -fx-background-color: #EAF2EA;
+    -fx-text-fill: #294A32;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-border-color: #C8D8C8;
+    -fx-border-radius: 8px;
+}
+
+
+/* Ljusgrön ruta som framhäver beloppet som ska betalas. */
+.payment-amount-card {
+    -fx-background-color: #E7F0E8;
+    -fx-background-radius: 10px;
+    -fx-padding: 14px 16px;
+    -fx-spacing: 4px;
+    -fx-border-color: #D3E3D5;
+    -fx-border-radius: 10px;
+}
+
+/* Beskrivning ovanför beloppet. */
+.payment-amount-title {
+    -fx-text-fill: #526957;
+    -fx-font-size: 13px;
+}
+
+/* Själva summan är den tydligaste delen av rutan. */
+.payment-amount-value {
+    -fx-text-fill: #2E7D32;
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+}
+
+/* Förklarande text under beloppet. */
+.payment-amount-description {
+    -fx-text-fill: #526957;
+    -fx-font-size: 11px;
+}
+
+/* Gemensam layout för fakturornas statusetiketter. */
+.status-paid,
+.status-unpaid {
+    -fx-padding: 6px 14px;
+    -fx-background-radius: 8px;
+    -fx-font-weight: bold;
+}
+
+/* Dov grön visar att fakturan är betald. */
+.status-paid {
+    -fx-background-color: #C8E1C4;
+    -fx-text-fill: #28512A;
+}
+
+/* Dov gul visar att fakturan fortfarande är obetald. */
+.status-unpaid {
+    -fx-background-color: #F9E7A8;
+    -fx-text-fill: #5F4B00;
+}
+
+/* Grön knapp för redan betalda fakturor. */
+.paid-button {
+    -fx-background-color: #B8CDB8;
+    -fx-text-fill: #294A32;
+    -fx-background-radius: 6px;
+    -fx-cursor: default;
+}
+
+/* Gemensam form för fakturornas statusetiketter. */
+.status-value {
+    -fx-text-alignment: center;
+    -fx-padding: 8px 18px;
+    -fx-background-radius: 10px;
+    -fx-font-weight: bold;
+}
+
+/* Betald faktura – samma typ av dov grön som Completed. */
+.status-value.status-paid {
+    -fx-background-color: #C8E1C4;
+    -fx-text-fill: #28512A;
+}
+
+/* Obetald faktura – samma typ av dov gul som Created. */
+.status-value.status-unpaid {
+    -fx-background-color: #F9E7A8;
+    -fx-text-fill: #5F4B00;
+}
+
+/* Gemensam stil för åtgärdsknappar i tabeller. */
+.action-button {
+    -fx-background-color: #DF8A36;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 7px;
+    -fx-padding: 8px 14px;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* Mörkare orange vid hovring. */
+.action-button:hover {
+    -fx-background-color: #C87525;
+}
+
+/* Gör ikonerna vita på de orange åtgärdsknapparna. */
+.action-button .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+/* Dov grön knapp för redan betalda fakturor. */
+.paid-button {
+    -fx-background-color: #DDEADD;
+    -fx-text-fill: #66816A;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: none;
+    -fx-cursor: default;
+    -fx-opacity: 1.0;
+}
+
+/* Behåller grön färg även när Paid-knappen är inaktiv. */
+.paid-button:disabled {
+    -fx-opacity: 1;
+}
+
+.paid-button .ikonli-font-icon {
+    -fx-icon-color: #66816A;
+}
+
+/* Grön knapp för att registrera en ny betalning. */
+.register-payment-button {
+    -fx-background-color: #2E7D32;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: none;
+    -fx-cursor: hand;
+}
+
+/* Mörkare grön när användaren hovrar över knappen. */
+.register-payment-button:hover {
+    -fx-background-color: #256628;
+}
+
+/* Säkerställer att betalkortsikonen är vit. */
+.register-payment-button .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+/* Knapp för att öppna betalningshistoriken. */
+.payment-history-button {
+    -fx-background-color: #E7F0E8;
+    -fx-text-fill: #2E7D32;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8px;
+    -fx-border-color: #C8DCCB;
+    -fx-border-radius: 8px;
+    -fx-padding: 10px 16px;
+    -fx-cursor: hand;
+}
+
+/* Ger knappen en något mörkare bakgrund vid hovring. */
+.payment-history-button:hover {
+    -fx-background-color: #D6E7D8;
+}
+
+/* Ger texten plats bredvid ikonen utan att ändra fältets yttre form. */
+.combo-box-with-icon {
+    -fx-padding: 6px 6px 6px 34px;
+}
+
+
+/* Bakgrund för loginvyn. */
+.login-root {
+    -fx-background-color: #E8F1EC;
+    -fx-padding: 30px;
+}
+
+/* Vitt inloggningskort med diskret grön kant. */
+.login-card {
+    -fx-background-color: #F8FAF8;
+    -fx-border-color: #C9DCCF;
+    -fx-border-width: 2px;
+    -fx-border-radius: 16px;
+    -fx-background-radius: 16px;
+    -fx-padding: 34px;
+    -fx-spacing: 18px;
+    -fx-effect: dropshadow(gaussian, rgba(25, 60, 40, 0.12), 18, 0.15, 0, 5);
+}
+
+/* Logotypens text. */
+.login-logo {
+    -fx-font-size: 23px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #267A35;
+}
+
+/* Rubrik och underrubrik. */
+.login-title {
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #102B46;
+}
+
+.login-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748B;
+}
+
+/* Etiketter ovanför inmatningsfälten. */
+.login-field-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #102B46;
+}
+
+/* Inmatningsfält med samma färgtema som resten av systemet. */
+.login-input {
+    -fx-pref-height: 46px;
+    -fx-font-size: 14px;
+    -fx-background-color: white;
+    -fx-border-color: #C9DCCF;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 9px;
+    -fx-background-radius: 9px;
+    -fx-padding: 0 12px;
+}
+
+.login-input:focused {
+    -fx-border-color: #287D38;
+    -fx-border-width: 2px;
+}
+
+/* Grön knapp för inloggning. */
+.login-submit {
+    -fx-pref-height: 48px;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #287D38;
+    -fx-background-radius: 9px;
+    -fx-cursor: hand;
+}
+
+.login-submit:hover {
+    -fx-background-color: #21682F;
+}
+
+/* Felmeddelande vid misslyckad inloggning. */
+.login-error {
+    -fx-text-fill: #B42318;
+    -fx-font-size: 13px;
+}
+
+/* Ger utloggningen en diskret stil som skiljer sig från huvudmenyn. */
+.logout-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #287D38;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent;
+    -fx-background-radius: 9px;
+    -fx-border-radius: 9px;
+    -fx-padding: 12px 16px;
+    -fx-cursor: hand;
+}
+
+/* Visar en svagt grön bakgrund när användaren håller över knappen. */
+.logout-button:hover {
+    -fx-background-color: #DCEAE0;
+}
+
+/* Ger en tydlig markering när knappen får tangentbordsfokus. */
+.logout-button:focused {
+    -fx-border-color: #A8BDA2;
+}
+
+/* Ger utloggningsikonen samma gröna färg som texten. */
+.logout-icon {
+    -fx-icon-color: #287D38;
+}
+
+
+/**** VARNINGSRUTA ****/
+/* Dialogrutans bakgrund och kant */
+.warning-dialog {
+    -fx-background-color: #F5F7F4;
+    -fx-border-color: #CFE0D6;
+    -fx-border-width: 1px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+/* Innehållet */
+.warning-dialog .warning-content {
+    -fx-padding: 18px 12px;
+    -fx-alignment: center-left;
+}
+
+/* Rund ikon med utropstecken */
+.warning-dialog .warning-icon {
+    -fx-background-color: #FBE9E7;
+    -fx-background-radius: 50%;
+    -fx-text-fill: #B84A4A;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-min-width: 44px;
+    -fx-min-height: 44px;
+    -fx-max-width: 44px;
+    -fx-max-height: 44px;
+}
+
+/* Rubrik */
+.warning-dialog .warning-heading {
+    -fx-text-fill: #10182B;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+/* Felmeddelande */
+.warning-dialog .warning-message {
+    -fx-text-fill: #52616B;
+    -fx-font-size: 14px;
+}
+
+/* Nedersta området med OK-knappen */
+.warning-dialog .button-bar {
+    -fx-padding: 10px 20px 16px 20px;
+}
+
+/* OK-knapp */
+.warning-dialog .button {
+    -fx-background-color: #B84A4A;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-padding: 9px 24px;
+    -fx-cursor: hand;
+}
+
+.warning-dialog .button:hover {
+    -fx-background-color: #963B3B;
+}
+
+/* Ger startsidan en ljus bakgrund som matchar övriga vyer. */
+.start-view {
+    -fx-background-color: #F4F7F4;
+}
+
+/* Gör välkomstrubriken tydlig och lätt att läsa. */
+.start-title {
+    -fx-font-size: 34px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #17243A;
+}
+
+/* Ger underrubriken en diskret grön accent. */
+.start-subtitle {
+    -fx-font-size: 21px;
+    -fx-text-fill: #2D7D35;
+}
+
+/* Håller beskrivningen lugn och lättläst. */
+.start-instruction {
+    -fx-font-size: 16px;
+    -fx-text-fill: #68756D;
+}
+
+
+/* Sammanfattningskort på startsidan. */
+.start-summary-card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CFE0D6;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 18px;
+    -fx-spacing: 10px;
+    -fx-pref-height: 125px;
+}
+
+/* Rubriken i varje kort. */
+.start-summary-label {
+    -fx-text-fill: #68756D;
+    -fx-font-size: 13px;
+}
+
+/* Det viktigaste värdet i kortet. */
+.start-summary-value {
+    -fx-text-fill: #17243A;
+    -fx-font-size: 27px;
+    -fx-font-weight: bold;
+}
+
+/* Grön ikon som följer applikationens färgtema. */
+.start-summary-icon {
+    -fx-icon-color: #2E7D32;
+}
+
+
+.information-dialog {
+    -fx-background-color: white;
+    -fx-border-color: #DFE7E1;
+    -fx-border-width: 1px;
+}
+
+.information-dialog .information-content {
+    -fx-background-color: white;
+}
+
+.information-dialog .information-header {
+    -fx-background-color: #EAF5EE;
+    -fx-padding: 25px 20px;
+}
+
+.information-dialog .information-icon {
+    -fx-background-color: white;
+    -fx-background-radius: 50%;
+    -fx-text-fill: #27804C;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-min-width: 54px;
+    -fx-min-height: 54px;
+}
+
+.information-dialog .information-heading {
+    -fx-text-fill: #19382B;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.information-dialog .information-message {
+    -fx-text-fill: #527360;
+    -fx-font-size: 13px;
+}
+
+.information-dialog .information-details {
+    -fx-padding: 20px 25px;
+}
+
+.information-dialog .information-field-label {
+    -fx-text-fill: #82938A;
+    -fx-font-size: 12px;
+}
+
+.information-dialog .information-field-value {
+    -fx-text-fill: #263D31;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.information-dialog .button-bar {
+    -fx-padding: 0 20px 16px 20px;
+}
+
+.information-dialog .button {
+    -fx-background-color: #287A50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-padding: 9px 30px;
+    -fx-cursor: hand;
+}
+
+.information-dialog .button:hover {
+    -fx-background-color: #20613F;
+}
+
+/* Kort för navigering mellan olika delar av servicehanteringen. */
+.overview-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-border-color: #D9E1D7;
+    -fx-border-radius: 10px;
+    -fx-padding: 20px;
+    -fx-spacing: 12px;
+}
+
+/* Ikon och texter i navigeringskorten. */
+.overview-card-icon {
+    -fx-icon-color: #3F5F76;
+}
+
+.overview-card-title {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+.overview-card-description {
+    -fx-font-size: 13px;
+    -fx-text-fill: #5F665F;
+}
+
+
+/* Dialog för att ändra pris */
+
+.price-dialog {
+    -fx-background-color: white;
+    -fx-border-color: #DFE7E1;
+    -fx-border-width: 1px;
+}
+
+.price-dialog .header-panel {
+    -fx-background-color: #EAF5EE;
+    -fx-padding: 18px 20px;
+}
+
+.price-dialog .header-panel .label {
+    -fx-text-fill: #19382B;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+.price-dialog .content {
+    -fx-padding: 20px;
+}
+
+.price-dialog .label {
+    -fx-text-fill: #527360;
+    -fx-font-size: 13px;
+}
+
+.price-dialog .text-field {
+    -fx-background-color: white;
+    -fx-border-color: #CFE0D6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 10px;
+    -fx-font-size: 14px;
+}
+
+.price-dialog .text-field:focused {
+    -fx-border-color: #287A50;
+}
+
+.price-dialog .button-bar {
+    -fx-padding: 10px 20px 16px 20px;
+}
+
+.price-dialog .button {
+    -fx-background-color: #EAF1EC;
+    -fx-text-fill: #263D31;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 22px;
+    -fx-cursor: hand;
+}
+
+.price-dialog .button:default {
+    -fx-background-color: #287A50;
+    -fx-text-fill: white;
+}
+
+.price-dialog .button:default:hover {
+    -fx-background-color: #20613F;
+}
+
+/* Håller kortens stora ikoner i projektets gröna färg. */
+.overview-card-icon {
+    -fx-icon-color: #287A35;
+}
+
+/* Centrerar rubriker och beskrivningar i navigeringskorten. */
+.overview-card-title {
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+.overview-card-description {
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+

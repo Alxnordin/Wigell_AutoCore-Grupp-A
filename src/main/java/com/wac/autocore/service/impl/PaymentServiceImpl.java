@@ -9,12 +9,18 @@ import com.wac.autocore.model.Payment;
 import com.wac.autocore.service.interf.InvoiceService;
 import com.wac.autocore.service.interf.PaymentService;
 import com.wac.autocore.repository.PaymentRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class PaymentServiceImpl implements PaymentService {
 
-    //private final PaymentDAO paymentDAO = new PaymentDAO();
+    private static final Logger LOG = LoggerFactory.getLogger(PaymentServiceImpl.class);
+
     private final PaymentRepository paymentRepository;
     private final InvoiceService invoiceService;
 
@@ -23,7 +29,7 @@ public class PaymentServiceImpl implements PaymentService {
         this.paymentRepository = paymentRepository;
         this.invoiceService = invoiceService;
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'WORKSHOP')")
     public List<Payment> findAll() {
         return paymentRepository.findAll();
     }
@@ -32,6 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
     //Alexander
     //kontrollerar betalningstyp och faktura först och kastar exception vid fel
     //paymentType är en kod: CARD, SWISH eller CASH inte den översatta texten i rullistan
+    @PreAuthorize("hasRole('ADMIN')")
     public Payment processPayment(int invoiceId, String paymentType) {
         if (paymentType == null || paymentType.trim().isEmpty()) {
             throw new ValidationException("missingPaymentTypeError");
@@ -59,19 +66,18 @@ public class PaymentServiceImpl implements PaymentService {
 
         if (paymentType.equalsIgnoreCase("CARD")) {
 
-            System.out.println("Connecting directly to SuperCardPayment...");
-            System.out.println("Card payment approved.");
+            //simulerad betalleverantör, bara användbar vid utveckling
+            LOG.debug("processPayment: simulerad kortbetalning godkänd för faktura {}", invoiceId);
             successful = true;
 
         } else if (paymentType.equalsIgnoreCase("SWISH")) {
 
-            System.out.println("Calling Swish payment service...");
-            System.out.println("Swish payment approved.");
+            LOG.debug("processPayment: simulerad Swish-betalning godkänd för faktura {}", invoiceId);
             successful = true;
 
         } else if (paymentType.equalsIgnoreCase("CASH")) {
 
-            System.out.println("Registering cash payment...");
+            LOG.debug("processPayment: kontantbetalning för faktura {}", invoiceId);
             successful = true;
 
         }
@@ -83,15 +89,16 @@ public class PaymentServiceImpl implements PaymentService {
             invoice.setPaid(true);
             invoiceService.updatePaidInvoice(invoice);
 
-            System.out.println("Payment completed successfully.");
-            System.out.println("Sending payment confirmation to customer...");
-            System.out.println("Confirmation sent.");
+            LOG.info("processPayment: betalning {} registrerad för faktura {} ({})",
+                    payment.getId(), invoiceId, paymentType);
+        } else {
+            LOG.warn("processPayment: betalning för faktura {} misslyckades ({})", invoiceId, paymentType);
         }
         return payment;
     }
     //Alexander
     //kunden hämtas via fakturan, ger null om fakturan eller kunde inte hittas
-
+    @PreAuthorize("hasRole('ADMIN')")
     public Customer findCustomerForPayment(Payment payment) {
         Invoice invoice = invoiceService.findInvoice(payment.getInvoiceId());
         if (invoice == null) {

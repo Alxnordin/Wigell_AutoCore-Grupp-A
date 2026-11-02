@@ -7,15 +7,20 @@ import com.wac.autocore.model.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.repository.InvoiceLineRepository;
 import com.wac.autocore.repository.InvoiceRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Service
 public class InvoiceServiceImpl implements InvoiceService {
 
-    //private final InvoiceDAO invoiceDAO = new InvoiceDAO();
+    private static final Logger LOG = LoggerFactory.getLogger(InvoiceServiceImpl.class);
+
     private final InvoiceRepository invoiceRepository;
-    //private final InvoiceLineDAO invoiceLineDAO = new InvoiceLineDAO();
     private final InvoiceLineRepository invoiceLineRepository;
 
     private final WorkOrderService workOrderService;
@@ -37,7 +42,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         this.customerService = customerService;
         this.serviceItemService = serviceItemService;
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'READ_ONLY')")
     public Invoice findInvoice(int id) {
         for (Invoice invoice : invoiceRepository.findAll()) {
             if (invoice.getId() == id) {
@@ -47,7 +52,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         return null;
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'READ_ONLY')")
     public List<Invoice> findAll() {
         return invoiceRepository.findAll();
     }
@@ -55,6 +60,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     //Alexander
     //kontrollerar arbetsordern & rabattkoden först och kastar exception vi fel
+    @PreAuthorize("hasRole('ADMIN')")
     public Invoice createInvoice(int workOrderId, String discountCode) {
 
         WorkOrder workOrder = workOrderService.findWorkOrder(workOrderId);
@@ -88,19 +94,34 @@ public class InvoiceServiceImpl implements InvoiceService {
         double discountPercentage = 0.0;
         double fixedDiscount = 0.0;
 
-        Booking booking = bookingService.findBooking(workOrder.getBookingId());
+        Booking booking = null;
+
+        if (workOrder.getBookingId() != null) {
+            booking = bookingService.findBooking(workOrder.getBookingId());
+
+            if (booking == null) {
+                throw new NotFoundException("bookingNotFoundError",
+                        String.valueOf(workOrder.getBookingId()));
+            }
+        }
 
         if (booking != null) {
-
             Vehicle vehicle = vehicleService.findVehicle(booking.getVehicleId());
 
-            if (vehicle != null) {
+            if (vehicle == null) {
+                throw new NotFoundException("vehicleNotFoundError",
+                        String.valueOf(booking.getVehicleId()));
+            }
 
-                Customer customer = customerService.findCustomer(vehicle.getCustomerId());
+            Customer customer = customerService.findCustomer(vehicle.getCustomerId());
 
-                if (customer != null && customer.isVip()) {
-                    discountPercentage += 0.10;
-                }
+            if (customer == null) {
+                throw new NotFoundException("customerNotFoundError",
+                        String.valueOf(vehicle.getCustomerId()));
+            }
+
+            if (customer.isVip()) {
+                discountPercentage += 0.10;
             }
         }
 
@@ -191,8 +212,7 @@ public class InvoiceServiceImpl implements InvoiceService {
             }
         }
 
-        System.out.println("Sending invoice notification to customer...");
-        System.out.println("Notification sent.");
+        LOG.info("createInvoice: faktura {} skapad för arbetsorder {}", invoice.getId(), workOrderId);
 
         return invoice;
     }
@@ -202,6 +222,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     //uppdaterar betald-status på den befintliga fakturan (UPDATE).
     //tidigare anropades save (INSERT), så varje betalning skapade en ny kopia av fakturan
     //medan originalet förblev obetalt
+    @PreAuthorize("hasRole('ADMIN')")
     public Invoice updatePaidInvoice(Invoice invoice) {
         invoiceRepository.updatePaid(invoice);
         return invoice;
@@ -210,10 +231,11 @@ public class InvoiceServiceImpl implements InvoiceService {
     //Alexander
     //kunden hämtas via arbetsordern. Finns ingen kund direkt på arbetsordern
     //används bokningens fordon som tidigare. Ger null om kunden inte hittas.
+    @PreAuthorize("hasRole('ADMIN')")
     public Customer findCustomerForInvoice(Invoice invoice) {
         WorkOrder workOrder = workOrderService.findWorkOrder(invoice.getWorkOrderId());
         if (workOrder == null) {
-            return null;
+            throw new NotFoundException("workOrderNotFoundError", String.valueOf(invoice.getWorkOrderId()));
         }
 
         if (workOrder.getCustomerId() > 0) {

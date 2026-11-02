@@ -2,19 +2,27 @@ package com.wac.autocore.controller;
 
 import com.wac.autocore.AutoCoreApplication;
 import com.wac.autocore.model.*;
-import com.wac.autocore.service.impl.*;
 import com.wac.autocore.service.interf.*;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.ErrorHandler;
+import com.wac.autocore.view.UIComponents;
 import com.wac.autocore.view.booking.BookingDetailsView;
 import com.wac.autocore.view.booking.BookingListView;
 import com.wac.autocore.view.booking.BookingView;
+import com.wac.autocore.view.customer.CustomerView;
+import com.wac.autocore.view.customer.CustomerListView;
+import com.wac.autocore.view.vehicle.VehicleView;
+import com.wac.autocore.view.vehicle.VehicleListView;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BookingController {
 
@@ -29,6 +37,8 @@ public class BookingController {
     private final BookingView bookingView;
     private final BookingListView bookingListView;
     private Booking originalBookingForCopy;
+
+    private boolean fromCreateBookingWindow = false;
 
     private final LanguageManager languageManager = LanguageManager.getInstance();
 
@@ -48,7 +58,7 @@ public class BookingController {
         this.bookingView = bookingView;
         this.bookingListView = bookingListView;
         bookingView.getCustomerComboBox().getItems().setAll(customerService.getAllCustomers());
-        bookingView.getVehicleComboBox().getItems().setAll(vehicleService.getVehicles());
+        //bookingView.getVehicleComboBox().getItems().setAll(vehicleService.getVehicles());
 
         wireEvents();
         refreshBookingList();
@@ -57,7 +67,7 @@ public class BookingController {
         //rullistan "Välj tjänst" i Skapa bokning: först de enskilda tjänsterna, sedan servicepaketen.
         //Ett paket utan tjänster visas inte, eftersom det inte finns något att lägga till.
         bookingView.getServiceComboBox().getItems().addAll(serviceItemService.getServiceItems());
-        for (ServicePackage servicePackage : servicePackageService.servicePackages()) {
+        for (ServicePackage servicePackage : servicePackageService.getServicePackages()) {
             if (servicePackage.getServiceCount() > 0) {
                 bookingView.getServiceComboBox().getItems().add(servicePackage);
             }
@@ -77,13 +87,96 @@ public class BookingController {
                 (ListChangeListener<ServiceItem>) change -> updateNewBookingSummary());
 
         bookingView.getCreateBookingButton().setOnAction(actionEvent -> createBooking());
+        bookingView.getCustomerComboBox().setOnAction(event -> updateVehicleChoices());
 
         bookingListView.setOnCreateWorkOrder(booking -> openCreateWorkOrder(booking));
         bookingListView.setOnViewBooking(booking -> openBookingDetails(booking));
         bookingListView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
         bookingListView.setGetRegistrationNumber(vehicleId -> getRegistrationNumber(vehicleId));
-        bookingView.getBackButton().setOnAction(actionEvent -> app.showMainMenu());
+        bookingView.getBackButton().setOnAction(actionEvent -> app.showBookingListView());
+        bookingListView.getAddBookingButton().setOnAction(event -> app.showBookingView());
+
+        //Alexander
+        //genväg för att skapa kund eller fordon utan att lämna bokningen
+        bookingView.getNewCustomerButton().setOnAction(event -> openCreateCustomerFromBooking());
+        bookingView.getNewVehicleButton().setOnAction(event -> openCreateVehicleFromBooking());
     }
+
+    //Alexander
+    //"+ Ny kund": visar det vanliga kundformuläret (samma formulär och validering som i Kunder)
+    //När kunden har skapats visas samma bokningsformulär igen, så allt som redan är ifyllt
+    //ligger kvar, och den nya kunden är vald.
+    private void openCreateCustomerFromBooking() {
+        CustomerController customerController = new CustomerController(
+                customerService, app, new CustomerView(), new CustomerListView());
+
+        customerController.setOnCustomerCreated(customer -> {
+            refreshCustomerComboBox();
+            selectCustomerById(customer.getId());
+            app.showView(bookingView.getView());
+        });
+        customerController.setOnBack(() -> app.showView(bookingView.getView()));
+
+        app.showView(customerController.getCustomerFormView());
+    }
+
+    //Alexander
+    //"+ Nytt fordon": visar det vanliga fordonsformuläret med bokningens kund förvald.
+    //När fordonet har skapats visas samma bokningsformulär igen med fordonet och dess ägare valda.
+    private void openCreateVehicleFromBooking() {
+        VehicleController vehicleController = new VehicleController(
+                vehicleService, customerService, app, new VehicleView(), new VehicleListView());
+
+        vehicleController.preselectCustomer(bookingView.getCustomerComboBox().getValue());
+
+        vehicleController.setOnVehicleCreated(vehicle -> {
+            refreshVehicleComboBox();
+            selectVehicleById(vehicle.getId());
+            selectCustomerById(vehicle.getCustomerId());
+            app.showView(bookingView.getView());
+        });
+        vehicleController.setOnBack(() -> app.showView(bookingView.getView()));
+
+        app.showView(vehicleController.getVehicleFormView());
+    }
+
+    //hämtar kunderna igen så att en nyss skapad kund finns med i listan
+    private void refreshCustomerComboBox() {
+        Customer selected = bookingView.getCustomerComboBox().getValue();
+        bookingView.getCustomerComboBox().getItems().setAll(customerService.getAllCustomers());
+        if (selected != null) {
+            selectCustomerById(selected.getId());
+        }
+    }
+
+    //hämtar fordonen igen så att ett nyss skapat fordon finns med i listan
+    private void refreshVehicleComboBox() {
+        Vehicle selected = bookingView.getVehicleComboBox().getValue();
+        bookingView.getVehicleComboBox().getItems().setAll(vehicleService.getVehicles());
+        if (selected != null) {
+            selectVehicleById(selected.getId());
+        }
+    }
+
+    //väljer på id, eftersom listan innehåller nya objekt efter att den hämtats igen
+    private void selectCustomerById(int customerId) {
+        for (Customer customer : bookingView.getCustomerComboBox().getItems()) {
+            if (customer.getId() == customerId) {
+                bookingView.getCustomerComboBox().setValue(customer);
+                return;
+            }
+        }
+    }
+
+    private void selectVehicleById(int vehicleId) {
+        for (Vehicle vehicle : bookingView.getVehicleComboBox().getItems()) {
+            if (vehicle.getId() == vehicleId) {
+                bookingView.getVehicleComboBox().setValue(vehicle);
+                return;
+            }
+        }
+    }
+
 
     //Alexander
     //läser formuläret och låter servicen validera. Vid fel kastar servicen en exception
@@ -105,10 +198,12 @@ public class BookingController {
         try {
             //Vanlig booking använder createBooking, bokning skapad av tidigare bokning använder
             //createBookingFromPreviousBooking. tjänsterna hämtas då från originalbokningen.
+            //Bokningen skapas EN gång och samma objekt används till bekräftelsen.
+            Booking booking;
             if (originalBookingForCopy != null) {
-                bookingService.createBookingFromPreviousBooking(originalBookingForCopy.getId(), date);
+                booking = bookingService.createBookingFromPreviousBooking(originalBookingForCopy.getId(), date);
             } else {
-                bookingService.createBooking(vehicleId, date, description, serviceItemIds);
+                booking = bookingService.createBooking(vehicleId, date, description, serviceItemIds);
             }
 
             refreshBookingList();
@@ -117,11 +212,32 @@ public class BookingController {
             bookingView.getDescriptionField().clear();
             bookingView.getServiceComboBox().setValue(null);
             bookingView.getServicesTable().getItems().clear();
-            showBookingConfirmationMessage("Bokning skapad. Det här är en tillfällig lösning " +
-                    "på bekräftelse :)");
+
+            fromCreateBookingWindow = true;
+            showBookingConfirmation(booking, fromCreateBookingWindow);
+
+            app.showBookingListView();
+
+            app.showBookingListView();
+
         } catch (Exception e) {
             ErrorHandler.show(e);
         }
+    }
+    //Ny metod som gör att man bara kan välja bil som hör till aktuell kund
+    private void updateVehicleChoices(){
+        var customer = bookingView.getCustomerComboBox().getValue();
+        var vehicleComboBox = bookingView.getVehicleComboBox();
+
+        vehicleComboBox.setValue(null);
+
+        if (customer == null){
+            vehicleComboBox.getItems().clear();
+            return;
+        }
+        vehicleComboBox.getItems().setAll(vehicleService.getVehicles().stream().filter
+                (vehicle -> vehicle.getCustomerId() == customer.getId()).toList());
+
     }
 
     //Alexander
@@ -266,7 +382,7 @@ public class BookingController {
                 detailsView.showEditServices();
                 detailsView.getServiceComboBox().getItems().setAll(serviceItemService.getServiceItems());
 
-                for (ServicePackage servicePackage : servicePackageService.servicePackages()) {
+                for (ServicePackage servicePackage : servicePackageService.getServicePackages()) {
                     if (servicePackage.getServiceCount() > 0) {
                         detailsView.getServiceComboBox().getItems().add(servicePackage);
                     }
@@ -359,9 +475,11 @@ public class BookingController {
                     }
                 }
 
-                showChangesConfirmationMessage("Ändringarna är sparade. Det här är en tillfällig lösning " +
-                        "på bekräftelse :)");
+                fromCreateBookingWindow = false;
+                showBookingConfirmation(booking, fromCreateBookingWindow);
+
                 detailsView.showBookingDetails();
+
             } catch (Exception e) {
                 ErrorHandler.show(e);
             }
@@ -383,38 +501,70 @@ public class BookingController {
             return "--";
         }
 
-        return String.format("%,.0f kr", bookingService.calculateTotalPrice(services));
+        return PriceFormatter.formatPrice(bookingService.calculateTotalPrice(services));
     }
 
     private void refreshBookingList() {
         Booking selectedBooking = bookingListView.getBookingTable().getSelectionModel().getSelectedItem();
 
-        bookingListView.getBookingTable().getItems().setAll(bookingService.getBookings());
+        //bookingListView.getBookingTable().getItems().setAll(bookingService.getBookings());
+        bookingListView.getObservableBookingList().setAll(bookingService.getBookings());
 
         if (selectedBooking != null) {
             for (Booking booking : bookingListView.getBookingTable().getItems()) {
                 if (booking.getId() == selectedBooking.getId()) {
                     bookingListView.getBookingTable().getSelectionModel().select(booking);
+                    break;
                 }
             }
         }
     }
 
     private void showWarning(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING, message);
-        alert.setHeaderText(null);
+        Alert alert = UIComponents.createWarningAlert(Alert.AlertType.WARNING,
+        message, languageManager.getString("headingAlertWarning"));
         alert.showAndWait();
     }
 
-    private void showChangesConfirmationMessage(String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, message);
-        alert.setHeaderText(null);
-        alert.showAndWait();
-    }
+    private void showBookingConfirmation(Booking booking, boolean fromCreateBookingWindow) {
 
-    private void showBookingConfirmationMessage(String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, message);
-        alert.setHeaderText(null);
+        String heading;
+
+        if (!fromCreateBookingWindow)   {
+             heading = languageManager.getString("confirmationChangedBookingHeading");
+        }
+
+        else  {
+            heading = languageManager.getString("confirmationNewBookingHeading");
+        }
+
+        String subHeading = languageManager.getString("confirmationNewBookingSubHeading");
+
+        Vehicle vehicle = vehicleService.findVehicle(booking.getVehicleId());
+        Customer customer = customerService.findCustomer(vehicle.getCustomerId());
+
+        List<ServiceItem> services = bookingService.getServicesForBooking(booking.getId());
+
+        String serviceNames = services.stream()
+                .map(ServiceItem::getName)
+                .collect(Collectors.joining(", "));
+
+        Map<String, String> confirmationDetails = new LinkedHashMap<>();
+
+        confirmationDetails.put(languageManager.getString("bookingIdField"),
+                String.valueOf(booking.getId()));
+        confirmationDetails.put(languageManager.getString("name"), customer.getName());
+        confirmationDetails.put(languageManager.getString("registrationNumber"),
+                vehicle.getRegistrationNumber());
+        confirmationDetails.put(languageManager.getString("date"),
+                String.valueOf(booking.getDate()));
+        confirmationDetails.put(languageManager.getString("services"), serviceNames);
+        confirmationDetails.put(languageManager.getString("estimatedTotalTime"),
+                formatTotalTime(services));
+        confirmationDetails.put(languageManager.getString("estimatedTotalPrice"),
+                formatTotalPrice(services));
+
+        Alert alert = UIComponents.createConfirmationAlert(heading, subHeading, confirmationDetails);
         alert.showAndWait();
     }
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ServicePackageService {
 
-    List<ServicePackage> servicePackages();
+    List<ServicePackage> getServicePackages();
     ServicePackage findServicePackage(int id);
     //Alexander
     //kastar exception om något inte är tillåtet, istället för att svara null/false

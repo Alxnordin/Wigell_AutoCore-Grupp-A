@@ -3,6 +3,7 @@ package com.wac.autocore.view.service;
 import com.wac.autocore.model.ServiceItem;
 import com.wac.autocore.model.ServicePackage;
 import com.wac.autocore.util.LanguageManager;
+import com.wac.autocore.util.PriceFormatter;
 import com.wac.autocore.view.UIComponents;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
@@ -38,6 +39,9 @@ public class ServicePackageView {
     private TextField packageNameField;
     private Button createPackageButton;
 
+    private Label title;
+    private Label subtitle;
+
     private Label packageServicesTitle;
     private TableView<ServiceItem> packageServicesTable;
     private TableColumn<ServiceItem, String> serviceColumn;
@@ -53,9 +57,20 @@ public class ServicePackageView {
     private Button addServiceButton;
     private Button removeServiceButton;
 
+    private Button backButton;
+
     LanguageManager languageManager = LanguageManager.getInstance();
 
     public ServicePackageView() {
+        // Skapar sidrubriken med ikon och projektets gemensamma stil.
+        title = new Label(languageManager.getString("servicePackagesTitle"));
+        HBox titleBox = UIComponents.createPageTitle(title, "fa-cubes");
+
+        // Skapar sidans beskrivande underrubrik.
+        subtitle = UIComponents.createSubtitle(
+                languageManager.getString("servicePackageSubtitle")
+        );
+
         servicePackagesTitle = UIComponents.createSectionTitle(languageManager.getString("servicePackagesTitle"));
 
         //lista över paket
@@ -85,7 +100,7 @@ public class ServicePackageView {
         totalPriceColumn = new TableColumn<>(languageManager.getString("" +
                 "packageTotalPriceColumn"));
         totalPriceColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(String.format("%,.0f kr",cellData.getValue().getPrice())));
+                new SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getPrice())));
 
 
         //paketets namn får mer plats än dom andra kolumnerna
@@ -137,7 +152,7 @@ public class ServicePackageView {
         priceColumn =new TableColumn<>(languageManager.getString("" +
                 "priceColumn"));
         priceColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(String.format("%.2f kr", cellData.getValue().getPrice())));
+                new SimpleStringProperty(PriceFormatter.formatPrice(cellData.getValue().getPrice())));
 
         serviceColumn.setPrefWidth(300);
         timeColumn.setPrefWidth(150);
@@ -181,7 +196,22 @@ public class ServicePackageView {
                 packageServicesTable,
                 serviceButtons
         );
-        this.root = section;
+
+        // Skapar tillbaka-knappen med projektets gemensamma stil.
+        backButton = UIComponents.createBackButton(
+                languageManager.getString("backButton")
+        );
+
+        // Lägger tillbaka-knappen under sektionen, till vänster.
+        VBox page = UIComponents.createVBoxForViews();
+        page.getChildren().addAll(
+                titleBox,
+                subtitle,
+                section,
+                backButton);
+
+        this.root = page;
+
 
         //ingen redigering förrän ett paket är markerat
         setServiceEditingDisabled(true);
@@ -190,6 +220,10 @@ public class ServicePackageView {
         languageManager.localeProperty().addListener((observable, oldValue, newValue) -> {
             changeTextAllComponents();
         });
+    }
+
+    public Button getBackButton() {
+        return backButton;
     }
 
     public Parent getView() {return root;}
@@ -218,20 +252,24 @@ public class ServicePackageView {
     }
 
     public void changeTextAllComponents() {
+        title.setText(languageManager.getString("servicePackagesTitle"));
+        subtitle.setText(languageManager.getString("servicePackageSubtitle"));
         servicePackagesTitle.setText(languageManager.getString("servicePackagesTitle"));
+        packageServicesTitle.setText(languageManager.getString("packageServicesTitle"));
         packageNameColumn.setText(languageManager.getString("packageNameColumn"));
-        serviceCountColumn.setText(languageManager.getString("packageServiceCountColumn"));
+        serviceCountColumn.setText(languageManager.getString("services"));
         totalTimeColumn.setText(languageManager.getString("packageTotalTimeColumn"));
         totalPriceColumn.setText(languageManager.getString("packageTotalPriceColumn"));
         noPackagesLabel.setText(languageManager.getString("noServicePackagesHint"));
         packageNameField.setPromptText(languageManager.getString("packageNamePrompt"));
         createPackageButton.setText(languageManager.getString("createPackageButton"));
-        packageServicesTitle.setText(languageManager.getString("packageServicesTitle"));
-        serviceColumn.setText(languageManager.getString("serviceColumn"));
+        serviceColumn.setText(languageManager.getString("service"));
         timeColumn.setText(languageManager.getString("timeColumn"));
-        priceColumn.setText(languageManager.getString("priceColumn"));
+        priceColumn.setText(languageManager.getString("price"));
         addServiceButton.setText(languageManager.getString("addService"));
         removeServiceButton.setText(languageManager.getString("removeService"));
+        backButton.setText(languageManager.getString("backButton"));
+
         setPackageSelected(packageSelected);
     }
 }
