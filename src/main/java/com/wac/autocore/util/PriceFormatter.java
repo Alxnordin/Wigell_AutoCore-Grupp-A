@@ -6,9 +6,9 @@ import java.util.Locale;
 public class PriceFormatter {
 
     public static String formatPrice(double amount) {
-        Locale locale = LanguageManager.getInstance().localeProperty().get();
+        NumberFormat format = NumberFormat.getNumberInstance(
+            Locale.forLanguageTag("sv-SE"));
 
-        NumberFormat format = NumberFormat.getNumberInstance(locale);
         format.setMinimumFractionDigits(0);
         format.setMaximumFractionDigits(2);
 
