@@ -453,7 +453,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         WorkOrderBuilder builder = new WorkOrderBuilder()
                 .customerId(customerId)
                 .vehicleId(vehicleId)
-                .mechanicId(mechanicId);
+                .mechanicId(mechanicId)
+                .workOrderDate(LocalDate.now());
 
         for (int serviceItemId : serviceItemIds) {
             ServiceItem serviceItem = serviceItemService.findServiceItem(serviceItemId);
