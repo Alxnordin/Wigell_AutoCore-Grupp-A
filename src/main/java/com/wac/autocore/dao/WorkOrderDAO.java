@@ -21,7 +21,7 @@ public class WorkOrderDAO implements WorkOrderRepository {
         List<WorkOrder> workOrders = new ArrayList<WorkOrder>();
 
         String sql = "SELECT id, booking_id, customer_id, vehicle_id, description, mechanic_id, status, " +
-                "is_complaint, original_work_order_id " +
+                "is_complaint, original_work_order_id, work_order_date " +
                 "FROM work_order " +
                 "ORDER BY id";
 
@@ -35,11 +35,16 @@ public class WorkOrderDAO implements WorkOrderRepository {
                 int vehicleId = resultSet.getInt("vehicle_id");
                 String description = resultSet.getString("description");
                 int mechanicId = resultSet.getInt("mechanic_id");
+
                 WorkOrder workOrder = new WorkOrder(
                         resultSet.getInt("id"),
                         bookingId,
                         mechanicId
                 );
+                java.sql.Date sqlDate = resultSet.getDate("work_order_date");
+                if (sqlDate != null){
+                    workOrder.setWorkOrderDate(sqlDate.toLocalDate());
+                }
                 workOrder.setCustomerId(customerId);
                 workOrder.setVehicleId(vehicleId);
                 workOrder.setDescription(description);
@@ -62,7 +67,7 @@ public class WorkOrderDAO implements WorkOrderRepository {
     @Override
     public WorkOrder findById(int workOrderId){
         String sql = "SELECT id, booking_id, customer_id, vehicle_id, description, mechanic_id, status, " +
-                "is_complaint, original_work_order_id " +
+                "is_complaint, original_work_order_id, work_order_date " +
                 "FROM work_order " +
                 "WHERE id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -79,6 +84,10 @@ public class WorkOrderDAO implements WorkOrderRepository {
                             bookingId,
                             resultSet.getInt("mechanic_id")
                     );
+                    java.sql.Date sqlDate = resultSet.getDate("work_order_date");
+                    if (sqlDate != null){
+                        workOrder.setWorkOrderDate(sqlDate.toLocalDate());
+                    }
                     workOrder.setCustomerId(resultSet.getInt("customer_id"));
                     workOrder.setVehicleId(resultSet.getInt("vehicle_id"));
                     workOrder.setDescription(resultSet.getString("description"));
@@ -107,7 +116,8 @@ public class WorkOrderDAO implements WorkOrderRepository {
                 "mechanic_id = ?, " +
                 "status = ?, " +
                 "is_complaint = ?, " +
-                "original_work_order_id = ? " +
+                "original_work_order_id = ?, " +
+                "work_order_date = ?" +
                 "WHERE id = ?";
 
         try  (Connection connection = DatabaseConnection.getConnection();
@@ -130,7 +140,9 @@ public class WorkOrderDAO implements WorkOrderRepository {
             }else {
                 statement.setNull(8, Types.INTEGER);
             }
-            statement.setInt(9, workOrder.getId());
+            statement.setDate(9, workOrder.getWorkOrderDate() == null
+            ? null : java.sql.Date.valueOf(workOrder.getWorkOrderDate()));
+            statement.setInt(10, workOrder.getId());
 
             statement.executeUpdate();
 
@@ -173,8 +185,8 @@ public class WorkOrderDAO implements WorkOrderRepository {
     @Override
     public WorkOrder save(WorkOrder workOrder){
         String sql = "INSERT INTO work_order " +
-                "(booking_id, customer_id,vehicle_id, description, mechanic_id, status, is_complaint, original_work_order_id) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                "(booking_id, customer_id,vehicle_id, description, mechanic_id, status, is_complaint, original_work_order_id, work_order_date) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
@@ -190,12 +202,13 @@ public class WorkOrderDAO implements WorkOrderRepository {
             statement.setString(6, workOrder.getStatus());
             statement.setBoolean(7, workOrder.isComplaint());
 
-
             if (workOrder.getOriginalWorkOrderId() != null) {
                 statement.setInt(8, workOrder.getOriginalWorkOrderId());
             } else {
                 statement.setNull(8, Types.INTEGER);
             }
+            statement.setDate(9, workOrder.getWorkOrderDate() == null
+                    ? null : java.sql.Date.valueOf(workOrder.getWorkOrderDate()));
 
             statement.executeUpdate();
 

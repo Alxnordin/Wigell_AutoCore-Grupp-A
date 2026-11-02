@@ -22,6 +22,8 @@ public class WorkOrder {
     //reklamation
     private boolean complaint;
     private Integer originalWorkOrderId;
+    //används vid drop-in
+    private LocalDate workOrderDate;
 
     public WorkOrder(int id, Integer bookingId, int mechanicId) {
         this.id = id;
@@ -119,6 +121,13 @@ public class WorkOrder {
     }
     public void setVehicleId(int vehicleId){
         this.vehicleId = vehicleId;
+    }
+
+    public LocalDate getWorkOrderDate(){
+        return workOrderDate;
+    }
+    public void setWorkOrderDate(LocalDate workOrderDate){
+        this.workOrderDate = workOrderDate;
     }
 
     public String getDescription() {

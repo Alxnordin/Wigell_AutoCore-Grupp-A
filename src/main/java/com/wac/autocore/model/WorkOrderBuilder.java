@@ -1,5 +1,6 @@
 package com.wac.autocore.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ public class WorkOrderBuilder {
     private int vehicleId;
     private int mechanicId;
     private String description;
+    private LocalDate workOrderDate;
 
     private List<Integer> serviceItemIds = new ArrayList<>();
     private Map<Integer, Double> serviceItemPrices = new HashMap<>();
@@ -58,6 +60,12 @@ public class WorkOrderBuilder {
         this.serviceItemPrices.put(serviceItemId, price);
         return this;
     }
+
+    public WorkOrderBuilder workOrderDate(LocalDate workOrderDate){
+        this.workOrderDate = workOrderDate;
+        return this;
+    }
+
     public WorkOrder build() {
         WorkOrder workOrder = new WorkOrder(id, bookingId, mechanicId);
 
@@ -67,7 +75,7 @@ public class WorkOrderBuilder {
         workOrder.setDescription(description);
         workOrder.setComplaint(complaint);
         workOrder.setOriginalWorkOrderId(originalWorkOrderId);
-
+        workOrder.setWorkOrderDate(workOrderDate);
 
         for(Integer serviceItemId : serviceItemIds){
             workOrder.addServiceItem(serviceItemId,serviceItemPrices.get(serviceItemId));

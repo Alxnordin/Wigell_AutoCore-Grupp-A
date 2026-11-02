@@ -108,7 +108,19 @@ public class OrderDetailsView {
         dateLabel = UIComponents.createInfoLabel(languageManager.getString("date"));
         //Alexander
         //drop-in saknar bokning och därmed bokningsdatum
-        Label dateValue = UIComponents.createValueLabel(booking != null ? booking.getDate().toString() : "--");
+        //Label dateValue = UIComponents.createValueLabel(booking != null ? booking.getDate().toString() : "--");
+
+        //Datum för drop-in
+        String workOrderDate;
+        if(booking != null){
+            workOrderDate = booking.getDate().toString();
+        }else if(workOrder.getWorkOrderDate() != null){
+            workOrderDate = workOrder.getWorkOrderDate().toString();
+        }else {
+            workOrderDate = "--";
+        }
+
+        Label dateValue = UIComponents.createValueLabel(workOrderDate);
 
         VBox dateBox = UIComponents.createVBoxWithSpacing6();
         dateBox.getChildren().addAll(

@@ -175,6 +175,13 @@ public class DatabaseConnection {
             }catch(SQLException e){
 
             }
+            //För att drop-in ordrar ska få datum(dagens datum)
+            try{
+                statement.execute("ALTER TABLE work_order " +
+                        "ADD COLUMN work_order_date DATE NULL");
+            } catch(SQLException e){
+                
+            }
 
         }catch(SQLException e){
             throw new RuntimeException("Could not initialize database.", e);
